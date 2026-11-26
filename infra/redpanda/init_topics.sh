@@ -4,7 +4,7 @@ set -euo pipefail
 BROKERS="${REDPANDA_BROKERS:-redpanda:9092}"
 
 echo "Waiting for Redpanda at $BROKERS..."
-until rpk cluster health --brokers "$BROKERS" >/dev/null 2>&1; do
+until rpk topic list --brokers "$BROKERS" >/dev/null 2>&1; do
   sleep 2
 done
 

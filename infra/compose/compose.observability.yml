@@ -76,7 +76,7 @@ services:
       - ../../infra/observability/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
       - grafana_data:/var/lib/grafana
     ports:
-      - "3000:3000"
+      - "${GRAFANA_HOST_PORT:-3002}:3000"
     networks:
       - internal_mesh
     healthcheck:
@@ -94,6 +94,7 @@ services:
       postgres:
         condition: service_healthy
     environment:
+      HOSTNAME: "0.0.0.0"
       DATABASE_URL: postgresql://langfuse_svc:${LANGFUSE_DB_PASSWORD:-tailored_langfuse_pass}@postgres:5432/langfuse_db
       NEXTAUTH_SECRET: ${LANGFUSE_NEXTAUTH_SECRET:-dev_langfuse_nextauth_secret_32_chars_min}
       SALT: ${LANGFUSE_SALT:-dev_langfuse_salt_change_in_prod}
