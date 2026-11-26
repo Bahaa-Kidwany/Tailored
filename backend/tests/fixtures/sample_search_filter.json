@@ -1,0 +1,39 @@
+{
+  "active_persona_id": "data_scientist_track",
+  "derived_from_persona": true,
+  "search_parameters": {
+    "query_terms": ["Data Scientist", "Machine Learning Engineer"],
+    "target_locations": [
+      {
+        "city": "Cairo",
+        "country": "Egypt",
+        "work_modes": ["Remote", "Hybrid"],
+        "is_active": true
+      },
+      {
+        "city": "Riyadh",
+        "country": "Saudi Arabia",
+        "work_modes": ["On-site", "Hybrid", "Remote"],
+        "is_active": true
+      },
+      {
+        "city": "Worldwide",
+        "country": "Remote",
+        "work_modes": ["Remote"],
+        "is_active": true
+      }
+    ],
+    "seniority_filter": ["Mid-Level", "Senior"],
+    "date_posted": "past-24h"
+  },
+  "ingestion_sources": {
+    "enable_linkedin": true,
+    "enable_wuzzuf": true,
+    "enable_company_ats": true,
+    "enable_indeed": false
+  },
+  "constraints": {
+    "max_results_per_source_per_location": 20,
+    "exclude_keywords": ["unpaid", "internship", "volunteer"]
+  }
+}

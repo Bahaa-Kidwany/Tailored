@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: tailored_user
+      POSTGRES_PASSWORD: tailored_password
+      POSTGRES_DB: tailored_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - tailored_pgdata:/var/lib/postgresql/data
+
+volumes:
+  tailored_pgdata:
+

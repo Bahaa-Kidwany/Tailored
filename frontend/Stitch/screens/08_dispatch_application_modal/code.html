@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Tailored - Dispatch Bespoke Application Modal</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Manrope"', '"Plus Jakarta Sans"', 'sans-serif'],
+            serif: ['"Newsreader"', '"Playfair Display"', 'serif'],
+          },
+          colors: {
+            forest: {
+              DEFAULT: '#142a20',
+              deep: '#0e1f17',
+              light: '#1f3e30',
+              surface: '#f3f6f4',
+            },
+            emerald: {
+              dispatch: '#00a86b',
+            },
+            sage: {
+              50: '#f5f8f6',
+              100: '#eaf1ed',
+              200: '#d7e4dc',
+              300: '#bdcfc4',
+            },
+            gold: {
+              50: '#fcfaf5',
+              100: '#f8f3e6',
+              200: '#eedfbc',
+              muted: '#9a7b38',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #0b1411;
+      background-image: 
+        radial-gradient(at 15% 15%, rgba(20, 42, 32, 0.55) 0px, transparent 55%),
+        radial-gradient(at 85% 20%, rgba(202, 163, 87, 0.08) 0px, transparent 50%),
+        radial-gradient(at 50% 85%, rgba(14, 31, 23, 0.75) 0px, transparent 65%),
+        radial-gradient(at 50% 50%, rgba(7, 12, 10, 0.95) 0px, #070c0a 100%);
+      background-attachment: fixed;
+    }
+  </style>
+</head>
+<body class="min-h-screen text-stone-300 font-sans antialiased flex flex-col justify-between selection:bg-emerald-500 selection:text-black">
+
+  <!-- Minimal Header -->
+  <header class="w-full max-w-7xl mx-auto px-8 py-6 flex items-center justify-between">
+    <div class="flex items-center space-x-3">
+      <span class="text-xl font-extrabold tracking-[0.25em] text-white uppercase">TAILORED</span>
+      <span class="hidden sm:inline-block text-[11px] tracking-wider uppercase px-2.5 py-0.5 rounded-full bg-white/5 text-stone-300 font-semibold border border-white/20">Private Atelier</span>
+    </div>
+    <div class="flex items-center space-x-6">
+      <a class="text-xs tracking-wider uppercase text-stone-400 hover:text-white transition-colors font-medium flex items-center gap-1.5" href="#">
+        RETURN TO STUDIO <span class="text-sm">✕</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="w-full max-w-5xl mx-auto px-4 sm:px-6 py-2 flex-1 flex flex-col justify-center items-center">
+    <!-- Verified Target Opportunity Ribbon -->
+    <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-[#131d1a]/80 backdrop-blur-md border border-white/10 shadow-lg mb-6 text-xs text-stone-300">
+      <span class="w-2 h-2 rounded-full bg-[#00a86b] animate-pulse"></span>
+      <span class="font-semibold text-white">Dispatch Verification:</span>
+      <span class="text-stone-300">Swvl Mobility</span>
+      <span class="text-stone-500">•</span>
+      <span class="text-stone-300">Lead Data Scientist</span>
+      <span class="text-stone-500">•</span>
+      <span class="text-stone-400 text-[11px]">Cairo &amp; Dubai</span>
+    </div>
+
+    <!-- Master Modal Card (Pure Alabaster Surface with Soft Rounded Corners) -->
+    <div class="w-full bg-white rounded-[2.5rem] shadow-2xl shadow-black/50 border border-stone-200/80 p-8 sm:p-10 relative overflow-hidden text-[#121815]">
+      <!-- Luxury Ambient Glows -->
+      <div class="absolute -top-32 -right-32 w-80 h-80 bg-gold-200/20 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-32 -left-32 w-80 h-80 bg-sage-200/30 rounded-full blur-3xl pointer-events-none"></div>
+
+      <!-- Top Title Area -->
+      <div class="text-center max-w-2xl mx-auto mb-8 relative">
+        <div class="inline-flex items-center space-x-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-gold-muted px-3 py-1 rounded-full bg-gold-50 border border-gold-200 mb-2.5">
+          <span>★</span>
+          <span>Atelier Outreach Engine</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-serif font-normal tracking-tight text-forest mb-2">
+          Dispatch Bespoke Application
+        </h1>
+        <p class="text-stone-500 text-xs sm:text-sm leading-relaxed">
+          Verified ATS resume pairing and contextual executive outreach for Swvl Mobility.
+        </p>
+      </div>
+
+      <!-- Two-Column Body Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 relative z-10 mb-8 items-start">
+        <!-- LEFT COLUMN: Transmission & Credentials (5 cols) -->
+        <div class="lg:col-span-5 flex flex-col space-y-4">
+          <!-- Recipient -->
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wider text-stone-500 mb-1.5">
+              Recipient Destination
+            </label>
+            <div class="relative">
+              <input type="email" value="careers@swvl.com" class="w-full text-xs font-semibold px-3.5 py-2.5 rounded-xl border border-stone-200 bg-stone-50/50 text-[#121815] focus:outline-none focus:border-forest" readonly/>
+              <span class="absolute right-2.5 top-2.5 text-[10px] font-bold text-emerald-dispatch bg-[#dff3e7] px-2 py-0.5 rounded-full border border-emerald-200">
+                ✓ Extracted
+              </span>
+            </div>
+            <div class="flex items-center justify-between text-[11px] text-stone-400 mt-1 px-1">
+              <span>CC: mostafa.eng@tailored.atelier</span>
+              <button class="text-forest hover:underline text-[11px] font-medium" type="button">Edit</button>
+            </div>
+          </div>
+
+          <!-- Subject -->
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wider text-stone-500 mb-1.5">
+              Subject Line
+            </label>
+            <input type="text" value="Application: Lead Data Scientist — Mostafa Ibrahim" class="w-full text-xs font-semibold px-3.5 py-2.5 rounded-xl border border-stone-200 bg-stone-50/50 text-[#121815] focus:outline-none focus:border-forest"/>
+          </div>
+
+          <!-- Verified Attachment Cards -->
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wider text-stone-500 mb-1.5">
+              Verified Attachments
+            </label>
+            <div class="space-y-2">
+              <!-- CV PDF Card -->
+              <div class="p-3 rounded-xl border border-stone-200 bg-stone-50/70 flex items-center justify-between gap-3">
+                <div class="flex items-center gap-2.5 truncate">
+                  <div class="w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center justify-center shrink-0 text-emerald-dispatch font-bold text-xs">
+                    PDF
+                  </div>
+                  <div class="truncate">
+                    <p class="text-xs font-bold text-[#121815] truncate">Mostafa_Ibrahim_CV_Swvl.pdf</p>
+                    <p class="text-[10px] text-stone-400">142 KB • 1-Page ATS Enforced</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-1.5 shrink-0">
+                  <button class="text-[11px] px-2.5 py-1 rounded-full border border-stone-200 bg-white text-stone-700 hover:bg-stone-100 font-medium" type="button">Preview</button>
+                  <button class="text-[11px] px-2.5 py-1 rounded-full border border-stone-200 bg-white text-stone-700 hover:bg-stone-100 font-medium" type="button">Download</button>
+                </div>
+              </div>
+
+              <!-- Cover Letter Text Card -->
+              <div class="p-3 rounded-xl border border-stone-200 bg-stone-50/70 flex items-center justify-between gap-3">
+                <div class="flex items-center gap-2.5 truncate">
+                  <div class="w-8 h-8 rounded-lg bg-stone-100 border border-stone-200 flex items-center justify-center shrink-0 text-stone-600 font-bold text-xs">
+                    TXT
+                  </div>
+                  <div class="truncate">
+                    <p class="text-xs font-bold text-[#121815] truncate">Cover_Letter_Swvl.txt</p>
+                    <p class="text-[10px] text-stone-400">2.1 KB • Plain Text</p>
+                  </div>
+                </div>
+                <button class="text-[11px] px-2.5 py-1 rounded-full border border-stone-200 bg-white text-stone-700 hover:bg-stone-100 font-medium shrink-0" type="button">Download</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Candidate Contact Identity Stamp -->
+          <div class="p-3 rounded-xl bg-sage-50 border border-sage-200 text-[11px] text-stone-600 space-y-1">
+            <p class="font-bold uppercase tracking-wider text-forest text-[10px]">Verified Candidate Signature:</p>
+            <p>• Phone: <span class="font-semibold text-stone-800">+20 100 482 9102</span> (Egypt Mobile)</p>
+            <p>• Email: <span class="font-semibold text-stone-800">mostafa.eng@tailored.atelier</span></p>
+            <p>• LinkedIn: <span class="font-semibold text-stone-800">linkedin.com/in/mostafa-ai</span></p>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Contextual Outreach Pitch (7 cols) -->
+        <div class="lg:col-span-7 flex flex-col space-y-3">
+          <div class="flex items-center justify-between">
+            <label class="block text-[11px] font-bold uppercase tracking-wider text-stone-500">
+              Executive Cover Letter Pitch
+            </label>
+            <span class="text-[11px] text-stone-400">Tailored to Swvl Requirements</span>
+          </div>
+
+          <!-- Editable Letter Textarea -->
+          <div class="relative">
+            <textarea rows="11" class="w-full text-xs leading-relaxed font-sans p-4 rounded-2xl border border-stone-200 bg-stone-50/40 text-stone-800 focus:outline-none focus:border-forest resize-none">Dear Swvl Talent Acquisition Team,
+
+I am writing to express my strong interest in the Lead Data Scientist position at Swvl. Having architected distributed ML inference pipelines and dynamic pricing models across Egypt and Gulf markets, I was particularly drawn to Swvl's mass-transit routing challenges.
+
+In my recent work, I spearheaded low-latency dynamic pricing algorithms using PyTorch and asynchronous FastAPI microservices, cutting fleet seat-underutilization by 28% and slashing dispatch calculation latency by 42% across 1,400 simultaneous urban routes. My background directly aligns with your tech stack (Python, Kafka, PostgreSQL, AWS) and high-concurrency requirements.
+
+My tailored ATS resume is attached for your review. I welcome the opportunity to discuss how my experience can drive immediate impact for Swvl Mobility.
+
+Sincerely,
+Mostafa Ibrahim
+Senior AI &amp; Infrastructure Engineer
+Phone: +20 100 482 9102 • Email: mostafa.eng@tailored.atelier</textarea>
+          </div>
+
+          <!-- Quick Polish Chips -->
+          <div class="flex items-center gap-1.5 flex-wrap pt-1">
+            <span class="text-[10px] uppercase font-bold text-stone-400 mr-1">Quick Polish:</span>
+            <button class="px-3 py-1 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-700 text-[11px] font-medium border border-stone-200 transition" type="button">Make More Concise</button>
+            <button class="px-3 py-1 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-700 text-[11px] font-medium border border-stone-200 transition" type="button">Emphasize Scale</button>
+            <button class="px-3 py-1 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-700 text-[11px] font-medium border border-stone-200 transition" type="button">Add Notice Period</button>
+            <button class="px-3 py-1 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-500 text-[11px] font-medium border border-stone-200 transition" type="button">↺ Reset</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Footer -->
+      <div class="pt-6 border-t border-stone-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <label class="flex items-center space-x-2 text-xs text-stone-600 cursor-pointer">
+          <input type="checkbox" checked class="rounded border-stone-300 text-forest focus:ring-forest"/>
+          <span>Automatically advance this job to <strong class="text-forest">"Applied"</strong> in Pipeline</span>
+        </label>
+
+        <div class="flex items-center space-x-3 w-full sm:w-auto justify-end">
+          <button class="px-4 py-2.5 rounded-full border border-stone-300 bg-white hover:bg-stone-50 text-stone-700 text-xs font-semibold transition shadow-sm" type="button">
+            📋 Copy Full Email
+          </button>
+          <button class="px-4 py-2.5 rounded-full border border-stone-300 bg-white hover:bg-stone-50 text-stone-700 text-xs font-semibold transition shadow-sm hidden md:inline-block" type="button">
+            ✉ Mail App
+          </button>
+          <button class="px-6 py-2.5 rounded-full bg-forest hover:bg-forest-deep text-white text-xs font-bold transition shadow-lg shadow-forest/20 flex items-center space-x-2" type="button">
+            <span>🚀 Open in Gmail Web</span>
+            <span class="text-emerald-400">✦</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Security & Footnote -->
+    <p class="text-center text-[11px] text-stone-500 mt-5">
+      Bank-grade data isolation. Application telemetry recorded to PostgreSQL 15.
+    </p>
+  </main>
+
+  <!-- Footer -->
+  <footer class="w-full max-w-7xl mx-auto px-8 py-6 flex items-center justify-between text-[11px] text-stone-500">
+    <span>© 2025 TAILORED Atelier Inc. All rights reserved.</span>
+    <div class="flex space-x-6">
+      <a class="hover:text-stone-300" href="#">Privacy</a>
+      <a class="hover:text-stone-300" href="#">Terms</a>
+      <a class="hover:text-stone-300" href="#">Security</a>
+    </div>
+  </footer>
+
+</body>
+</html>
+

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TAILORED — Track &amp; Career Goal</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-lowest": "#ffffff",
+            "background": "#f8f9f7",
+            "charcoal-ink": "#18221d",
+            "charcoal-muted": "#5e6962",
+            "forest-primary": "#1b382b",
+            "forest-hover": "#142b21",
+            "sage-border": "#d8e0db",
+            "sage-border-subtle": "#e6ede8",
+            "sage-surface": "#f1f5f2",
+            "sage-pill": "#e8efe9",
+            "sage-tint": "#2e4d40"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.75rem",
+            "lg": "1rem",
+            "xl": "1.25rem",
+            "2xl": "1.5rem",
+            "3xl": "2rem",
+            "4xl": "2.5rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "sans": ["'Plus Jakarta Sans'", "sans-serif"],
+            "mono": ["'Space Grotesk'", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 350, 'GRAD' 0, 'opsz' 20;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #1b382b;
+      cursor: pointer;
+      border: 2px solid #ffffff;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+    }
+  </style>
+</head>
+<body class="bg-[#f6f7f5] text-charcoal-ink font-sans min-h-screen flex flex-col justify-between antialiased selection:bg-forest-primary selection:text-white relative overflow-x-hidden">
+<!-- Ambient organic muted sage gradient backdrop matching Create Account -->
+<div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+<div class="absolute -top-[18%] -left-[12%] w-[680px] h-[680px] rounded-full bg-[#dfe8e2]/65 blur-[120px]"></div>
+<div class="absolute top-[28%] -right-[15%] w-[620px] h-[620px] rounded-full bg-[#d7e4dc]/55 blur-[130px]"></div>
+<div class="absolute -bottom-[20%] left-[25%] w-[580px] h-[580px] rounded-full bg-[#e3ece6]/70 blur-[110px]"></div>
+<div class="absolute top-[45%] left-[8%] w-[380px] h-[380px] rounded-full bg-[#ccdcd2]/30 blur-[90px]"></div>
+</div>
+<!-- Minimal Top Header -->
+<header class="w-full border-b border-sage-border/60 bg-[#f6f7f5]/80 backdrop-blur-md px-6 md:px-12 py-4 flex items-center justify-between z-30 transition-colors">
+<div class="flex items-center gap-2">
+<span class="text-[17px] tracking-widest uppercase text-forest-primary font-bold">TAILORED</span>
+</div>
+<a class="inline-flex items-center gap-1.5 text-charcoal-muted hover:text-forest-primary transition-colors duration-150 text-[13px] rounded-full px-3 py-1 hover:bg-white/60" href="#">
+<span>Return to Command Center</span>
+<span class="material-symbols-outlined text-[16px]">close</span>
+</a>
+</header>
+<!-- Main Central Card Plinth -->
+<main class="flex-grow flex items-center justify-center px-4 md:px-8 py-8 md:py-12 z-10 relative">
+<div class="w-full max-w-[560px]">
+<!-- Floating White Card Architecture -->
+<div class="bg-white/90 backdrop-blur-md border border-sage-border/80 p-7 md:p-10 rounded-[2.5rem] shadow-[0_12px_40px_-15px_rgba(27,56,43,0.07)] relative transition-all">
+<!-- Centered Title & Minimalist Subhead -->
+<div class="text-center mb-7">
+<div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-sage-surface border border-sage-border/70 text-forest-primary text-[11px] font-semibold tracking-wider mb-3">
+<span>STEP 01 / 06</span>
+</div>
+<h1 class="text-2xl md:text-3xl font-bold tracking-tight text-charcoal-ink">Track &amp; Career Goal</h1>
+<p class="text-[13px] md:text-sm text-charcoal-muted mt-1.5">Set your target role or upload an existing resume to fast-forward.</p>
+</div>
+<!-- Quick CV Upload Dropzone matching Social Auth style -->
+<div class="relative group bg-[#f4f7f4] hover:bg-[#ebf2ec] border border-sage-border/80 rounded-2xl p-4 transition-all duration-150 cursor-pointer flex items-center justify-between gap-3 mb-6" id="cv-dropzone" onclick="document.getElementById('cv-file-input').click()">
+<input accept=".pdf,.docx,.tex,.txt" class="hidden" id="cv-file-input" type="file"/>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-white text-forest-primary flex items-center justify-center shrink-0 shadow-xs">
+<span class="material-symbols-outlined text-[20px]">upload_file</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-semibold text-charcoal-ink text-[13px]">Fast-Forward with CV</span>
+<span class="text-[9px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-forest-primary text-white">Recommended</span>
+</div>
+<p class="text-[11px] text-charcoal-muted mt-0.5">Drop PDF, DOCX or LaTeX (instant auto-fill)</p>
+</div>
+</div>
+<button class="shrink-0 bg-white text-forest-primary border border-sage-border/80 px-3.5 py-1.5 text-xs font-semibold rounded-full shadow-xs hover:border-forest-primary transition-colors" type="button">
+      Upload File
+    </button>
+</div>
+<!-- Hairline Demarcation -->
+<div class="relative flex items-center justify-center mb-6">
+<div class="absolute inset-0 flex items-center">
+<div class="w-full border-t border-sage-border/70"></div>
+</div>
+<span class="relative px-3 bg-white/95 rounded-full text-[11px] uppercase tracking-wider text-charcoal-muted">or enter manually</span>
+</div>
+<!-- Form Core -->
+<div class="space-y-5">
+<!-- Target Role -->
+<div>
+<label class="block text-[13px] text-charcoal-ink mb-1.5 font-semibold" for="target-role">Target Role</label>
+<div class="relative">
+<input class="w-full h-11 px-4 rounded-xl bg-[#f1f5f2]/80 border border-sage-border/90 text-charcoal-ink text-[14px] placeholder:text-charcoal-muted/70 focus:bg-white focus:border-forest-primary focus:ring-2 focus:ring-forest-primary/15 focus:outline-none transition-all" id="target-role" placeholder="e.g. Senior Machine Learning Engineer" type="text" value="Senior Machine Learning Engineer"/>
+<button class="absolute right-3.5 top-1/2 -translate-y-1/2 text-charcoal-muted hover:text-forest-primary transition-colors">
+<span class="material-symbols-outlined text-[17px]">edit</span>
+</button>
+</div>
+<!-- Quick Suggestion Chips -->
+<div class="flex flex-wrap items-center gap-1.5 mt-2">
+<button class="suggestion-chip text-[11px] px-2.5 py-1 rounded-full bg-sage-pill hover:bg-[#dce6dd] text-forest-primary font-medium transition-colors" type="button">
+          + Fullstack Engineer
+        </button>
+<button class="suggestion-chip text-[11px] px-2.5 py-1 rounded-full bg-sage-pill hover:bg-[#dce6dd] text-forest-primary font-medium transition-colors" type="button">
+          + AI Systems Architect
+        </button>
+<button class="suggestion-chip text-[11px] px-2.5 py-1 rounded-full bg-sage-pill hover:bg-[#dce6dd] text-forest-primary font-medium transition-colors" type="button">
+          + Engineering Manager
+        </button>
+</div>
+</div>
+<!-- Seniority Level Segmented Pill -->
+<div>
+<label class="block text-[13px] text-charcoal-ink mb-1.5 font-semibold">Seniority Level</label>
+<div class="grid grid-cols-4 gap-1 p-1 rounded-full bg-sage-pill/80 border border-sage-border/60">
+<button class="seniority-btn py-1.5 text-center rounded-full text-[12px] text-charcoal-muted hover:text-forest-primary transition-all duration-150" type="button">
+          Junior
+        </button>
+<button class="seniority-btn py-1.5 text-center rounded-full text-[12px] text-charcoal-muted hover:text-forest-primary transition-all duration-150" type="button">
+          Mid
+        </button>
+<button class="seniority-btn active py-1.5 text-center rounded-full text-[12px] bg-forest-primary text-white font-medium shadow-xs transition-all duration-150" type="button">
+          Senior
+        </button>
+<button class="seniority-btn py-1.5 text-center rounded-full text-[12px] text-charcoal-muted hover:text-forest-primary transition-all duration-150" type="button">
+          Lead / Principal
+        </button>
+</div>
+</div>
+<!-- Cumulative Experience Slider -->
+<div class="pt-1">
+<div class="flex items-center justify-between text-[12px] mb-1.5">
+<span class="font-medium text-charcoal-ink">Cumulative Experience</span>
+<span class="font-semibold text-forest-primary bg-sage-surface px-2.5 py-0.5 rounded-full border border-sage-border" id="exp-val">7 Years</span>
+</div>
+<input class="w-full h-1.5 bg-sage-border rounded-lg appearance-none cursor-pointer accent-forest-primary" id="exp-slider" max="20" min="0" type="range" value="7"/>
+</div>
+<!-- Executive Summary -->
+<div class="pt-1">
+<div class="flex items-center justify-between mb-1.5">
+<label class="block text-[13px] text-charcoal-ink font-semibold" for="exec-summary">Executive Summary</label>
+<button class="inline-flex items-center gap-1 text-[11px] font-semibold text-forest-primary hover:text-forest-hover px-2 py-0.5 rounded-full bg-sage-surface border border-sage-border/70 transition-colors" id="ai-polish-btn" type="button">
+<span>AI Polish</span>
+<span>✨</span>
+</button>
+</div>
+<textarea class="w-full p-3.5 rounded-xl bg-[#f1f5f2]/80 border border-sage-border/90 text-charcoal-ink text-[13px] leading-relaxed placeholder:text-charcoal-muted/70 focus:bg-white focus:border-forest-primary focus:ring-2 focus:ring-forest-primary/15 focus:outline-none transition-all resize-none" id="exec-summary" rows="3">Lead ML Practitioner with 7+ years designing distributed deep learning pipelines, transformer models, and production cloud systems.</textarea>
+</div>
+<!-- Primary CTA Button -->
+<div class="pt-3">
+<button class="w-full h-12 rounded-full bg-forest-primary hover:bg-forest-hover text-white text-[14px] font-semibold flex items-center justify-center gap-2 transition-all duration-150 shadow-sm focus:outline-none focus:ring-2 focus:ring-forest-primary focus:ring-offset-2" type="button">
+<span>Continue to Identity &amp; Mobility</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+<!-- Minimal Auto-save Indicator -->
+<div class="text-center pt-1">
+<p class="text-[12px] text-charcoal-muted flex items-center justify-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+<span>Auto-saved just now</span>
+</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Canonical Minimal Footer matching Create Account -->
+<footer class="w-full border-t border-sage-border/60 bg-[#f6f7f5]/80 backdrop-blur-md px-6 md:px-12 py-4 flex flex-col md:flex-row justify-between items-center gap-2.5 z-30 transition-colors">
+<div class="text-[12px] text-charcoal-muted">
+  © 2025 TAILORED Atelier Inc.
+</div>
+<div class="flex items-center gap-5 text-charcoal-muted text-[12px]">
+<a class="hover:text-forest-primary transition-colors" href="#">Privacy</a>
+<a class="hover:text-forest-primary transition-colors" href="#">Terms</a>
+<a class="hover:text-forest-primary transition-colors" href="#">Security</a>
+</div>
+</footer>
+<!-- Interactive State Script -->
+<script>
+  // Slider interaction
+  const slider = document.getElementById('exp-slider');
+  const expVal = document.getElementById('exp-val');
+  if (slider && expVal) {
+    slider.addEventListener('input', (e) => {
+      const val = e.target.value;
+      expVal.textContent = `${val} ${val === '1' ? 'Year' : 'Years'}`;
+    });
+  }
+
+  // Seniority pill selector switch
+  const seniorityBtns = document.querySelectorAll('.seniority-btn');
+  seniorityBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      seniorityBtns.forEach(b => {
+        b.classList.remove('bg-forest-primary', 'text-white', 'shadow-xs', 'active', 'font-medium');
+        b.classList.add('text-charcoal-muted');
+      });
+      btn.classList.add('bg-forest-primary', 'text-white', 'shadow-xs', 'active', 'font-medium');
+      btn.classList.remove('text-charcoal-muted');
+    });
+  });
+
+  // Suggestion chips
+  const chips = document.querySelectorAll('.suggestion-chip');
+  const roleInput = document.getElementById('target-role');
+  chips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      const cleanText = chip.textContent.replace('+', '').trim();
+      if (roleInput) {
+        roleInput.value = cleanText;
+      }
+    });
+  });
+
+  // AI Polish mock interaction
+  const aiBtn = document.getElementById('ai-polish-btn');
+  const summaryBox = document.getElementById('exec-summary');
+  if (aiBtn && summaryBox) {
+    aiBtn.addEventListener('click', () => {
+      aiBtn.innerHTML = '<span>Polishing...</span>';
+      setTimeout(() => {
+        summaryBox.value = "Systems & ML Specialist with 7+ years architecting autonomous data pipelines and fault-tolerant inference clusters for mission-critical production environments.";
+        aiBtn.innerHTML = '<span>Polished ✨</span>';
+        setTimeout(() => {
+          aiBtn.innerHTML = '<span>AI Polish</span><span>✨</span>';
+        }, 2000);
+      }, 400);
+    });
+  }
+</script>
+</body></html>

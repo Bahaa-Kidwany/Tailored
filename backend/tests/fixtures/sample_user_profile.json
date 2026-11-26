@@ -1,0 +1,170 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.1.0",
+  "personal_info": {
+    "full_name": "Ahmed El-Sayed",
+    "primary_email": "ahmed.elsayed@example.com",
+    "contact_numbers": [
+      {
+        "country_code": "EG",
+        "dial_code": "+20",
+        "phone_number": "1001234567",
+        "is_primary": true,
+        "label": "Egypt Mobile"
+      },
+      {
+        "country_code": "SA",
+        "dial_code": "+966",
+        "phone_number": "501234567",
+        "is_primary": false,
+        "label": "Saudi Mobile (Zain)"
+      }
+    ],
+    "links": {
+      "linkedin": "https://linkedin.com/in/ahmed-elsayed",
+      "github": "https://github.com/ahmed-elsayed",
+      "portfolio": "https://ahmedelsayed.dev"
+    }
+  },
+  "residence_and_mobility": {
+    "current_residence": {
+      "city": "Cairo",
+      "country": "Egypt"
+    },
+    "willing_to_relocate": true,
+    "target_locations": [
+      {
+        "location_id": "loc_cairo",
+        "city": "Cairo",
+        "country": "Egypt",
+        "work_modes": ["Remote", "Hybrid"],
+        "is_active_for_search": true
+      },
+      {
+        "location_id": "loc_riyadh",
+        "city": "Riyadh",
+        "country": "Saudi Arabia",
+        "work_modes": ["On-site", "Hybrid", "Remote"],
+        "is_active_for_search": true
+      },
+      {
+        "location_id": "loc_remote",
+        "city": "Remote",
+        "country": "Global",
+        "work_modes": ["Remote"],
+        "is_active_for_search": true
+      }
+    ]
+  },
+  "education": [
+    {
+      "institution": "Cairo University",
+      "degree": "B.S. in Computer Science",
+      "field_of_study": "Information Systems",
+      "graduation_year": 2021,
+      "grade_or_gpa": "Very Good (Honor)"
+    }
+  ],
+  "languages": [
+    {"language": "Arabic", "proficiency": "Native"},
+    {"language": "English", "proficiency": "Professional Working"}
+  ],
+  "career_personas": [
+    {
+      "persona_id": "data_scientist_track",
+      "target_title": "Data Scientist",
+      "alternative_titles": ["Machine Learning Engineer", "AI Engineer"],
+      "is_primary": true,
+      "seniority_level": "Mid-Level",
+      "years_of_experience": 3,
+      "summary_bio": "Data Scientist with 3+ years designing predictive ML pipelines, customer churn models, and NLP text processing systems. Experienced in Python, PyTorch, and deploying models using FastAPI and Docker.",
+      "skills_and_tools": {
+        "core_skills": ["Machine Learning", "Deep Learning", "NLP", "Feature Engineering", "A/B Testing"],
+        "programming_languages": ["Python", "SQL", "R"],
+        "frameworks_and_libraries": ["PyTorch", "Scikit-Learn", "Pandas", "NumPy", "HuggingFace"],
+        "tools_and_platforms": ["MLflow", "Docker", "Git", "Jupyter", "PostgreSQL"]
+      },
+      "experience_highlights": [
+        {
+          "company": "Swvl",
+          "role": "Data Scientist",
+          "start_date": "2022-08",
+          "end_date": "Present",
+          "location": "Cairo, Egypt (Hybrid)",
+          "achievements": [
+            "Built a dynamic route pricing regression model that improved ride margins by 7.4%.",
+            "Deployed production sentiment analysis model processing 50k+ user reviews monthly using HuggingFace and FastAPI."
+          ]
+        }
+      ],
+      "featured_projects": [
+        {
+          "name": "Customer Churn Early-Warning Predictor",
+          "tech_stack": ["Python", "XGBoost", "FastAPI", "PostgreSQL"],
+          "summary": "Trained and deployed an XGBoost pipeline predicting user churn with 88% ROC-AUC, triggering automated retention discounts.",
+          "link": "https://github.com/ahmed-elsayed/churn-predictor"
+        }
+      ],
+      "certifications": [
+        {
+          "name": "Deep Learning Specialization",
+          "issuer": "DeepLearning.AI / Coursera",
+          "issue_date": "2022-03"
+        }
+      ]
+    },
+    {
+      "persona_id": "data_analyst_track",
+      "target_title": "Data Analyst",
+      "alternative_titles": ["Business Intelligence Analyst", "Product Data Analyst"],
+      "is_primary": false,
+      "seniority_level": "Mid-Level",
+      "years_of_experience": 3,
+      "summary_bio": "Analytical problem solver skilled in transforming complex relational databases into executive decision dashboards. Expert in advanced SQL querying, Tableau, Power BI, and cohort retention analysis.",
+      "skills_and_tools": {
+        "core_skills": ["Exploratory Data Analysis", "Cohort Analysis", "KPI Metric Formulation", "Data Storytelling"],
+        "programming_languages": ["SQL (PostgreSQL, BigQuery)", "Python"],
+        "frameworks_and_libraries": ["Pandas", "Matplotlib", "Seaborn"],
+        "tools_and_platforms": ["Power BI", "Tableau", "Excel / Google Sheets", "Metabase", "dbt"]
+      },
+      "experience_highlights": [
+        {
+          "company": "Swvl",
+          "role": "Product Data Analyst (Cross-functional)",
+          "start_date": "2022-08",
+          "end_date": "Present",
+          "location": "Cairo, Egypt",
+          "achievements": [
+            "Designed executive daily active rider dashboard in Metabase, monitoring fleet performance across 4 cities.",
+            "Wrote optimized PostgreSQL queries reducing reporting ETL runtimes by 42%."
+          ]
+        },
+        {
+          "company": "Local Agency",
+          "role": "Junior Data Analyst",
+          "start_date": "2021-07",
+          "end_date": "2022-07",
+          "location": "Cairo, Egypt",
+          "achievements": [
+            "Analyzed e-commerce checkout funnel drop-offs and presented actionable UI friction points to stakeholders."
+          ]
+        }
+      ],
+      "featured_projects": [
+        {
+          "name": "E-Commerce Cohort Retention & LTV Dashboard",
+          "tech_stack": ["SQL", "Power BI", "Python"],
+          "summary": "Built end-to-end dashboard tracking customer lifetime value (LTV) and 30-day retention across marketing channels.",
+          "link": "https://github.com/ahmed-elsayed/retention-bi-dashboard"
+        }
+      ],
+      "certifications": [
+        {
+          "name": "Google Data Analytics Professional Certificate",
+          "issuer": "Google / Coursera",
+          "issue_date": "2021-11"
+        }
+      ]
+    }
+  ]
+}

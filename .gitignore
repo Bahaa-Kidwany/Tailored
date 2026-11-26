@@ -1,0 +1,49 @@
+# Environment & secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*credentials*.json
+*service-account*.json
+
+# Node / Frontend
+node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Python & caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+
+# Local SQLite databases
+*.db
+*.sqlite
+*.sqlite3
+tailored.db
+backend/tailored.db
+
+# Generated artifacts & large local binaries
+backend/artifacts/
+backend/scratch_test_tex/
+backend/bin/tectonic.exe
+
+# Runtime infra data & logs
+infra/data/
+*.log
+
+# OS / Editor files
+.DS_Store
+Thumbs.db
+
+# Office temp lock files
+~$*

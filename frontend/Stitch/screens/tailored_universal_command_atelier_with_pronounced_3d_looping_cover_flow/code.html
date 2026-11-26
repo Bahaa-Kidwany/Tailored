@@ -1,0 +1,466 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>TAILORED — Private Executive Placement &amp; Caliber Resonance</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400;1,600;1,700&amp;family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&amp;family=Space+Mono:ital,wght@0,400;0,700;1,400&amp;family=Syne:wght@400;500;600;700;800&amp;family=Tenor+Sans&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,600,700,900&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "forest-deep": "#0d1513",
+          "forest-card": "#131d1a",
+          "forest-elevated": "#182420",
+          "jade-surface": "#1e2e29",
+          "bronze-primary": "#e2c289",
+          "bronze-muted": "#bfa16b",
+          "bronze-dark": "#735b2c",
+          "parchment": "#e8ede9",
+          "parchment-muted": "#9bbdad",
+          "sage-subtle": "#879b92",
+          "glass-edge": "rgba(226, 194, 137, 0.18)"
+        },
+        fontFamily: {
+          "sans": ["Satoshi", "sans-serif"],
+          "serif": ["Cormorant Garamond", "serif"],
+          "editorial": ["Newsreader", "serif"],
+          "mono": ["Space Mono", "monospace"]
+        },
+        letterSpacing: {
+          "brutalist": "0.26em",
+          "telemetry": "0.18em"
+        }
+      }
+    }
+  }
+</script>
+<style>
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 250, 'GRAD' 0, 'opsz' 20;
+    display: inline-block;
+    vertical-align: middle;
+  }
+  
+  /* Amplified 3D Spatial Stage */
+  .stage-3d {
+    perspective: 900px;
+    perspective-origin: 50% 50%;
+    transform-style: preserve-3d;
+  }
+
+  .coverflow-card {
+    transition: transform 0.85s cubic-bezier(0.2, 0.8, 0.2, 1),
+                box-shadow 0.85s ease,
+                border-color 0.6s ease;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+    will-change: transform, box-shadow;
+    opacity: 1 !important;
+  }
+
+  /* Center Stage - Prominent Elevation */
+  .cf-pos-center {
+    transform: translateX(0px) translateZ(60px) rotateY(0deg) scale(1.08);
+    z-index: 35;
+    pointer-events: auto;
+    box-shadow: 0 35px 80px -15px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(255, 255, 255, 0.22), 0 10px 30px -10px rgba(226, 194, 137, 0.15);
+  }
+
+  /* Left Receded Stage - Dramatic Inward Yaw */
+  .cf-pos-left {
+    transform: translateX(-340px) translateZ(-260px) rotateY(42deg) scale(0.82);
+    z-index: 10;
+    pointer-events: auto;
+    cursor: pointer;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.88), 0 0 0 1px rgba(255, 255, 255, 0.12);
+  }
+  .cf-pos-left:hover {
+    transform: translateX(-310px) translateZ(-210px) rotateY(36deg) scale(0.86);
+    box-shadow: 0 30px 65px -12px rgba(0, 0, 0, 0.92), 0 0 0 1px rgba(255, 255, 255, 0.2);
+  }
+
+  /* Right Receded Stage - Dramatic Inward Yaw */
+  .cf-pos-right {
+    transform: translateX(340px) translateZ(-260px) rotateY(-42deg) scale(0.82);
+    z-index: 10;
+    pointer-events: auto;
+    cursor: pointer;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.88), 0 0 0 1px rgba(255, 255, 255, 0.12);
+  }
+  .cf-pos-right:hover {
+    transform: translateX(310px) translateZ(-210px) rotateY(-36deg) scale(0.86);
+    box-shadow: 0 30px 65px -12px rgba(0, 0, 0, 0.92), 0 0 0 1px rgba(255, 255, 255, 0.2);
+  }
+
+  /* Responsive adjustments for mid-size screens */
+  @media (max-width: 900px) {
+    .cf-pos-left {
+      transform: translateX(-240px) translateZ(-220px) rotateY(38deg) scale(0.78);
+    }
+    .cf-pos-right {
+      transform: translateX(240px) translateZ(-220px) rotateY(-38deg) scale(0.78);
+    }
+  }
+
+  /* Dark Forest Obsidian Atmospheric Scrim */
+  .forest-monolith-scrim {
+    background: radial-gradient(circle at 50% 24%, rgba(15, 23, 21, 0.68) 0%, rgba(13, 21, 19, 0.88) 55%, rgba(9, 14, 13, 0.97) 100%);
+  }
+
+  /* Blinking cursor for typewriter effect */
+  @keyframes blink-caret {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+  .typewriter-cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1.15em;
+    vertical-align: middle;
+    margin-left: 2px;
+    background-color: #879b92;
+    animation: blink-caret 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  .input-has-text + .typewriter-placeholder {
+    display: none !important;
+  }
+</style>
+</head>
+<body class="bg-[#0d1513] text-[#e8ede9] antialiased font-sans selection:bg-[#e2c289]/20 selection:text-[#e2c289] min-h-screen flex flex-col overflow-x-hidden">
+<!-- LAYER 1: Full-Bleed Sculptural Forest Jade Monolith Architecture -->
+<div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+<img alt="Monochrome architectural monoliths" class="w-full h-full object-cover object-center filter grayscale brightness-[0.82] contrast-[1.12]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxxkG1zTtDyO6o9ChgG7SQqVqnDDTDgibe9y9d_pw9Z8mpm4cd6kJ1C9D39sVhOuV9lquQ5DF30GQcOg1mVDQTauFKFoey7rljM0TT1WM4l7ATzG16lWyFOaTAmAQ7vkCnEnNVYA0JrmToUvRp_iqyDB9hBnIXZOrFk6NPQ9sa-60TV-ooNQSGYa5LotD-Ra4yOMnFtcLSBQEKWw4MWvq5tDYHFkgdHrjO-mnLdtyuJpwKbowMa0o">
+</div>
+<!-- LAYER 2: Dark Forest & Obsidian Atmospheric Scrim -->
+<div class="fixed inset-0 z-10 forest-monolith-scrim pointer-events-none"></div>
+<!-- LAYER 3: FOREGROUND BRUTALIST LUXURY INTERFACE -->
+<div class="relative z-20 flex-1 flex flex-col">
+<!-- Header: Architectural Brutalist Atelier Navigation -->
+<header class="top-0 fixed w-full z-50 border-b border-white/10 bg-[#0d1513]/80 backdrop-blur-md transition-all"><div class="w-full max-w-[1400px] mx-auto px-6 md:px-12 h-20 flex items-center justify-between"><a class="flex items-center gap-3 group" href="#"><span class="tracking-[0.34em] text-xl font-bold text-[#f1f5f9] uppercase group-hover:text-[#a3b899] transition-colors font-sans">Tailored</span></a><nav class="hidden md:flex items-center gap-10"><a class="text-[0.6875rem] uppercase tracking-widest font-semibold text-[#f1f5f9] border-b-2 border-[#c8b99d] pb-1 font-sans" href="#intelligence">Intelligence</a><a class="text-[0.6875rem] uppercase tracking-widest font-medium text-[#879b92] hover:text-[#f1f5f9] transition-colors duration-200 font-sans" href="#fit-engine">Fit Engine</a><a class="text-[0.6875rem] uppercase tracking-widest font-medium text-[#879b92] hover:text-[#f1f5f9] transition-colors duration-200 font-sans" href="#cv-studio">CV Studio</a></nav><div class="flex items-center gap-6"><a class="text-[0.6875rem] uppercase tracking-widest font-bold text-[#e2e8f0] bg-[#162320]/90 hover:bg-[#1e2e29] border border-white/15 hover:border-[#8fa89b]/50 px-6 py-2.5 rounded-full backdrop-blur-md transition-all font-sans" href="#inquire">Inquire</a></div></div></header>
+<!-- MAIN HERO & SPATIAL COMMAND STAGE -->
+<main class="w-full max-w-[1400px] mx-auto px-6 md:px-12 pt-36 md:pt-40 pb-20 flex-1 flex flex-col justify-start">
+<!-- Hero Header with High-Contrast Brutalist Weight -->
+<section class="max-w-4xl mx-auto text-center pt-2 pb-9"><h1 class="text-4xl sm:text-6xl md:text-[4.25rem] text-[#f1f5f9] font-bold tracking-tight leading-[1.05] mb-5 font-sans">Invisible Discovery. <br class="hidden sm:inline"><span class="font-light text-[#f1f5f9] tracking-tight relative inline-block">Absolute Caliber.</span></h1></section>
+<!-- AI Command Dock / Expansive Omni-Bar -->
+<section class="max-w-5xl w-full mx-auto mb-14 relative">
+<div class="bg-[#131917]/95 backdrop-blur-xl rounded-2xl md:rounded-full border border-white/10 p-3 sm:p-4 px-4 sm:px-6 hover:border-white/20 transition-all duration-300 relative z-10 shadow-2xl shadow-black/50">
+<div class="flex items-center gap-3 sm:gap-5 py-1">
+<!-- Minimalist File/CV Upload Action (+) -->
+<label class="group/upload relative flex items-center justify-center w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#18221e] hover:bg-[#202e29] border border-white/10 hover:border-white/25 cursor-pointer transition-all duration-200 flex-shrink-0" title="Upload CV, mandate document, or vector asset">
+<input accept=".pdf,.docx,.doc,.txt" class="sr-only" id="cv-file-input" type="file">
+<svg class="w-4 h-4 text-[#879b92] group-hover/upload:text-[#f1f5f9] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path></svg>
+</label>
+<!-- Spacious Input Area with Interactive Typewriter Effect -->
+<div class="relative flex-1 min-w-0 h-11 sm:h-12 flex items-center">
+<input autocomplete="off" class="relative z-10 w-full bg-transparent border-0 p-0 text-[#f1f5f9] text-base md:text-[1.05rem] font-normal tracking-wide focus:ring-0 focus:outline-none font-sans" id="command-search-input" spellcheck="false" type="text">
+<!-- Animated Typewriter Placeholder -->
+<div class="typewriter-placeholder absolute inset-0 z-0 flex items-center pointer-events-none text-[#879b92]/70 text-base md:text-[1.05rem] font-normal tracking-wide whitespace-nowrap overflow-hidden select-none font-sans" id="typewriter-container">
+<span id="typewriter-text">senior dev</span><span class="typewriter-cursor"></span>
+</div>
+</div>
+<!-- Action Button -->
+<button class="h-11 sm:h-12 px-6 sm:px-8 rounded-full bg-[#1e2723] hover:bg-[#27322d] border border-white/10 hover:border-white/20 text-[#e2e8f0] font-medium text-xs flex items-center gap-2 transition-all flex-shrink-0" title="Execute AI Search">
+<span class="tracking-wider hidden sm:inline text-[#e2e8f0] font-sans font-semibold">ANALYZE</span>
+<span class="material-symbols-outlined text-[1.2rem] text-[#9bbdad]">arrow_forward</span>
+</button>
+</div>
+</div>
+</section>
+<!-- 3D Spatial Cover Flow Stage -->
+<section class="w-full max-w-5xl mx-auto mb-16 relative select-none overflow-visible">
+<!-- Stage Controls Bar: Pagination & Manual Stepper Arrows -->
+
+<!-- 3D Carousel Stage Viewport -->
+<div class="stage-3d relative w-full h-[360px] flex items-center justify-center overflow-visible" id="carousel-stage">
+<!-- CARD 0: MULTI-SOURCE DISCOVERY / STEALTH RADAR -->
+<div class="coverflow-card absolute w-full max-w-[420px] h-[300px] bg-gradient-to-br from-[#15191c] to-[#0f1315] rounded-2xl border border-white/15 p-6 flex flex-col justify-between select-none shadow-2xl cf-pos-right" id="card-0" onclick="handleCardClick(0)">
+<div>
+<div class="flex items-center justify-between gap-4 mb-3">
+<div>
+<h3 class="text-xl md:text-2xl text-[#f1f5f9] font-bold font-sans">Stealth Radar</h3>
+
+</div>
+
+</div>
+<div class="space-y-2.5">
+<div class="p-2.5 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-between">
+<div>
+<div class="text-[#f1f5f9] font-semibold text-xs font-sans">Executive Corpus Ingest</div>
+
+</div>
+
+</div>
+<div class="p-2.5 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-between">
+<div>
+<div class="text-[#f1f5f9] font-semibold text-xs font-sans">Tier-1 Private Mandates</div>
+
+</div>
+
+</div>
+<div class="p-2.5 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-between">
+<div>
+<div class="text-[#f1f5f9] font-semibold text-xs font-sans">Non-Public Market Drift</div>
+
+</div>
+
+</div>
+</div>
+</div>
+
+</div>
+<!-- CARD 1: RESONANCE (CENTER AI 5D FIT ENGINE) -->
+<div class="coverflow-card absolute w-full max-w-[420px] h-[300px] bg-gradient-to-br from-[#15191c] to-[#0f1315] rounded-2xl border border-white/15 p-6 flex flex-col justify-between select-none shadow-2xl cf-pos-left" id="card-1" onclick="handleCardClick(1)">
+<div>
+<div class="flex items-center justify-between gap-4 mb-4">
+<div>
+<h3 class="text-xl md:text-2xl text-[#f1f5f9] font-bold font-sans">Caliber Resonance</h3>
+
+</div>
+<div class="flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-full border border-white/20 bg-white/[0.05] shadow-inner">
+<span class="text-base font-bold text-[#f1f5f9] font-sans">98%</span>
+</div>
+</div>
+<div class="space-y-3 mb-2">
+<div>
+<div class="flex justify-between text-[0.7rem] mb-1 text-[#94a3b8]">
+<span class="font-medium text-[#f1f5f9] font-sans">System Architecture &amp; Scale</span>
+<span class="font-mono text-[#e2e8f0] font-semibold">98.4%</span>
+</div>
+<div class="w-full bg-[#0a0d0e]/80 h-1.5 rounded-full overflow-hidden border border-white/10 p-0">
+<div class="bg-[#cbd5e1] h-full rounded-full transition-all duration-700" style="width: 98.4%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-[0.7rem] mb-1 text-[#94a3b8]">
+<span class="font-medium text-[#f1f5f9] font-sans">Executive Capital Allocation</span>
+<span class="font-mono text-[#c8b99d] font-semibold">96.8%</span>
+</div>
+<div class="w-full bg-[#0a0d0e]/80 h-1.5 rounded-full overflow-hidden border border-white/10 p-0">
+<div class="bg-[#bfa882] h-full rounded-full transition-all duration-700" style="width: 96.8%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-[0.7rem] mb-1 text-[#94a3b8]">
+<span class="font-medium text-[#f1f5f9] font-sans">Strategic Corridors Alignment</span>
+<span class="font-mono text-[#cbd5e1] font-semibold">97.2%</span>
+</div>
+<div class="w-full bg-[#0a0d0e]/80 h-1.5 rounded-full overflow-hidden border border-white/10 p-0">
+<div class="bg-[#94a3b8] h-full rounded-full transition-all duration-700" style="width: 97.2%"></div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+<!-- CARD 2: CV SYNTHETICS & ATS DIFF STUDIO -->
+<div class="coverflow-card absolute w-full max-w-[420px] h-[300px] bg-gradient-to-br from-[#15191c] to-[#0f1315] rounded-2xl border border-white/15 p-6 flex flex-col justify-between select-none shadow-2xl cf-pos-center" id="card-2" onclick="handleCardClick(2)">
+<div>
+<div class="flex items-center justify-between gap-4 mb-3">
+<div>
+<h3 class="text-xl md:text-2xl text-[#f1f5f9] font-bold font-sans">CV Synthetics</h3>
+
+</div>
+
+</div>
+<div class="space-y-2.5">
+<div>
+<div class="text-[0.625rem] uppercase font-mono tracking-widest text-[#879b92] mb-1 font-medium">Original Baseline:</div>
+<div class="p-2 rounded-lg bg-white/[0.02] border border-white/5 text-[#94a3b8] text-[0.72rem] line-through font-light leading-snug">
+  "Led distributed cloud engineering team and improved system throughput performance."
+</div>
+</div>
+<div>
+<div class="text-[0.625rem] uppercase font-mono tracking-widest text-[#c8b99d] mb-1 font-semibold flex items-center justify-between">
+<span>Caliber Refined Output:</span>
+
+</div>
+<div class="p-2 rounded-lg bg-white/[0.06] border border-white/15 text-[#f1f5f9] text-[0.72rem] leading-snug font-sans">
+  "Directed 28 core systems architects, scaling petabyte stream throughput by 42% across sovereign clusters."
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- 3D COVER FLOW & TYPEWRITER SCRIPT -->
+<script>
+  let activeIndex = 0;
+  const cards = [
+    document.getElementById('card-0'),
+    document.getElementById('card-1'),
+    document.getElementById('card-2')
+  ];
+  const stepNum = document.getElementById('active-step-num');
+  const stage = document.getElementById('carousel-stage');
+  let autoCycleTimer = null;
+  const SLIDE_INTERVAL = 3200;
+
+  function renderCarousel() {
+    cards.forEach((card, i) => {
+      card.classList.remove('cf-pos-left', 'cf-pos-center', 'cf-pos-right');
+      const diff = (i - activeIndex + 3) % 3;
+
+      if (diff === 0) {
+        card.classList.add('cf-pos-center');
+      } else if (diff === 1) {
+        card.classList.add('cf-pos-right');
+      } else {
+        card.classList.add('cf-pos-left');
+      }
+    });
+
+    if (stepNum) {
+      stepNum.textContent = `0${activeIndex + 1} / 03`;
+    }
+  }
+
+  function rotateNext() {
+    activeIndex = (activeIndex + 1) % 3;
+    renderCarousel();
+  }
+
+  function rotatePrev() {
+    activeIndex = (activeIndex - 1 + 3) % 3;
+    renderCarousel();
+  }
+
+  function handleCardClick(index) {
+    if (activeIndex !== index) {
+      activeIndex = index;
+      renderCarousel();
+      resetTimer();
+    }
+  }
+
+  const prevBtn = document.getElementById('cf-prev-btn');
+  const nextBtn = document.getElementById('cf-next-btn');
+
+  if (nextBtn) {
+    nextBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      rotateNext();
+      resetTimer();
+    });
+  }
+
+  if (prevBtn) {
+    prevBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      rotatePrev();
+      resetTimer();
+    });
+  }
+
+  function startTimer() {
+    stopTimer();
+    autoCycleTimer = setInterval(rotateNext, SLIDE_INTERVAL);
+  }
+
+  function stopTimer() {
+    if (autoCycleTimer) {
+      clearInterval(autoCycleTimer);
+      autoCycleTimer = null;
+    }
+  }
+
+  function resetTimer() {
+    stopTimer();
+    startTimer();
+  }
+
+  if (stage) {
+    stage.addEventListener('mouseenter', stopTimer);
+    stage.addEventListener('mouseleave', startTimer);
+  }
+
+  renderCarousel();
+  startTimer();
+
+  // --- COMMAND BAR TYPEWRITER EFFECT ---
+  const typewriterPhrases = [
+    "senior developer",
+    "find jobs based on my cv",
+    "create a cover letter that fits this job",
+    "tailor my cv for this job",
+    "find jobs in my area",
+    "review my cv"
+  ];
+
+  const searchInput = document.getElementById('command-search-input');
+  const typewriterTarget = document.getElementById('typewriter-text');
+  let phraseIndex = 0;
+  let charIndex = 0;
+  let isDeleting = false;
+  let isInputActive = false;
+
+  function updateTypewriter() {
+    if (isInputActive) {
+      setTimeout(updateTypewriter, 300);
+      return;
+    }
+
+    const currentPhrase = typewriterPhrases[phraseIndex];
+
+    if (!isDeleting) {
+      charIndex++;
+      typewriterTarget.textContent = currentPhrase.substring(0, charIndex);
+
+      if (charIndex === currentPhrase.length) {
+        isDeleting = true;
+        setTimeout(updateTypewriter, 1800);
+        return;
+      }
+      setTimeout(updateTypewriter, 80);
+    } else {
+      charIndex--;
+      typewriterTarget.textContent = currentPhrase.substring(0, charIndex);
+
+      if (charIndex === 0) {
+        isDeleting = false;
+        phraseIndex = (phraseIndex + 1) % typewriterPhrases.length;
+        setTimeout(updateTypewriter, 350);
+        return;
+      }
+      setTimeout(updateTypewriter, 40);
+    }
+  }
+
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      if (searchInput.value.length > 0) {
+        searchInput.classList.add('input-has-text');
+        isInputActive = true;
+      } else {
+        searchInput.classList.remove('input-has-text');
+        isInputActive = false;
+      }
+    });
+
+    searchInput.addEventListener('focus', () => {
+      if (searchInput.value.length > 0) {
+        isInputActive = true;
+      }
+    });
+
+    searchInput.addEventListener('blur', () => {
+      if (searchInput.value.length === 0) {
+        isInputActive = false;
+        searchInput.classList.remove('input-has-text');
+      }
+    });
+  }
+
+  setTimeout(updateTypewriter, 500);
+</script>
+
+
+</body></html>

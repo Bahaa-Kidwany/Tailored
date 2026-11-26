@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tailored - Step 5: Featured Projects &amp; Proof of Execution</title>
+<!-- Inter Font Family -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 CDN with forms and container queries plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration for exact Tailored theme design tokens -->
+<script id="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            tailored: {
+              forest: '#18382A',
+              forestDark: '#122B20',
+              forestLight: '#244e3b',
+              canvas: '#EBF1ED',
+              cardBg: '#FFFFFF',
+              surface: '#F6F9F6',
+              surfaceHover: '#EEF3EE',
+              border: '#E3E9E4',
+              borderSubtle: '#ECF1EC',
+              ink: '#111816',
+              inkMuted: '#526059',
+              inkSubtle: '#7A8C83',
+            }
+          },
+          boxShadow: {
+            'floating': '0 24px 64px -12px rgba(26, 46, 36, 0.08), 0 4px 20px -2px rgba(26, 46, 36, 0.03)',
+            'pill': '0 2px 6px rgba(0, 0, 0, 0.04)',
+          },
+          borderRadius: {
+            'card': '2.5rem',
+          }
+        }
+      }
+    };
+  </script>
+<!-- BEGIN: Custom Atmospheric Background Styles -->
+<style data-purpose="background-atmosphere">
+    body {
+      background-color: #EBF1ED;
+      background-image: 
+        radial-gradient(circle at 18% 22%, rgba(204, 222, 210, 0.65) 0%, transparent 45%),
+        radial-gradient(circle at 82% 78%, rgba(200, 220, 208, 0.55) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(235, 241, 237, 0.9) 0%, #EBF1ED 100%);
+      background-attachment: fixed;
+      min-height: 100vh;
+    }
+  </style>
+<!-- END: Custom Atmospheric Background Styles -->
+<meta content="web_standard" name="shell-type"/></head>
+<body class="font-sans text-tailored-ink antialiased flex flex-col min-h-screen justify-between selection:bg-tailored-forest selection:text-white">
+<!-- BEGIN: MainHeader -->
+<header class="w-full px-8 py-7 flex items-center justify-between z-20">
+<div class="tracking-[0.22em] text-sm font-bold text-tailored-ink uppercase pl-2">
+      TAILORED
+    </div>
+<div>
+<a class="text-xs font-semibold text-tailored-inkMuted hover:text-tailored-ink transition-colors flex items-center gap-1.5 pr-2" href="#">
+<span>Save &amp; Exit</span>
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<line x1="18" x2="6" y1="6" y2="18"></line>
+<line x1="6" x2="18" y1="6" y2="18"></line>
+</svg>
+</a>
+</div>
+</header>
+<!-- END: MainHeader -->
+<!-- BEGIN: MainContent -->
+<main class="flex-grow flex items-center justify-center px-4 py-6 md:py-10 z-10"><div class="flex flex-col w-full">
+<div class="bg-tailored-cardBg rounded-card shadow-floating border border-tailored-border/70 max-w-2xl w-full p-8 md:p-12 mx-auto my-4 transition-all duration-300">
+<!-- Top Pill Badge -->
+<div class="flex items-center justify-center mb-6">
+<div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-tailored-surface text-tailored-forestDark font-sans text-xs font-semibold tracking-wide border border-tailored-borderSubtle">
+<span class="w-1.5 h-1.5 rounded-full bg-tailored-forest animate-pulse"></span>
+<span>STEP 06 / 06</span>
+</div>
+</div>
+<!-- Centered Header & Subtitle -->
+<div class="text-center mb-10">
+<h1 class="font-sans text-2xl md:text-3xl font-bold text-tailored-ink tracking-tight mb-2.5">
+        Education &amp; Final Review
+      </h1>
+<p class="font-sans text-tailored-inkMuted text-sm leading-relaxed max-w-md mx-auto">
+        Verify your academic credentials, certifications, and review your master profile readiness.
+      </p>
+</div>
+<!-- Progress Track (Micro Indication of 100% completion) -->
+<div class="mb-10 px-1">
+<div class="flex justify-between items-center text-xs font-medium text-tailored-inkMuted mb-2">
+<span class="text-tailored-forest font-semibold flex items-center gap-1.5">
+<svg class="w-3.5 h-3.5 text-tailored-forest" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+</svg>
+          Master Profile Completion
+        </span>
+<span class="text-tailored-forest font-bold">100%</span>
+</div>
+<div class="w-full h-1.5 bg-tailored-surface rounded-full overflow-hidden">
+<div class="h-full bg-tailored-forest rounded-full transition-all duration-700 ease-out" style="width: 100%;"></div>
+</div>
+</div>
+<div class="space-y-8">
+<!-- Section 1: Academic Credentials -->
+<section class="space-y-3">
+<div class="flex items-center justify-between">
+<h2 class="font-sans text-xs font-bold uppercase tracking-wider text-tailored-inkSubtle flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-tailored-forest">school</span>
+            Academic Credentials
+          </h2>
+<span class="text-xs font-medium text-tailored-forest">1 Verified</span>
+</div>
+<!-- Academic Degree Card -->
+<div class="group relative bg-tailored-surface hover:bg-tailored-surfaceHover/80 border border-tailored-border rounded-2xl p-4 sm:p-5 transition-all duration-200">
+<div class="flex items-start justify-between gap-3">
+<div class="space-y-1">
+<div class="flex items-center gap-2 flex-wrap">
+<h3 class="font-sans text-sm font-semibold text-tailored-ink">
+                  Cairo University
+                </h3>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-tailored-forest border border-emerald-100">
+                  First Class Honors (GPA 3.9/4.0)
+                </span>
+</div>
+<p class="font-sans text-xs text-tailored-inkMuted">
+                B.Sc. in Computer Science &amp; Engineering
+              </p>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs font-medium text-tailored-inkSubtle whitespace-nowrap bg-white px-2.5 py-1 rounded-md border border-tailored-border">
+                2017 — 2021
+              </span>
+<button aria-label="Edit degree" class="text-tailored-inkSubtle hover:text-tailored-ink p-1 rounded-md hover:bg-white transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Add Education Button -->
+<button class="w-full py-2.5 px-4 rounded-xl border border-dashed border-tailored-border hover:border-tailored-forest text-xs font-semibold text-tailored-inkMuted hover:text-tailored-forest flex items-center justify-center gap-1.5 transition-colors group bg-tailored-surface/40 hover:bg-tailored-surface" type="button">
+<span class="material-symbols-outlined text-[16px] transition-transform group-hover:scale-110">add_circle</span>
+          Add Education
+        </button>
+</section>
+<!-- Section 2: Certifications & Languages -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Certifications Block -->
+<div class="bg-tailored-surface/70 border border-tailored-border rounded-2xl p-4 flex flex-col justify-between space-y-3">
+<div>
+<div class="flex items-center justify-between mb-2.5">
+<span class="text-xs font-bold uppercase tracking-wider text-tailored-inkSubtle flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-tailored-forest">verified</span>
+                Certifications
+              </span>
+<button aria-label="Add certification" class="text-tailored-forest hover:opacity-80 transition-opacity" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+</button>
+</div>
+<div class="space-y-2">
+<div class="bg-white p-2.5 rounded-xl border border-tailored-borderSubtle flex items-start gap-2.5">
+<span class="w-2 h-2 rounded-full bg-tailored-forest mt-1.5 shrink-0"></span>
+<div class="min-w-0 flex-1">
+<p class="text-xs font-semibold text-tailored-ink truncate">AWS Certified Solutions Architect</p>
+<p class="text-[11px] text-tailored-inkSubtle truncate">Amazon Web Services • 2023</p>
+</div>
+</div>
+<div class="bg-white p-2.5 rounded-xl border border-tailored-borderSubtle flex items-start gap-2.5">
+<span class="w-2 h-2 rounded-full bg-tailored-forest mt-1.5 shrink-0"></span>
+<div class="min-w-0 flex-1">
+<p class="text-xs font-semibold text-tailored-ink truncate">Deep Learning Specialization</p>
+<p class="text-[11px] text-tailored-inkSubtle truncate">DeepLearning.AI • 2022</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Languages Block -->
+<div class="bg-tailored-surface/70 border border-tailored-border rounded-2xl p-4 flex flex-col justify-between space-y-3">
+<div>
+<div class="flex items-center justify-between mb-2.5">
+<span class="text-xs font-bold uppercase tracking-wider text-tailored-inkSubtle flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-tailored-forest">translate</span>
+                Languages
+              </span>
+<button aria-label="Add language" class="text-tailored-forest hover:opacity-80 transition-opacity" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+</button>
+</div>
+<div class="space-y-2">
+<div class="bg-white p-2.5 rounded-xl border border-tailored-borderSubtle flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="text-sm">🇬🇧</span>
+<span class="text-xs font-semibold text-tailored-ink">English</span>
+</div>
+<span class="text-[11px] font-medium text-tailored-inkMuted bg-tailored-surface px-2 py-0.5 rounded-md">Bilingual / Native</span>
+</div>
+<div class="bg-white p-2.5 rounded-xl border border-tailored-borderSubtle flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="text-sm">🇪🇬</span>
+<span class="text-xs font-semibold text-tailored-ink">Arabic</span>
+</div>
+<span class="text-[11px] font-medium text-tailored-inkMuted bg-tailored-surface px-2 py-0.5 rounded-md">Native</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 3: Master Profile Readiness Check -->
+<section class="bg-emerald-50/50 border border-emerald-100 rounded-2xl p-5 space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-tailored-forest flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-[14px]">format_image_left</span>
+</div>
+<h2 class="font-sans text-xs font-bold uppercase tracking-wider text-tailored-forestDark">
+              Master Profile Readiness Check
+            </h2>
+</div>
+<span class="text-[11px] font-bold tracking-wider text-tailored-forest uppercase bg-white px-2 py-0.5 rounded border border-emerald-100">
+            Validated
+          </span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-medium text-tailored-ink">
+<div class="flex items-center gap-2 bg-white/80 p-2 rounded-lg border border-emerald-100/60">
+<span class="material-symbols-outlined text-tailored-forest text-[16px] shrink-0" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="truncate">Target: Senior ML Engineer</span>
+</div>
+<div class="flex items-center gap-2 bg-white/80 p-2 rounded-lg border border-emerald-100/60">
+<span class="material-symbols-outlined text-tailored-forest text-[16px] shrink-0" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="truncate">2 Regional Contacts (+20, +966)</span>
+</div>
+<div class="flex items-center gap-2 bg-white/80 p-2 rounded-lg border border-emerald-100/60">
+<span class="material-symbols-outlined text-tailored-forest text-[16px] shrink-0" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="truncate">14 Categorized Skills &amp; Tools</span>
+</div>
+<div class="flex items-center gap-2 bg-white/80 p-2 rounded-lg border border-emerald-100/60">
+<span class="material-symbols-outlined text-tailored-forest text-[16px] shrink-0" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="truncate">2 Work Experiences Tailored</span>
+</div>
+<div class="flex items-center gap-2 bg-white/80 p-2 rounded-lg border border-emerald-100/60 sm:col-span-2">
+<span class="material-symbols-outlined text-tailored-forest text-[16px] shrink-0" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="truncate">2 Production Technical Projects Documented</span>
+</div>
+</div>
+<p class="text-[11px] leading-relaxed text-tailored-inkMuted pt-1">
+          Your zero-hallucination master profile is complete and ready for instant ATS CV generation and 5D job radar matching.
+        </p>
+</section>
+</div>
+<!-- Stepper Navigation & Action Buttons -->
+<div class="mt-10 pt-6 border-t border-tailored-border flex flex-col sm:flex-row items-center justify-between gap-4">
+<a class="text-xs font-semibold text-tailored-inkMuted hover:text-tailored-ink transition-colors flex items-center gap-1.5 order-2 sm:order-1 py-2" href="#">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span>Back to Step 5</span>
+</a>
+<button class="w-full sm:w-auto bg-[#18382A] text-white hover:bg-[#122B20] px-7 py-3 rounded-full text-xs font-semibold tracking-wide shadow-md transition-all duration-200 flex items-center justify-center gap-2 hover:shadow-lg active:scale-[0.99] order-1 sm:order-2" id="cta-complete-profile" type="button">
+<span>Save Master Profile &amp; Unlock Radar</span>
+<span class="text-sm">🚀</span>
+</button>
+</div>
+<!-- Auto-saved status note -->
+<div class="mt-4 flex items-center justify-center gap-1.5 text-[11px] text-tailored-inkSubtle">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+<span>Auto-saved just now</span>
+</div>
+</div>
+</div>
+<script>
+  (function() {
+    const btn = document.getElementById('cta-complete-profile');
+    if (btn) {
+      btn.addEventListener('click', function() {
+        btn.classList.add('opacity-90', 'cursor-wait');
+        btn.innerHTML = `
+          <svg class="animate-spin h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span>Activating 5D Radar...</span>
+        `;
+        setTimeout(() => {
+          btn.innerHTML = `
+            <span>Radar Active! Redirecting...</span>
+            <span>✨</span>
+          `;
+          btn.classList.remove('bg-[#18382A]');
+          btn.classList.add('bg-emerald-700');
+        }, 1200);
+      });
+    }
+  })();
+</script></main>
+<!-- END: MainContent -->
+<!-- BEGIN: SiteFooter -->
+<footer class="w-full px-8 py-6 text-xs text-tailored-inkSubtle flex flex-col sm:flex-row items-center justify-between gap-4 z-20">
+<div>
+      © 2025 TAILORED Atelier Inc.
+    </div>
+<div class="flex items-center gap-6">
+<a class="hover:text-tailored-ink transition-colors" href="#">Privacy</a>
+<a class="hover:text-tailored-ink transition-colors" href="#">Terms</a>
+<a class="hover:text-tailored-ink transition-colors" href="#">Security</a>
+</div>
+</footer>
+<!-- END: SiteFooter -->
+</body></html>

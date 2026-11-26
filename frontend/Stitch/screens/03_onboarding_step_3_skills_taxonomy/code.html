@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TAILORED — Personal Identity &amp; Mobility</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-lowest": "#ffffff",
+            "background": "#f8f9f7",
+            "charcoal-ink": "#18221d",
+            "charcoal-muted": "#5e6962",
+            "forest-primary": "#1b382b",
+            "forest-hover": "#13271e",
+            "sage-border": "#d8e0db",
+            "sage-surface": "#f4f7f4",
+            "sage-pill": "#e8efe9"
+          },
+          "borderRadius": {
+            "3xl": "2rem",
+            "4xl": "2.5rem"
+          },
+          "fontFamily": {
+            "sans": ["Plus Jakarta Sans", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 350, 'GRAD' 0, 'opsz' 20;
+    }
+  </style>
+<meta content="web_standard" name="shell-type"/></head>
+<body class="bg-[#f6f7f5] text-stone-900 min-h-screen flex flex-col justify-between antialiased selection:bg-[#1B382B] selection:text-white relative overflow-x-hidden font-sans">
+<!-- Ambient organic muted sage radial backdrop matching Create Account -->
+<div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+<div class="absolute -top-[18%] -left-[12%] w-[680px] h-[680px] rounded-full bg-[#dfe8e2]/65 blur-[120px]"></div>
+<div class="absolute top-[28%] -right-[15%] w-[620px] h-[620px] rounded-full bg-[#d7e4dc]/55 blur-[130px]"></div>
+<div class="absolute -bottom-[20%] left-[25%] w-[580px] h-[580px] rounded-full bg-[#e3ece6]/70 blur-[110px]"></div>
+<div class="absolute top-[45%] left-[8%] w-[380px] h-[380px] rounded-full bg-[#ccdcd2]/30 blur-[90px]"></div>
+</div>
+<!-- Header (Matching Create Account exactly) -->
+<header class="w-full border-b border-stone-200/60 bg-[#f6f7f5]/80 backdrop-blur-md px-6 md:px-12 py-4 flex items-center justify-between z-30 transition-colors">
+<div class="flex items-center">
+<span class="text-[17px] tracking-widest uppercase text-[#1B382B] font-semibold">TAILORED</span>
+</div>
+<a class="inline-flex items-center gap-1.5 text-stone-500 hover:text-stone-900 transition-colors text-sm rounded-full px-3 py-1 hover:bg-white/60" data-path="track-and-career-goal" href="#">
+<span>Save &amp; Exit</span>
+<span class="material-symbols-outlined text-[16px]">close</span>
+</a>
+</header>
+<!-- Main Plinth Card Section -->
+<main class="flex-grow flex items-center justify-center px-4 sm:px-6 md:px-8 py-8 md:py-12 z-10 relative"><div class="flex flex-col w-full">
+<div class="w-full max-w-2xl mx-auto my-4 md:my-8 bg-white rounded-4xl md:rounded-[2.5rem] shadow-sm border border-stone-200/60 p-6 sm:p-10 md:p-12 transition-all">
+<!-- Top Step Meta & Progress -->
+<div class="flex flex-col items-center justify-center text-center">
+<div class="inline-flex items-center gap-2 rounded-full bg-stone-100 text-stone-600 text-xs px-3.5 py-1 font-medium tracking-wide">
+<span class="w-1.5 h-1.5 rounded-full bg-[#1B382B]"></span>
+<span>STEP 03 / 06</span>
+</div>
+<h1 class="text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight mt-3">Skills &amp; Competencies</h1>
+<p class="text-sm text-stone-500 mt-1 mb-8 max-w-md">Highlight your core competencies, languages, and technical stack.</p>
+</div>
+<!-- Taxonomy Categories Form -->
+<div class="space-y-6">
+<!-- Category 1: Core Competencies -->
+<div class="space-y-2.5">
+<div class="flex items-center justify-between">
+<label class="text-xs font-semibold tracking-wider uppercase text-stone-700">Core Competencies</label>
+<span class="text-[11px] font-medium text-stone-400">Min 3 required</span>
+</div>
+<div class="flex flex-wrap gap-2 pt-0.5" id="competencies-container">
+<!-- Active Chips -->
+<button class="group inline-flex items-center gap-1.5 bg-[#1B382B] text-white hover:bg-[#142a20] rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors" data-active="true" onclick="toggleSkill(this)" type="button">
+<span>System Architecture</span>
+<span class="material-symbols-outlined text-[14px] text-white/70 group-hover:text-white">close</span>
+</button>
+<button class="group inline-flex items-center gap-1.5 bg-[#1B382B] text-white hover:bg-[#142a20] rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors" data-active="true" onclick="toggleSkill(this)" type="button">
+<span>Distributed Systems</span>
+<span class="material-symbols-outlined text-[14px] text-white/70 group-hover:text-white">close</span>
+</button>
+<button class="group inline-flex items-center gap-1.5 bg-[#1B382B] text-white hover:bg-[#142a20] rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors" data-active="true" onclick="toggleSkill(this)" type="button">
+<span>ETL Pipelines</span>
+<span class="material-symbols-outlined text-[14px] text-white/70 group-hover:text-white">close</span>
+</button>
+<!-- Suggested Chips -->
+<button class="group inline-flex items-center gap-1 bg-[#f4f7f4] text-stone-700 hover:bg-stone-200/80 rounded-full px-3 py-1.5 text-xs font-medium transition-colors" data-active="false" onclick="toggleSkill(this)" type="button">
+<span class="material-symbols-outlined text-[14px] text-stone-400 group-hover:text-stone-700">add</span>
+<span>Microservices</span>
+</button>
+<button class="group inline-flex items-center gap-1 bg-[#f4f7f4] text-stone-700 hover:bg-stone-200/80 rounded-full px-3 py-1.5 text-xs font-medium transition-colors" data-active="false" onclick="toggleSkill(this)" type="button">
+<span class="material-symbols-outlined text-[14px] text-stone-400 group-hover:text-stone-700">add</span>
+<span>Dynamic Pricing</span>
+</button>
+<button class="group inline-flex items-center gap-1 bg-[#f4f7f4] text-stone-700 hover:bg-stone-200/80 rounded-full px-3 py-1.5 text-xs font-medium transition-colors" data-active="false" onclick="toggleSkill(this)" type="button">
+<span class="material-symbols-outlined text-[14px] text-stone-400 group-hover:text-stone-700">add</span>
+<span>Cloud Infrastructure</span>
+</button>
+</div>
+</div>
+<!-- Category 2: Programming Languages -->
+<div class="space-y-2.5 pt-2">
+<label class="text-xs font-semibold tracking-wider uppercase text-stone-700 block">Programming Languages</label>
+<div class="flex flex-wrap gap-2 pt-0.5" id="languages-container">
+<button class="group inline-flex items-center gap-1.5 bg-[#1B382B] text-white hover:bg-[#142a20] rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors" data-active="true" onclick="toggleSkill(this)" type="button">
+<span>Python</span>
+<span class="material-symbols-outlined text-[14px] text-white/70 group-hover:text-white">close</span>
+</button>
+<button class="group inline-flex items-center gap-1.5 bg-[#1B382B] text-white hover:bg-[#142a20] rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors" data-active="true" onclick="toggleSkill(this)" type="button">
+<span>TypeScript</span>
+<span class="material-symbols-outlined text-[14px] text-white/70 group-hover:text-white">close</span>
+</button>
+<button class="group inline-flex items-center gap-1.5 bg-[#1B382B] text-white hover:bg-[#142a20] rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors" data-active="true" onclick="toggleSkill(this)" type="button">
+<span>SQL</span>
+<span class="material-symbols-outlined text-[14px] text-white/70 group-hover:text-white">close</span>
+</button>
+<button class="group inline-flex items-center gap-1.5 bg-[#1B382B] text-white hover:bg-[#142a20] rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors" data-active="true" onclick="toggleSkill(this)" type="button">
+<span>Go</span>
+<span class="material-symbols-outlined text-[14px] text-white/70 group-hover:text-white">close</span>
+</button>
+<!-- Suggested Chips -->
+<button class="group inline-flex items-center gap-1 bg-[#f4f7f4] text-stone-700 hover:bg-stone-200/80 rounded-full px-3 py-1.5 text-xs font-medium transition-colors" data-active="false" onclick="toggleSkill(this)" type="button">
+<span class="material-symbols-outlined text-[14px] text-stone-400 group-hover:text-stone-700">add</span>
+<span>Rust</span>
+</button>
+<button class="group inline-flex items-center gap-1 bg-[#f4f7f4] text-stone-700 hover:bg-stone-200/80 rounded-full px-3 py-1.5 text-xs font-medium transition-colors" data-active="false" onclick="toggleSkill(this)" type="button">
+<span class="material-symbols-outlined text-[14px] text-stone-400 group-hover:text-stone-700">add</span>
+<span>Java</span>
+</button>
+<button class="group inline-flex items-center gap-1 bg-[#f4f7f4] text-stone-700 hover:bg-stone-200/80 rounded-full px-3 py-1.5 text-xs font-medium transition-colors" data-active="false" onclick="toggleSkill(this)" type="button">
+<span class="material-symbols-outlined text-[14px] text-stone-400 group-hover:text-stone-700">add</span>
+<span>C++</span>
+</button>
+</div>
+</div>
+<!-- Category 3: Frameworks & Libraries -->
+<div class="space-y-2.5 pt-2">
+<label class="text-xs font-semibold tracking-wider uppercase text-stone-700 block">Frameworks &amp; Libraries</label>
+<div class="flex flex-wrap gap-2 pt-0.5" id="frameworks-container">
+<button class="group inline-flex items-center gap-1.5 bg-[#1B382B] text-white hover:bg-[#142a20] rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors" data-active="true" onclick="toggleSkill(this)" type="button">
+<span>FastAPI</span>
+<span class="material-symbols-outlined text-[14px] text-white/70 group-hover:text-white">close</span>
+</button>
+<button class="group inline-flex items-center gap-1.5 bg-[#1B382B] text-white hover:bg-[#142a20] rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors" data-active="true" onclick="toggleSkill(this)" type="button">
+<span>PyTorch</span>
+<span class="material-symbols-outlined text-[14px] text-white/70 group-hover:text-white">close</span>
+</button>
+<button class="group inline-flex items-center gap-1.5 bg-[#1B382B] text-white hover:bg-[#142a20] rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors" data-active="true" onclick="toggleSkill(this)" type="button">
+<span>React</span>
+<span class="material-symbols-outlined text-[14px] text-white/70 group-hover:text-white">close</span>
+</button>
+<!-- Suggested Chips -->
+<button class="group inline-flex items-center gap-1 bg-[#f4f7f4] text-stone-700 hover:bg-stone-200/80 rounded-full px-3 py-1.5 text-xs font-medium transition-colors" data-active="false" onclick="toggleSkill(this)" type="button">
+<span class="material-symbols-outlined text-[14px] text-stone-400 group-hover:text-stone-700">add</span>
+<span>Docker</span>
+</button>
+<button class="group inline-flex items-center gap-1 bg-[#f4f7f4] text-stone-700 hover:bg-stone-200/80 rounded-full px-3 py-1.5 text-xs font-medium transition-colors" data-active="false" onclick="toggleSkill(this)" type="button">
+<span class="material-symbols-outlined text-[14px] text-stone-400 group-hover:text-stone-700">add</span>
+<span>Kubernetes</span>
+</button>
+<button class="group inline-flex items-center gap-1 bg-[#f4f7f4] text-stone-700 hover:bg-stone-200/80 rounded-full px-3 py-1.5 text-xs font-medium transition-colors" data-active="false" onclick="toggleSkill(this)" type="button">
+<span class="material-symbols-outlined text-[14px] text-stone-400 group-hover:text-stone-700">add</span>
+<span>Next.js</span>
+</button>
+<button class="group inline-flex items-center gap-1 bg-[#f4f7f4] text-stone-700 hover:bg-stone-200/80 rounded-full px-3 py-1.5 text-xs font-medium transition-colors" data-active="false" onclick="toggleSkill(this)" type="button">
+<span class="material-symbols-outlined text-[14px] text-stone-400 group-hover:text-stone-700">add</span>
+<span>TensorFlow</span>
+</button>
+</div>
+</div>
+<!-- Category 4: Tools & Cloud Platforms -->
+<div class="space-y-2.5 pt-2">
+<label class="text-xs font-semibold tracking-wider uppercase text-stone-700 block">Tools &amp; Cloud Platforms</label>
+<div class="flex flex-wrap gap-2 pt-0.5" id="tools-container">
+<button class="group inline-flex items-center gap-1.5 bg-[#1B382B] text-white hover:bg-[#142a20] rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors" data-active="true" onclick="toggleSkill(this)" type="button">
+<span>PostgreSQL</span>
+<span class="material-symbols-outlined text-[14px] text-white/70 group-hover:text-white">close</span>
+</button>
+<button class="group inline-flex items-center gap-1.5 bg-[#1B382B] text-white hover:bg-[#142a20] rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors" data-active="true" onclick="toggleSkill(this)" type="button">
+<span>AWS</span>
+<span class="material-symbols-outlined text-[14px] text-white/70 group-hover:text-white">close</span>
+</button>
+<button class="group inline-flex items-center gap-1.5 bg-[#1B382B] text-white hover:bg-[#142a20] rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors" data-active="true" onclick="toggleSkill(this)" type="button">
+<span>Redis</span>
+<span class="material-symbols-outlined text-[14px] text-white/70 group-hover:text-white">close</span>
+</button>
+<!-- Suggested Chips -->
+<button class="group inline-flex items-center gap-1 bg-[#f4f7f4] text-stone-700 hover:bg-stone-200/80 rounded-full px-3 py-1.5 text-xs font-medium transition-colors" data-active="false" onclick="toggleSkill(this)" type="button">
+<span class="material-symbols-outlined text-[14px] text-stone-400 group-hover:text-stone-700">add</span>
+<span>GCP</span>
+</button>
+<button class="group inline-flex items-center gap-1 bg-[#f4f7f4] text-stone-700 hover:bg-stone-200/80 rounded-full px-3 py-1.5 text-xs font-medium transition-colors" data-active="false" onclick="toggleSkill(this)" type="button">
+<span class="material-symbols-outlined text-[14px] text-stone-400 group-hover:text-stone-700">add</span>
+<span>Kafka</span>
+</button>
+<button class="group inline-flex items-center gap-1 bg-[#f4f7f4] text-stone-700 hover:bg-stone-200/80 rounded-full px-3 py-1.5 text-xs font-medium transition-colors" data-active="false" onclick="toggleSkill(this)" type="button">
+<span class="material-symbols-outlined text-[14px] text-stone-400 group-hover:text-stone-700">add</span>
+<span>Git</span>
+</button>
+</div>
+</div>
+<!-- Custom Skill / Tool Adder -->
+<div class="pt-4">
+<form class="relative flex items-center" onsubmit="event.preventDefault(); addCustomSkill();">
+<input class="w-full bg-[#f8f9f7] hover:bg-stone-100/70 focus:bg-white text-stone-800 placeholder-stone-400 text-xs sm:text-sm rounded-full pl-4.5 pr-20 py-3 border border-stone-200/80 focus:border-[#1B382B] focus:ring-1 focus:ring-[#1B382B] transition-all outline-none" id="custom-skill-input" placeholder="+ Add custom skill or technology..." type="text"/>
+<button class="absolute right-1.5 top-1/2 -translate-y-1/2 bg-white hover:bg-stone-100 border border-stone-200 text-stone-700 text-xs font-medium px-3.5 py-1.5 rounded-full shadow-2xs transition-colors" onclick="addCustomSkill()" type="button">
+            Add
+          </button>
+</form>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex items-center justify-between pt-10 mt-8 border-t border-stone-200/60">
+<a class="inline-flex items-center gap-1.5 text-stone-600 hover:text-stone-900 font-medium text-sm py-2.5 px-4 rounded-full hover:bg-stone-100 transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+<span>Back</span>
+</a>
+<a class="inline-flex items-center justify-center gap-2 bg-[#1B382B] hover:bg-[#142a20] text-white font-medium text-sm rounded-full py-3.5 px-7 shadow-sm transition-all group" href="#">
+<span>Continue to Experience</span>
+<span class="material-symbols-outlined text-[18px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+</a>
+</div>
+</div>
+<script>
+    function toggleSkill(button) {
+      const isActive = button.getAttribute('data-active') === 'true';
+      const label = button.querySelector('span:first-of-type')?.innerText || button.innerText.replace(/[+×]/g, '').trim();
+
+      if (isActive) {
+        button.setAttribute('data-active', 'false');
+        button.className = "group inline-flex items-center gap-1 bg-[#f4f7f4] text-stone-700 hover:bg-stone-200/80 rounded-full px-3 py-1.5 text-xs font-medium transition-colors";
+        button.innerHTML = `
+          <span class="material-symbols-outlined text-[14px] text-stone-400 group-hover:text-stone-700">add</span>
+          <span>${label}</span>
+        `;
+      } else {
+        button.setAttribute('data-active', 'true');
+        button.className = "group inline-flex items-center gap-1.5 bg-[#1B382B] text-white hover:bg-[#142a20] rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors";
+        button.innerHTML = `
+          <span>${label}</span>
+          <span class="material-symbols-outlined text-[14px] text-white/70 group-hover:text-white">close</span>
+        `;
+      }
+    }
+
+    function addCustomSkill() {
+      const input = document.getElementById('custom-skill-input');
+      const val = input.value.trim();
+      if (!val) return;
+
+      const container = document.getElementById('competencies-container');
+      const newBtn = document.createElement('button');
+      newBtn.type = 'button';
+      newBtn.onclick = function() { toggleSkill(this); };
+      newBtn.setAttribute('data-active', 'true');
+      newBtn.className = "group inline-flex items-center gap-1.5 bg-[#1B382B] text-white hover:bg-[#142a20] rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors";
+      newBtn.innerHTML = `
+        <span>${val}</span>
+        <span class="material-symbols-outlined text-[14px] text-white/70 group-hover:text-white">close</span>
+      `;
+      container.appendChild(newBtn);
+      input.value = '';
+    }
+  </script>
+</div></main>
+<!-- Canonical Minimal Footer (matching Create Account exactly) -->
+<footer class="w-full border-t border-stone-200/60 bg-[#f6f7f5]/80 backdrop-blur-md px-6 md:px-12 py-4 flex flex-col md:flex-row justify-between items-center gap-2.5 z-30 transition-colors">
+<div class="text-[12px] text-stone-500">
+  © 2025 TAILORED Atelier Inc.
+</div>
+<div class="flex items-center gap-5 text-stone-500 text-[12px]">
+<a class="hover:text-[#1B382B] transition-colors" href="#">Privacy</a>
+<a class="hover:text-[#1B382B] transition-colors" href="#">Terms</a>
+<a class="hover:text-[#1B382B] transition-colors" href="#">Security</a>
+</div>
+</footer>
+<script>
+  function makePrimary(btn) {
+    const parentContainer = document.getElementById('contact-list');
+    parentContainer.querySelectorAll('.primary-btn, [data-primary="true"]').forEach(el => {
+      el.removeAttribute('data-primary');
+      el.outerHTML = `<button type="button" onclick="makePrimary(this)" class="inline-flex items-center px-3 py-1 rounded-full bg-white border border-stone-200 text-stone-600 hover:text-stone-900 hover:border-stone-400 text-xs font-medium transition-colors">Make Primary</button>`;
+    });
+    btn.outerHTML = `<span data-primary="true" class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#1B382B] text-white text-xs font-medium shadow-xs"><span class="material-symbols-outlined text-[14px]">check</span> Primary</span>`;
+  }
+
+  function toggleMode(btn) {
+    const active = btn.classList.contains('bg-[#1B382B]');
+    if (active) {
+      btn.classList.remove('bg-[#1B382B]', 'text-white');
+      btn.classList.add('bg-white', 'text-stone-600', 'border', 'border-stone-200');
+    } else {
+      btn.classList.add('bg-[#1B382B]', 'text-white');
+      btn.classList.remove('bg-white', 'text-stone-600', 'border', 'border-stone-200');
+    }
+  }
+</script>
+</body></html>

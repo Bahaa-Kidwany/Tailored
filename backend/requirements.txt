@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+psycopg[binary]
+sqlmodel
+playwright
+playwright-stealth
+beautifulsoup4
+apify-client
+selectolax
+

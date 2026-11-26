@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tailored - Step 5: Featured Projects &amp; Proof of Execution</title>
+<!-- Inter Font Family -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS v3 CDN with forms and container queries plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration for exact Tailored theme design tokens -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            tailored: {
+              forest: '#18382A',
+              forestDark: '#122B20',
+              forestLight: '#244e3b',
+              canvas: '#EBF1ED',
+              cardBg: '#FFFFFF',
+              surface: '#F6F9F6',
+              surfaceHover: '#EEF3EE',
+              border: '#E3E9E4',
+              borderSubtle: '#ECF1EC',
+              ink: '#111816',
+              inkMuted: '#526059',
+              inkSubtle: '#7A8C83',
+            }
+          },
+          boxShadow: {
+            'floating': '0 24px 64px -12px rgba(26, 46, 36, 0.08), 0 4px 20px -2px rgba(26, 46, 36, 0.03)',
+            'pill': '0 2px 6px rgba(0, 0, 0, 0.04)',
+          },
+          borderRadius: {
+            'card': '2.5rem',
+          }
+        }
+      }
+    };
+  </script>
+<!-- BEGIN: Custom Atmospheric Background Styles -->
+<style data-purpose="background-atmosphere">
+    body {
+      background-color: #EBF1ED;
+      background-image: 
+        radial-gradient(circle at 18% 22%, rgba(204, 222, 210, 0.65) 0%, transparent 45%),
+        radial-gradient(circle at 82% 78%, rgba(200, 220, 208, 0.55) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(235, 241, 237, 0.9) 0%, #EBF1ED 100%);
+      background-attachment: fixed;
+      min-height: 100vh;
+    }
+  </style>
+<!-- END: Custom Atmospheric Background Styles -->
+</head>
+<body class="font-sans text-tailored-ink antialiased flex flex-col min-h-screen justify-between selection:bg-tailored-forest selection:text-white">
+<!-- BEGIN: MainHeader -->
+<header class="w-full px-8 py-7 flex items-center justify-between z-20">
+<div class="tracking-[0.22em] text-sm font-bold text-tailored-ink uppercase pl-2">
+      TAILORED
+    </div>
+<div>
+<a class="text-xs font-semibold text-tailored-inkMuted hover:text-tailored-ink transition-colors flex items-center gap-1.5 pr-2" href="#">
+<span>Save &amp; Exit</span>
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<line x1="18" x2="6" y1="6" y2="18"></line>
+<line x1="6" x2="18" y1="6" y2="18"></line>
+</svg>
+</a>
+</div>
+</header>
+<!-- END: MainHeader -->
+<!-- BEGIN: MainContent -->
+<main class="flex-grow flex items-center justify-center px-4 py-6 md:py-10 z-10">
+<div class="w-full max-w-[780px] bg-white rounded-card shadow-floating border border-stone-200/70 p-8 sm:p-12 md:p-14">
+<!-- BEGIN: StepHeader -->
+<section class="text-center flex flex-col items-center" data-purpose="step-introduction">
+<!-- Step Pill Badge -->
+<div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#EBF0EC] border border-[#DEE6E0] text-[11px] font-semibold tracking-wider text-tailored-forest uppercase mb-5">
+<span class="w-1.5 h-1.5 rounded-full bg-tailored-forest inline-block"></span>
+<span>STEP 05 / 06</span>
+</div>
+<!-- Headline -->
+<h1 class="text-3xl sm:text-4xl font-bold tracking-tight text-tailored-ink mb-3">
+          Featured Projects
+        </h1>
+<!-- Subtitle -->
+<p class="text-sm sm:text-[15px] leading-relaxed text-tailored-inkMuted max-w-lg mb-9">
+          Document technical projects, repositories, and proof of execution across engineering domains.
+        </p>
+</section>
+<!-- END: StepHeader -->
+<!-- BEGIN: ProjectsContainer -->
+<section class="space-y-4" data-purpose="project-list">
+<!-- Active / Expanded Project Card -->
+<div class="bg-tailored-surface border border-tailored-border rounded-2xl p-6 sm:p-7 transition-all" data-purpose="active-project-card">
+<!-- Project Header Row -->
+<div class="flex items-start justify-between gap-4 pb-5 border-b border-tailored-borderSubtle">
+<div class="flex items-start gap-3.5">
+<!-- Folder / Terminal Icon -->
+<div class="w-10 h-10 rounded-xl bg-white border border-stone-200/80 flex items-center justify-center shadow-xs flex-shrink-0 mt-0.5 text-tailored-forest">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<path d="M4 17l6-6-6-6"></path>
+<line x1="12" x2="20" y1="19" y2="19"></line>
+</svg>
+</div>
+<div>
+<div class="flex items-center gap-1.5 flex-wrap">
+<h3 class="text-base sm:text-[17px] font-bold text-tailored-ink">Distributed LLM Inference Engine</h3>
+<!-- Verified Icon -->
+<svg class="w-4 h-4 text-tailored-forest" fill="currentColor" viewbox="0 0 24 24">
+<path clip-rule="evenodd" d="M8.603 3.799A4.49 4.49 0 0112 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 013.498 1.307 4.491 4.491 0 011.307 3.497A4.49 4.49 0 0121.75 12a4.49 4.49 0 01-1.549 3.397 4.491 4.491 0 01-1.307 3.497 4.491 4.491 0 01-3.497 1.307A4.49 4.49 0 0112 21.75a4.49 4.49 0 01-3.397-1.549 4.49 4.49 0 01-3.498-1.306 4.491 4.491 0 01-1.307-3.498A4.49 4.49 0 012.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 011.307-3.497 4.49 4.49 0 013.497-1.307zm7.007 6.387a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" fill-rule="evenodd"></path>
+</svg>
+</div>
+<div class="flex items-center gap-1.5 text-xs text-tailored-inkMuted mt-1">
+<span>Lead Contributor</span>
+<span>•</span>
+<a class="inline-flex items-center gap-0.5 text-tailored-forest hover:underline font-medium" href="#">
+                    github.com/adrianstone/dist-inference
+                    <svg class="w-3 h-3 ml-0.5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<line x1="7" x2="17" y1="17" y2="7"></line>
+<polyline points="7 7 17 7 17 17"></polyline>
+</svg>
+</a>
+</div>
+</div>
+</div>
+<!-- Status Pill -->
+<div class="flex items-center gap-1.5 text-[11px] font-bold text-tailored-forest bg-[#E1EDE5] px-2.5 py-1 rounded-full whitespace-nowrap">
+<svg class="w-3.5 h-3.5" fill="currentColor" viewbox="0 0 24 24">
+<path clip-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" fill-rule="evenodd"></path>
+</svg>
+<span>ACTIVE PROJECT</span>
+</div>
+</div>
+<!-- Technologies Used Section -->
+<div class="pt-4 pb-5">
+<span class="block text-[11px] font-bold uppercase tracking-wider text-tailored-inkSubtle mb-2.5">
+              Technologies &amp; Frameworks
+            </span>
+<div class="flex flex-wrap items-center gap-2">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-tailored-forest text-white text-xs font-medium">
+                Python
+                <button class="hover:text-stone-300 transition-colors" type="button">✕</button>
+</span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-tailored-forest text-white text-xs font-medium">
+                PyTorch
+                <button class="hover:text-stone-300 transition-colors" type="button">✕</button>
+</span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-tailored-forest text-white text-xs font-medium">
+                Ray
+                <button class="hover:text-stone-300 transition-colors" type="button">✕</button>
+</span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-tailored-forest text-white text-xs font-medium">
+                CUDA
+                <button class="hover:text-stone-300 transition-colors" type="button">✕</button>
+</span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-tailored-forest text-white text-xs font-medium">
+                Docker
+                <button class="hover:text-stone-300 transition-colors" type="button">✕</button>
+</span>
+<button class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#EBF0EC] hover:bg-[#E0E9E2] text-xs font-medium text-tailored-inkMuted transition-colors" type="button">
+<span>+</span> Add tech
+              </button>
+</div>
+</div>
+<!-- Impact & Highlights Section -->
+<div class="pt-1">
+<div class="flex items-center justify-between mb-3">
+<span class="text-[11px] font-bold uppercase tracking-wider text-tailored-inkSubtle">
+                Key Impact &amp; Architecture
+              </span>
+<button class="text-xs font-semibold text-tailored-forest hover:text-tailored-forestDark flex items-center gap-1 transition-colors" type="button">
+<span>✨</span>
+<span>AI Polish Impact</span>
+</button>
+</div>
+<!-- Bullet Card 1 -->
+<div class="flex items-start gap-3 bg-white p-3.5 rounded-xl border border-stone-200/80 mb-2.5">
+<span class="text-tailored-inkSubtle text-xs mt-0.5 select-none">▸</span>
+<p class="text-xs sm:text-[13px] text-tailored-ink leading-relaxed">
+                Engineered custom continuous batching and KV-cache paged memory manager, reducing inference latency by <strong class="font-semibold text-tailored-ink">38%</strong> across 8x H100 GPU nodes.
+              </p>
+</div>
+<!-- Bullet Card 2 -->
+<div class="flex items-start gap-3 bg-white p-3.5 rounded-xl border border-stone-200/80">
+<span class="text-tailored-inkSubtle text-xs mt-0.5 select-none">▸</span>
+<p class="text-xs sm:text-[13px] text-tailored-ink leading-relaxed">
+                Architected zero-copy tensor parallelism pipeline supporting concurrent streaming requests for <strong class="font-semibold text-tailored-ink">15K+ daily active developers</strong>.
+              </p>
+</div>
+<!-- Footer Action Row inside active card -->
+<div class="flex items-center justify-between pt-3.5 mt-1 text-xs">
+<button class="font-medium text-tailored-inkMuted hover:text-tailored-ink flex items-center gap-1 transition-colors" type="button">
+<span>+</span> Add impact metric
+              </button>
+<span class="text-tailored-inkSubtle text-[11px]">2 metrics captured</span>
+</div>
+</div>
+</div>
+<!-- Collapsed Secondary Project Card -->
+<div class="bg-tailored-surface border border-tailored-border rounded-2xl p-4 sm:p-5 flex items-center justify-between hover:bg-tailored-surfaceHover transition-colors" data-purpose="collapsed-project-card">
+<div class="flex items-center gap-3.5">
+<!-- Project Icon Badge -->
+<div class="w-9 h-9 rounded-xl bg-white border border-stone-200/80 flex items-center justify-center text-tailored-inkMuted flex-shrink-0 shadow-xs">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+<polyline points="2 17 12 22 22 17"></polyline>
+<polyline points="2 12 12 17 22 12"></polyline>
+</svg>
+</div>
+<div>
+<div class="flex items-center gap-2 flex-wrap">
+<h4 class="text-sm font-semibold text-tailored-ink">Autonomous Job Radar Agent</h4>
+<span class="text-xs text-tailored-inkSubtle">• Next.js, FastAPI, PostgreSQL</span>
+</div>
+<p class="text-xs text-tailored-inkSubtle mt-0.5">2 Core Impact Points</p>
+</div>
+</div>
+<!-- Edit Action -->
+<button class="flex items-center gap-1.5 text-xs font-semibold text-tailored-inkMuted hover:text-tailored-ink transition-colors px-2 py-1" type="button">
+<span>Edit Details</span>
+<svg class="w-3.5 h-3.5 text-tailored-inkSubtle" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<line x1="4" x2="4" y1="21" y2="14"></line>
+<line x1="4" x2="4" y1="10" y2="3"></line>
+<line x1="12" x2="12" y1="21" y2="12"></line>
+<line x1="12" x2="12" y1="8" y2="3"></line>
+<line x1="20" x2="20" y1="21" y2="16"></line>
+<line x1="20" x2="20" y1="12" y2="3"></line>
+<line x1="1" x2="7" y1="14" y2="14"></line>
+<line x1="9" x2="15" y1="8" y2="8"></line>
+<line x1="17" x2="23" y1="16" y2="16"></line>
+</svg>
+</button>
+</div>
+<!-- Add Another Project Action -->
+<div class="flex justify-center pt-3 pb-2">
+<button class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-tailored-border bg-white hover:bg-tailored-surface text-xs font-semibold text-tailored-ink transition-all shadow-xs" type="button">
+<span class="text-sm leading-none font-normal text-tailored-forest">+</span>
+<span>Add Another Project</span>
+</button>
+</div>
+</section>
+<!-- END: ProjectsContainer -->
+<!-- BEGIN: NavigationFooter -->
+<section class="mt-10 pt-6 border-t border-tailored-borderSubtle" data-purpose="form-actions">
+<div class="flex items-center justify-between">
+<!-- Back Link -->
+<a class="inline-flex items-center gap-2 text-sm font-semibold text-tailored-ink hover:text-tailored-forest transition-colors" href="#">
+<span>←</span>
+<span>Back</span>
+</a>
+<!-- Primary CTA Button -->
+<button class="inline-flex items-center gap-2 bg-tailored-forest hover:bg-tailored-forestDark text-white px-7 py-3 rounded-full text-sm font-medium transition-all shadow-md hover:shadow-lg" type="button">
+<span>Continue to Education</span>
+<span>→</span>
+</button>
+</div>
+<!-- Auto-save notification -->
+<div class="text-center mt-3">
+<span class="text-[11px] text-tailored-inkSubtle font-medium">
+            • Auto-saved just now
+          </span>
+</div>
+</section>
+<!-- END: NavigationFooter -->
+</div>
+</main>
+<!-- END: MainContent -->
+<!-- BEGIN: SiteFooter -->
+<footer class="w-full px-8 py-6 text-xs text-tailored-inkSubtle flex flex-col sm:flex-row items-center justify-between gap-4 z-20">
+<div>
+      © 2025 TAILORED Atelier Inc.
+    </div>
+<div class="flex items-center gap-6">
+<a class="hover:text-tailored-ink transition-colors" href="#">Privacy</a>
+<a class="hover:text-tailored-ink transition-colors" href="#">Terms</a>
+<a class="hover:text-tailored-ink transition-colors" href="#">Security</a>
+</div>
+</footer>
+<!-- END: SiteFooter -->
+</body></html>

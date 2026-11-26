@@ -1,0 +1,129 @@
+[
+  {
+    "source_id": "wuzzuf_rcqxngwvzmck",
+    "title": "Senior FullStack (Python) Engineer",
+    "url": "https://wuzzuf.net/jobs/p/rcqxngwvzmck-senior-fullstack-python-engineer-vertex-technologies-cairo-egypt",
+    "raw_description": "Job Description\nWe are an Egyptian technology company delivering international software projects in cooperation with the global NIX brand. Our office in Smart Village, at the heart of Cairo's tech ecosystem, offers stability, transparent working conditions, professional mentorship, and a supportive team.\nResponsibilities:\nDesigning the architecture of web applications and their components, defining data flows, dependencies, and communication between services\nDeveloping both backend and frontend parts of web applications with a focus on scalability and maintainability\nDecomposing project requirements into deliverable parts, estimating work, and planning development phases\nReviewing code and effort estimates of team members, mentoring engineers, and supporting their professional growth\nImproving application performance, reducing technical debt, and driving refactoring initiatives\nDiscussing technical solutions, trade-offs, and risks directly with clients\nWhat we offer:\nLong-term career stability with a competitive salary paid in USD.\nConditions for steady career development.\nDevelopment supported by dedicated mentors and a variety of programs focused on expertise and innovation.\nPrivate medical insurance provided after successful completion of the probationary period\nA well-equipped and cozy office supports comfort and productivity across all project stages.\nWelcoming atmosphere and a friendly corporate culture.\n\nJob Requirements\nWhat we expect from you:\n5+ years of experience in commercial projects\nUpper-Intermediate English level and strong communication skills to discuss technical solutions, trade-offs, and risks directly with clients\nExcellent understanding of advanced Python and JavaScript (TypeScript) concepts, and strong experience building REST services with FastAPI, DRF, or Flask\nStrong commercial experience with React or Vue\nDeep knowledge of Relational Databases: query optimization, indexing, isolation levels and locking, and fixing ORM performance anti-patterns\nExperience setting up CI/CD pipelines and containerization (Docker)\nHands-on experience with AWS, including serverless architectures (Lambda, API Gateway, Step Functions, EventBridge, DynamoDB, SQS/SNS) and container-based workloads (ECS/EKS), as well as RDS, S3, CloudWatch, and IAM\nExperience designing and evolving system architecture, from monoliths to microservices, with a clear understanding of their trade-offs, service boundaries, integration patterns (REST, event-driven, message brokers such as RabbitMQ, Kafka, or AWS SQS/SNS), data consistency, and observability\nExperience building high-performance applications: identifying and eliminating bottlenecks across API, database, and caching layers, and applying asynchronous processing and advanced caching\nDefining testing strategy at the project level (unit / integration / e2e), keeping tests reliable and maintainable\nAbility to decompose requirements, estimate effort, and identify dependencies and risks affecting scope, timeline, and resources\nExperience mentoring engineers, conducting code reviews, and introducing engineering practices on the project level, including team guidelines for AI-assisted development (AI coding tools, reviewing AI-generated code, safe AI usage in client projects)\nExperience with LLM API integration, RAG, MCP, and agentic workflows\nWill be a plus:\nUnderstanding of business models and product roadmaps, and participation in strategic technical discussions\nExperience with Kubernetes and IaC tools (AWS CDK, Terraform, CloudFormation)\nExperience with AI services on AWS (Amazon Bedrock, Bedrock AgentCore, SageMaker)\nExperience with other cloud platforms (GCP or Azure)\nExperience with frontend architecture: micro-frontends or modular frontend systems, and rendering/loading performance profiling\nExperience with another backend language (Node.js, Go, or Java)\nOpen-minded attitude toward new technologies and approaches",
+    "company_name": "Vertex Technologies    ",
+    "location": "Cairo,Egypt",
+    "source_type": "wuzzuf",
+    "posted_at": null,
+    "canonical_hash": "60fc8eadf1003a10c683b4d1cb6d22201c246ff72a17ce6b22224a97c87a8d08",
+    "source_metadata": {
+      "wuzzuf_id": "rcqxngwvzmck"
+    }
+  },
+  {
+    "source_id": "wuzzuf_aydk9faexs8n",
+    "title": "Middle FullStack (Python) Developer",
+    "url": "https://wuzzuf.net/jobs/p/aydk9faexs8n-middle-fullstack-python-developer-vertex-technologies-cairo-egypt",
+    "raw_description": "Job Description\nWe are an Egyptian technology company delivering international software projects in cooperation with the global NIX brand. Our office in Smart Village, at the heart of Cairo’s tech ecosystem, offers stability, transparent working conditions, professional mentorship, and a supportive team — the perfect place to grow your career.\nResponsibilities:\nDevelopment of interactive web systems and services\nFollowing best practices of code writing using modern approaches and patterns\nCreating both the frontend and backend components of web applications\nActive collaboration with development teams to determine applications requirements and implementation\nWhat we offer:\nLong-term career stability with a competitive salary paid in USD.\nConditions for steady career development.\nDevelopment supported by dedicated mentors and a variety of programs focused on expertise and innovation.\nPrivate medical insurance provided after successful completion of the probationary period\nA well-equipped and cozy office supports comfort and productivity across all project stages.\nWelcoming atmosphere and a friendly corporate culture.\n\nJob Requirements\nWhat we expect from you:\nUpper-Intermediate English level\n3+ years of experience in commercial projects\nExcellent understanding of advanced Python and JavaScript (Typescript) concepts.\nStrong understanding of developing REST services using FastAPI/DRF/Flask web frameworks\nCommercial experience with React or Vue\nDeep knowledge of relational databases (PostgreSQL, MySQL)\nExperience with Continuous Integration and Continuous Deployment\nFamiliarity with containerization (Docker)\nExperience working with one of the Cloud-based platforms (AWS, GCP, or Azure)\nCommunication and negotiation skills to establish and maintain good working relationships with external organizations and internal customers\nQuick learning and result-orientation\nWill be a plus:\nBackground in Agile development methodologies\nUnderstanding of Monolithic and Microservices Architectures\nExperience with Kubernetes",
+    "company_name": "Vertex Technologies    ",
+    "location": "Cairo,Egypt",
+    "source_type": "wuzzuf",
+    "posted_at": null,
+    "canonical_hash": "3e71462ae7fc81da5445274fc9b2085dbb898b327ed485baafb958af93890939",
+    "source_metadata": {
+      "wuzzuf_id": "aydk9faexs8n"
+    }
+  },
+  {
+    "source_id": "wuzzuf_7jkhc0bc9ozg",
+    "title": "Senior Python Developer",
+    "url": "https://wuzzuf.net/jobs/p/7jkhc0bc9ozg-senior-python-developer-nile-bits-llc-giza-egypt",
+    "raw_description": "Job Description\nWe are looking for a\nSenior Python Software Engineer\nwith\nat least 4 years of professional experience\ndeveloping backend applications using Python to join our engineering team. In this role, you will help design, build, maintain, and evolve scalable backend services that power our platform.\nYou will be responsible for implementing high-quality software solutions, optimizing application performance, and contributing to the architecture and long-term evolution of our systems. Working closely with cross-functional teams, you will participate in technical design discussions, mentor fellow engineers, and promote engineering best practices. This role requires deep technical expertise in Python, Django, distributed systems, and modern software engineering principles.\n\nJob Requirements\nResponsibilities\nDesign, develop, and implement new functionality for decoupled backend services.\nMaintain, enhance, and refactor existing backend applications to improve scalability, reliability, and maintainability.\nAnalyze and optimize application performance, database queries, and overall system efficiency.\nTake ownership of backend services throughout their lifecycle, including architecture, deployment, production support, monitoring, and continuous improvement.\nParticipate actively in technical design discussions, solution architecture, and project planning sessions.\nCollaborate with engineers, product managers, and stakeholders to deliver high-quality software solutions.\nReview code, provide constructive feedback, and champion engineering best practices through peer collaboration.\nMentor and support other team members by sharing technical expertise and assisting with complex engineering challenges.\nTroubleshoot production issues using profiling, monitoring, logging, and diagnostic tools.\nProduce and maintain clear technical documentation, architectural diagrams, and design specifications.\nEvaluate emerging technologies and recommend improvements to the engineering stack where appropriate.\nEffectively utilize AI-powered development tools (such as Claude Code, GitHub Copilot, or Codex) to accelerate software development while ensuring code quality, correctness, security, and maintainability.\nQualifications\nAt least 5 years of professional experience\ndeveloping backend applications with\nPython\n.\nStrong commercial experience building web applications using\nDjango\nand the Django ORM.\nSolid experience working with relational databases, particularly\nMySQL\n.\nExperience designing, developing, and consuming\nRESTful APIs\n,\nGraphQL\n, or similar service interfaces.\nExperience working with distributed systems and asynchronous messaging technologies such as\nCelery\n.\nStrong understanding of object-oriented programming, software design patterns, clean architecture, and distributed system design.\nExperience using Git-based version control workflows, including branching strategies, pull requests, and code reviews.\nExperience writing technical documentation and software design specifications.\nStrong debugging, troubleshooting, and performance optimization skills using profiling tools, SQL execution plans, application monitoring tools (e.g., New Relic), and related technologies.\nAbility to work independently, take ownership of technical solutions, prioritize tasks effectively, and proactively resolve issues.\nStrong communication and collaboration skills with the ability to participate in technical discussions and mentor other engineers.\nPreferred Qualifications\nExperience with supporting technologies such as\nRedis\n,\nMemcached\n,\nElasticsearch\n, and\nCelery\n.\nExperience building, deploying, and operating cloud-native or highly scalable backend services.\nExperience working within Agile/Scrum development environments.\nHands-on experience using AI-assisted development tools (e.g., Claude Code, GitHub Copilot, or Codex) for code generation, testing, debugging, refactoring, and code review while applying sound engineering judgment to validate and improve generated output.\nExperience mentoring junior and mid-level engineers and contributing to engineering standards and best practices.",
+    "company_name": "Nile Bits, LLC  ",
+    "location": "6th of October,Giza,Egypt",
+    "source_type": "wuzzuf",
+    "posted_at": null,
+    "canonical_hash": "3780f72a4f5209a91d6faca23e5e4483eb3e89a37a9e223ba2e51cf1157fd896",
+    "source_metadata": {
+      "wuzzuf_id": "7jkhc0bc9ozg"
+    }
+  },
+  {
+    "source_id": "linkedin_4384675689",
+    "title": "Cashier",
+    "url": "https://www.linkedin.com/jobs/view/cashier-at-the-home-depot-4384675689?position=60&pageNum=0&refId=PmGJhu4JpwcRTvmgPv7BMg%3D%3D&trackingId=dFtRGtkFo3ABzJg9DUB0ug%3D%3D",
+    "raw_description": "80776BR\n\nJob Description\n\nPosition Purpose:\n\nCashiers play a critical customer service role by providing customers with fast, friendly, accurate and safe service. They process Checkout and/or Return transactions, as well as monitor and maintain the Self-Checkout area. They proactively seek product/project knowledge to provide customers with information and identify selling opportunities. They follow all policies and procedures to ensure that shrink is minimized. A Head Cashier will position Cashiers and support them by expediting price checks, approving Point of Sale transactions and markdowns for mainline registers, Self-Checkout, Returns, Pro Desk, Special Services, and Tool Rental. They provide first level escalation for customer issues and assist in the supervision, coaching and training of other Front End Associates by participating in the training of new Cashiers and utilizing all available tools to coach and develop other Cashiers. The preferred qualification for a Head Cashier is 1+ years of Cashier experience.",
+    "company_name": "The Home Depot",
+    "location": "Corona, CA",
+    "source_type": "linkedin_apify",
+    "posted_at": "2026-03-14T00:00:00",
+    "canonical_hash": "609853d0a59a9c9de88853acae45180c997761bf0e7ce0e17a28aa4a91bf27a8",
+    "source_metadata": {
+      "apify_job_id": "4384675689",
+      "seniority": "Not Applicable",
+      "employment_type": "Full-time",
+      "industries": "Consumer Services"
+    }
+  },
+  {
+    "source_id": "linkedin_4384670969",
+    "title": "Cashier",
+    "url": "https://www.linkedin.com/jobs/view/cashier-at-the-home-depot-4384670969?position=59&pageNum=0&refId=PmGJhu4JpwcRTvmgPv7BMg%3D%3D&trackingId=RkvVZ7KgYGsql8pJ%2BfaFxg%3D%3D",
+    "raw_description": "82743BR\n\nJob Description\n\nPosition Purpose:\n\nCashiers play a critical customer service role by providing customers with fast, friendly, accurate and safe service. They process Checkout and/or Return transactions, as well as monitor and maintain the Self-Checkout area. They proactively seek product/project knowledge to provide customers with information and identify selling opportunities. They follow all policies and procedures to ensure that shrink is minimized. A Head Cashier will position Cashiers and support them by expediting price checks, approving Point of Sale transactions and markdowns for mainline registers, Self-Checkout, Returns, Pro Desk, Special Services, and Tool Rental. They provide first level escalation for customer issues and assist in the supervision, coaching and training of other Front End Associates by participating in the training of new Cashiers and utilizing all available tools to coach and develop other Cashiers. The preferred qualification for a Head Cashier is 1+ years of Cashier experience.",
+    "company_name": "The Home Depot",
+    "location": "Broadview, IL",
+    "source_type": "linkedin_apify",
+    "posted_at": "2026-03-14T00:00:00",
+    "canonical_hash": "50bbf2ee95267b73bfbe22a49a1c4d0f4183512d69426b79729976749b01392f",
+    "source_metadata": {
+      "apify_job_id": "4384670969",
+      "seniority": "Not Applicable",
+      "employment_type": "Full-time",
+      "industries": "Consumer Services"
+    }
+  },
+  {
+    "source_id": "linkedin_4384694337",
+    "title": "Cashier",
+    "url": "https://www.linkedin.com/jobs/view/cashier-at-the-home-depot-4384694337?position=58&pageNum=0&refId=PmGJhu4JpwcRTvmgPv7BMg%3D%3D&trackingId=N6yHHrq7K%2FcW%2F4MekvzR4A%3D%3D",
+    "raw_description": "73975BR\n\nJob Description\n\nPosition Purpose:\n\nCashiers play a critical customer service role by providing customers with fast, friendly, accurate and safe service. They process Checkout and/or Return transactions, as well as monitor and maintain the Self-Checkout area. They proactively seek product/project knowledge to provide customers with information and identify selling opportunities. They follow all policies and procedures to ensure that shrink is minimized. A Head Cashier will position Cashiers and support them by expediting price checks, approving Point of Sale transactions and markdowns for mainline registers, Self-Checkout, Returns, Pro Desk, Special Services, and Tool Rental. They provide first level escalation for customer issues and assist in the supervision, coaching and training of other Front End Associates by participating in the training of new Cashiers and utilizing all available tools to coach and develop other Cashiers. The preferred qualification for a Head Cashier is 1+ years of Cashier experience.",
+    "company_name": "The Home Depot",
+    "location": "Everett, MA",
+    "source_type": "linkedin_apify",
+    "posted_at": "2026-03-14T00:00:00",
+    "canonical_hash": "f087eed2c657557db21b12920c09f9872ea9191275481bfcf62647bad696d6ec",
+    "source_metadata": {
+      "apify_job_id": "4384694337",
+      "seniority": "Not Applicable",
+      "employment_type": "Full-time",
+      "industries": "Consumer Services"
+    }
+  },
+  {
+    "source_id": "linkedin_4384698023",
+    "title": "Cashier",
+    "url": "https://www.linkedin.com/jobs/view/cashier-at-the-home-depot-4384698023?position=56&pageNum=0&refId=PmGJhu4JpwcRTvmgPv7BMg%3D%3D&trackingId=L%2BsFzsM9L8J9VFpEX%2BzyLA%3D%3D",
+    "raw_description": "78084BR\n\nJob Description\n\nPosition Purpose:\n\nCashiers play a critical customer service role by providing customers with fast, friendly, accurate and safe service. They process Checkout and/or Return transactions, as well as monitor and maintain the Self-Checkout area. They proactively seek product/project knowledge to provide customers with information and identify selling opportunities. They follow all policies and procedures to ensure that shrink is minimized. A Head Cashier will position Cashiers and support them by expediting price checks, approving Point of Sale transactions and markdowns for mainline registers, Self-Checkout, Returns, Pro Desk, Special Services, and Tool Rental. They provide first level escalation for customer issues and assist in the supervision, coaching and training of other Front End Associates by participating in the training of new Cashiers and utilizing all available tools to coach and develop other Cashiers. The preferred qualification for a Head Cashier is 1+ years of Cashier experience.",
+    "company_name": "The Home Depot",
+    "location": "Westbury, NY",
+    "source_type": "linkedin_apify",
+    "posted_at": "2026-03-14T00:00:00",
+    "canonical_hash": "080feeb55caea3f1f095a0ba82e5ab02c342c3fda2b7b5a9bb4e466d5246f3ed",
+    "source_metadata": {
+      "apify_job_id": "4384698023",
+      "seniority": "Not Applicable",
+      "employment_type": "Full-time",
+      "industries": "Consumer Services"
+    }
+  },
+  {
+    "source_id": "linkedin_4384698625",
+    "title": "Cashier",
+    "url": "https://www.linkedin.com/jobs/view/cashier-at-the-home-depot-4384698625?position=54&pageNum=0&refId=PmGJhu4JpwcRTvmgPv7BMg%3D%3D&trackingId=gQH2kmX5EgOEf8lqXU%2BVeQ%3D%3D",
+    "raw_description": "84247BR\n\nJob Description\n\nPosition Purpose:\n\nCashiers play a critical customer service role by providing customers with fast, friendly, accurate and safe service. They process Checkout and/or Return transactions, as well as monitor and maintain the Self-Checkout area. They proactively seek product/project knowledge to provide customers with information and identify selling opportunities. They follow all policies and procedures to ensure that shrink is minimized. A Head Cashier will position Cashiers and support them by expediting price checks, approving Point of Sale transactions and markdowns for mainline registers, Self-Checkout, Returns, Pro Desk, Special Services, and Tool Rental. They provide first level escalation for customer issues and assist in the supervision, coaching and training of other Front End Associates by participating in the training of new Cashiers and utilizing all available tools to coach and develop other Cashiers. The preferred qualification for a Head Cashier is 1+ years of Cashier experience.",
+    "company_name": "The Home Depot",
+    "location": "O'Fallon, MO",
+    "source_type": "linkedin_apify",
+    "posted_at": "2026-03-14T00:00:00",
+    "canonical_hash": "607623a8f9fa641724cf8859f3fdcaa6532618e1ea041fad18af2ea1c9318ff4",
+    "source_metadata": {
+      "apify_job_id": "4384698625",
+      "seniority": "Not Applicable",
+      "employment_type": "Full-time",
+      "industries": "Consumer Services"
+    }
+  }
+]

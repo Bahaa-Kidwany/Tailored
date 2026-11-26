@@ -1,0 +1,601 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<meta content="web_standard" name="shell-type">
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&amp;family=JetBrains+Mono:ital,wght@0,400..700;1,400..700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+      main > :first-child { margin-top: 0 !important; }
+      main > :last-child { margin-bottom: 0 !important; }
+    }
+    ::-webkit-scrollbar { display: none; }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface": "#f5f7f4",
+            "background": "#f5f7f4",
+            "on-surface": "#19221d",
+            "on-surface-variant": "#495a51",
+            "primary": "#152e25",
+            "primary-container": "#23463a",
+            "on-primary": "#ffffff",
+            "on-primary-container": "#f1f6f3",
+            "sage-subtle": "#e8eee7",
+            "sage-border": "#d8e1d7",
+            "sage-tag": "#e2ebdf",
+            "sage-pill": "#edf3eb",
+            "accent-green": "#2b5945",
+            "outline-subtle": "#dce4da",
+            "card-surface": "#ffffff"
+          },
+          borderRadius: {
+            "DEFAULT": "0.5rem",
+            "lg": "0.75rem",
+            "xl": "1rem",
+            "2xl": "1.5rem",
+            "3xl": "2rem",
+            "full": "9999px"
+          },
+          fontFamily: {
+            sans: ["Plus Jakarta Sans", "sans-serif"],
+            mono: ["JetBrains Mono", "monospace"]
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-[#f5f7f4] font-sans text-on-surface h-screen overflow-hidden antialiased selection:bg-[#dbe7dc] selection:text-[#152e25] flex flex-col" style="background: radial-gradient(circle at 50% 20%, rgb(14, 23, 20) 0%, rgb(6, 10, 8) 70%) fixed rgb(6, 10, 8); min-height: 100vh;">
+<!-- Top Navigation Header -->
+<header class="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-[#dce4da] shadow-sm"><div class="h-16 w-full px-4 sm:px-8 max-w-7xl mx-auto flex items-center justify-between gap-4"><div class="flex items-center gap-6"><a class="flex items-center gap-2" data-path="workbench" href="#"><span class="font-bold tracking-widest text-[#152e25] uppercase text-lg">TAILORED</span></a><div class="hidden xl:flex items-center gap-2 text-[#495a51] text-xs font-medium uppercase tracking-wider bg-[#edf3eb] px-3 py-1 rounded-full border border-[#dce4da]"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span><span>CV Studio • Atelier</span></div></div><nav class="hidden lg:flex items-center gap-1.5 bg-[#edf3eb] p-1 rounded-full border border-[#dce4da]"><a aria-current="page" class="px-4 py-1.5 text-xs font-semibold uppercase tracking-wider transition-all bg-white text-[#152e25] rounded-full shadow-sm" data-path="workbench" href="#">Workbench</a><a class="px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-[#495a51] hover:text-[#152e25] hover:bg-white/60 transition-all rounded-full" data-path="radar-feed" href="#">Radar Feed</a><a class="px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-[#495a51] hover:text-[#152e25] hover:bg-white/60 transition-all rounded-full" data-path="saved-cvs" href="#">Saved CVs</a><a class="px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-[#495a51] hover:text-[#152e25] hover:bg-white/60 transition-all rounded-full flex items-center gap-1.5" data-path="interest-list" href="#"><span>Interest List</span><span class="px-1.5 py-0.5 rounded-full bg-[#dbe7dc] text-[#152e25] text-[10px] font-bold border border-[#c5d6c7]">5</span></a></nav><div class="flex items-center gap-2.5"><div class="hidden sm:flex items-center gap-2"><button class="px-4 py-1.5 border border-[#d2dcd0] bg-white text-xs text-[#27352d] hover:text-[#152e25] uppercase tracking-wider hover:bg-[#edf3eb] transition-all rounded-full font-medium shadow-sm" type="button">Copy TeX</button><button class="px-4 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-[#060a08] text-xs uppercase tracking-wider transition-all rounded-full font-bold shadow-sm flex items-center gap-1.5" type="button"><svg class="w-3.5 h-3.5 stroke-current" fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"></path></svg><span>Download PDF</span></button></div><a class="px-3 py-1.5 text-[#5a6a61] hover:text-[#152e25] text-xs font-medium uppercase tracking-wider hidden md:inline-block" data-path="settings" href="#">Settings</a><div class="w-9 h-9 rounded-full bg-[#edf3eb] border border-[#dce4da] flex items-center justify-center shrink-0 text-[#27352d] hover:bg-[#e2ebdf] transition-all cursor-pointer"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M20 21a8 8 0 1 0-16 0"></path></svg></div></div></div></header>
+<main class="w-full pt-16 flex-1 flex flex-col bg-transparent overflow-hidden">
+<div class="flex flex-col w-full h-full overflow-hidden">
+<!-- 1. The 2-Sided Pairing Formula Dock (Floating Soft Sage Control Strip) -->
+<section class="w-full px-4 sm:px-8 py-3 bg-white/95 backdrop-blur-md border-b border-[#dce4da] shadow-sm shrink-0"><div class="w-full max-w-7xl mx-auto flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-3"><div class="flex flex-wrap items-center gap-2 text-xs"><button class="group flex items-center gap-2 px-3.5 py-1.5 bg-[#edf3eb] hover:bg-[#e2ebdf] border border-[#d2dcd0] rounded-full text-[#19221d] transition-all text-left shadow-sm" id="identityToggleBtn" type="button"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><div class="flex items-center gap-1.5"><span class="font-bold text-[#152e25]">Mostafa Ibrahim</span><span class="text-[#a4b5aa]">•</span><span class="text-[#495a51] hidden md:inline">Senior AI Engineer</span><span class="text-[#a4b5aa] hidden md:inline">•</span><span class="text-[#2b5945] font-semibold">EG (+20)</span></div><svg class="w-3.5 h-3.5 text-[#63766b] group-hover:text-[#152e25] transition-transform duration-200 group-hover:translate-y-0.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg></button><span class="text-[#78887e] font-light px-0.5">+</span><button class="group flex items-center gap-2 px-3.5 py-1.5 bg-[#edf3eb] hover:bg-[#e2ebdf] border border-[#d2dcd0] rounded-full text-[#19221d] transition-all text-left shadow-sm" id="jobToggleBtn" type="button"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><div class="flex items-center gap-1.5"><span class="font-bold text-[#152e25]">Swvl</span><span class="text-[#a4b5aa]">•</span><span class="text-[#495a51] truncate max-w-[130px] sm:max-w-none">Lead Data Scientist</span><span class="px-2 py-0.5 bg-[#dbe7dc] text-[#152e25] border border-[#c5d6c7] text-[10px] rounded-full font-semibold uppercase tracking-wider">94% Fit</span></div><svg class="w-3.5 h-3.5 text-[#63766b] group-hover:text-[#152e25] transition-transform duration-200 group-hover:translate-y-0.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg></button><span class="text-[#78887e] hidden lg:inline-block font-light px-1">→</span><button class="flex items-center gap-1.5 px-4 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-[#060a08] rounded-full text-xs uppercase tracking-wider font-bold transition-all shadow-sm" id="reTailorBtn" type="button"><svg class="w-3.5 h-3.5 stroke-current" fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3v3m0 12v3M3 12h3m12 0h3M5.636 5.636l2.122 2.122m8.485 8.485 2.122 2.122M5.636 18.364l2.122-2.122m8.485-8.485 2.122-2.122"></path></svg><span>Re-Tailor Synced</span></button></div><div class="flex items-center gap-2 shrink-0 self-end xl:self-auto overflow-x-auto"><button class="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#ffffff] text-[#3d4d44] hover:text-[#152e25] hover:bg-[#edf3eb] rounded-full border border-[#d2dcd0] text-xs uppercase tracking-wider transition-all font-semibold shadow-sm" id="swapTargetBtn" type="button"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M16 3h5v5m0-5L10 14m-1 7H4v-5m0 5 11-11"></path></svg><span class="hidden sm:inline">Swap Job</span></button><button class="flex items-center gap-1.5 px-3.5 py-1.5 bg-[#dbe7dc] text-[#152e25] hover:bg-[#c8d8c9] rounded-full border border-[#c5d6c7] text-xs uppercase tracking-wider transition-all font-bold shadow-sm" id="matchModalTrigger" type="button"><svg class="w-3.5 h-3.5 stroke-current" fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"></path></svg><span>94% Breakdown</span></button></div></div></section>
+<!-- Workspace Container: Proportional 2-Pane System -->
+<div class="w-full px-4 sm:px-8 py-4 flex-1 overflow-hidden">
+<div class="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 h-full items-stretch">
+<!-- LEFT STAGE: ATS Document Canvas & Surgical Diffs (approx 65% / 8 cols) -->
+<section class="lg:col-span-8 flex flex-col gap-3 h-full overflow-hidden">
+<!-- Canvas Toolbar Controls -->
+<div class="w-full flex flex-wrap items-center justify-between gap-3 p-2 bg-white rounded-2xl border border-[#dce4da] shadow-sm shrink-0"><div class="flex items-center p-1 bg-[#edf3eb] rounded-full border border-[#d2dcd0]"><button class="px-4 py-1.5 rounded-full text-xs uppercase font-bold tracking-wider bg-white text-[#152e25] flex items-center gap-1.5 transition-all shadow-sm" id="btnModeDiffs"><svg class="w-3.5 h-3.5 stroke-current" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 3h5v5m0-5L10 14m-1 7H4v-5m0 5 11-11"></path></svg><span>Surgical Diffs</span></button><button class="px-4 py-1.5 rounded-full text-xs uppercase tracking-wider text-[#495a51] hover:text-[#152e25] flex items-center gap-1.5 transition-all" id="btnModePdf"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg><span>Live PDF</span></button><button class="px-4 py-1.5 rounded-full text-xs uppercase tracking-wider text-[#495a51] hover:text-[#152e25] flex items-center gap-1.5 transition-all" id="btnModeTex"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg><span>LaTeX</span></button></div><div class="flex items-center gap-2"><div class="flex items-center gap-1.5 text-xs text-[#152e25] px-3 py-1 bg-[#dbe7dc] border border-[#c5d6c7] rounded-full font-bold"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span><span>ATS Score 99</span></div><button class="w-8 h-8 flex items-center justify-center text-[#5a6a61] hover:text-[#152e25] hover:bg-[#edf3eb] rounded-full transition-all" title="Revert"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg></button><button class="w-8 h-8 flex items-center justify-center text-[#5a6a61] hover:text-[#152e25] hover:bg-[#edf3eb] rounded-full transition-all" title="Copy"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect height="13" rx="2" width="13" x="9" y="9"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button></div></div>
+<!-- Atelier Surgical ATS Resume Canvas Card -->
+<div class="relative w-full bg-white text-[#19221d] rounded-2xl shadow-2xl overflow-y-auto flex-1 p-8 sm:p-10 border border-white/20">
+<div class="absolute top-4 right-6 text-[10px] font-medium tracking-widest text-[#718278] uppercase bg-[#edf3eb] px-3 py-1 rounded-full border border-[#dce4da]">8.5" × 11" • 1-Page Enforced</div>
+<!-- Header Info -->
+<div class="text-center pb-6 mb-6 relative pt-4 border-b border-[#e8eee7]">
+<h1 class="text-3xl font-bold tracking-tight text-[#152e25]">Mostafa Ibrahim</h1>
+<p class="text-xs uppercase tracking-widest text-[#2b5945] font-semibold mt-1.5">Senior AI &amp; Infrastructure Engineer • Cairo, Egypt</p>
+<div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-[#5a6a61] mt-2.5">
+<span>+20 100 482 9102</span>
+<span class="text-[#a4b5aa]">•</span>
+<span>mostafa.eng@tailored.atelier</span>
+<span class="text-[#a4b5aa]">•</span>
+<span>linkedin.com/in/mostafa-ai</span>
+<span class="text-[#a4b5aa]">•</span>
+<span>github.com/m-ibrahim</span>
+</div>
+</div>
+<!-- Executive Summary Section -->
+<div class="mb-7">
+<div class="flex items-center justify-between mb-2">
+<h2 class="text-xs uppercase tracking-widest font-bold text-[#152e25] flex items-center gap-2">
+<span class="w-1.5 h-3.5 bg-[#152e25] rounded-full"></span>
+<span>Executive Summary</span>
+</h2>
+<span class="text-xs text-[#152e25] bg-[#dbe7dc] px-3 py-0.5 rounded-full font-semibold border border-[#c5d6c7]">Tailored for Swvl Mobility</span>
+</div>
+<p class="text-sm text-[#27352d] leading-relaxed">
+                  Staff AI Systems Engineer with 8+ years architecting fault-tolerant distributed inference pipelines and routing heuristics. Specialized in micro-service dispatch models and 
+                  <span class="bg-[#dbe7dc] text-[#152e25] px-2 py-0.5 font-semibold rounded-full border border-[#c5d6c7]">dynamic pricing algorithms</span> 
+                  for high-velocity mass transit. Proven track record reducing p99 dispatch compute overheads across North African and Gulf fleets.
+                </p>
+</div>
+<!-- Work Experience Section -->
+<div class="mb-7">
+<div class="flex items-center justify-between mb-3">
+<h2 class="text-xs uppercase tracking-widest font-bold text-[#152e25] flex items-center gap-2">
+<span class="w-1.5 h-3.5 bg-[#152e25] rounded-full"></span>
+<span>Work Experience</span>
+</h2>
+<button class="text-xs text-[#152e25] hover:text-[#23463a] uppercase tracking-wider flex items-center gap-1 font-semibold bg-[#edf3eb] hover:bg-[#e2ebdf] px-3 py-1 rounded-full transition-all">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"></path></svg>
+<span>Add Bullet</span>
+</button>
+</div>
+<!-- Swvl Experience Container -->
+<div class="bg-[#f9fbf9] p-5 rounded-2xl mb-4 border border-[#dce4da]">
+<div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 mb-3">
+<div>
+<span class="font-bold text-base text-[#152e25]">Swvl Mobility</span>
+<span class="text-[#2b5945] text-xs ml-2 font-semibold">• Lead Data &amp; AI Scientist</span>
+</div>
+<span class="text-xs uppercase tracking-wider text-[#63766b]">2022 – Present | Cairo &amp; Dubai</span>
+</div>
+<div class="space-y-3 text-sm">
+<!-- Strikethrough Diff Baseline -->
+<div class="p-3 bg-[#ffffff] rounded-xl text-[#78887e] text-xs line-through flex items-start gap-2 border border-[#dce4da]">
+<span class="text-[#8a3328] select-none font-bold shrink-0 bg-[#faebea] px-2 py-0.5 rounded-full">− BASELINE</span>
+<span class="pt-0.5">Developed real-time batch models and distributed routing logic for bus and van fleets across urban transit zones.</span>
+</div>
+<!-- Injected Diff Tailored Bullet -->
+<div class="p-3.5 bg-[#edf3eb]/80 border border-[#c8d8c9] rounded-2xl flex flex-col gap-2 shadow-sm">
+<div class="flex items-center justify-between">
+<span class="text-xs text-[#152e25] font-semibold uppercase tracking-wider flex items-center gap-1.5">
+<svg class="w-3.5 h-3.5 stroke-current" fill="none" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>
+<span>INJECTED SPEC: Dynamic Pricing Algorithms, PyTorch, FastAPI</span>
+</span>
+<span class="text-[11px] text-[#152e25] font-bold bg-[#dbe7dc] px-2 py-0.5 rounded-full border border-[#c5d6c7]">+42% Latency Gain</span>
+</div>
+<p class="text-[#19221d] leading-normal text-xs sm:text-sm">
+                        Spearheaded low-latency <span class="text-[#152e25] bg-[#dbe7dc] px-2 py-0.5 rounded-full font-semibold border border-[#c5d6c7]">dynamic pricing algorithms</span> using <span class="text-[#19221d] bg-[#e6ece8] px-2 py-0.5 rounded-full font-medium">PyTorch</span> and asynchronous <span class="text-[#19221d] bg-[#e6ece8] px-2 py-0.5 rounded-full font-medium">FastAPI</span> microservices, cutting fleet seat-underutilization by 28% and slashing dispatch calculation latency by <strong class="text-[#152e25] font-bold">42%</strong> across 1,400 simultaneous Cairo routes.
+                      </p>
+</div>
+<!-- Unchanged Bullet -->
+<div class="p-2.5 flex items-start gap-2 text-[#3d4d44] text-xs sm:text-sm">
+<span class="text-[#152e25] select-none shrink-0 font-bold">•</span>
+<span>Orchestrated continuous deployment of Kafka-driven sensor pipelines handling 12M telemetry events daily with 99.98% fault isolation.</span>
+</div>
+<!-- Quantified Impact Bullet -->
+<div class="p-3.5 bg-[#edf3eb]/80 border border-[#c8d8c9] rounded-2xl flex flex-col gap-2 shadow-sm">
+<div class="flex items-center justify-between">
+<span class="text-xs text-[#152e25] font-semibold uppercase tracking-wider flex items-center gap-1.5">
+<svg class="w-3.5 h-3.5 stroke-current" fill="none" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>
+<span>QUANTIFIED IMPACT • ATS OPTIMIZED</span>
+</span>
+</div>
+<p class="text-[#19221d] leading-normal text-xs sm:text-sm">
+                        Mentored 9 junior and mid-level data engineers in implementing strict latency profiling; containerized distributed workers with Kubernetes, saving $14,000 monthly AWS infrastructure costs.
+                      </p>
+</div>
+</div>
+</div>
+<!-- Instabug Experience Container -->
+<div class="bg-[#f9fbf9]/70 p-5 rounded-2xl border border-[#dce4da]">
+<div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-1 mb-2">
+<div>
+<span class="font-bold text-base text-[#152e25]">Instabug</span>
+<span class="text-[#495a51] text-xs ml-2 font-medium">• Senior Machine Learning Engineer</span>
+</div>
+<span class="text-xs uppercase tracking-wider text-[#63766b]">2019 – 2022 | Cairo</span>
+</div>
+<ul class="list-disc list-inside text-xs sm:text-sm text-[#3d4d44] space-y-1 pl-1">
+<li>Built automated crash-triage classifiers classifying 4M stack traces/month using fine-tuned transformer topologies.</li>
+<li>Reduced mean time to resolution (MTTR) by 34% across 800+ enterprise mobile engineering suites.</li>
+</ul>
+</div>
+</div>
+<!-- Verified Competencies Grid -->
+<div class="mb-4">
+<h2 class="text-xs uppercase tracking-widest font-bold text-[#152e25] flex items-center gap-2 mb-3">
+<span class="w-1.5 h-3.5 bg-[#152e25] rounded-full"></span>
+<span>Verified Competencies &amp; Tech Stack</span>
+</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 text-xs">
+<div class="bg-[#f9fbf9] p-3 rounded-xl border border-[#dce4da]">
+<span class="text-[#63766b] uppercase block text-[10px] font-semibold mb-0.5">Languages &amp; Core</span>
+<span class="text-[#152e25] font-semibold">Python, Go, C++, SQL, Bash</span>
+</div>
+<div class="bg-[#edf3eb] p-3 rounded-xl border border-[#c5d6c7]">
+<span class="text-[#152e25] uppercase block text-[10px] font-semibold mb-0.5">ML &amp; Systems</span>
+<span class="text-[#152e25] font-bold">PyTorch, Ray, FastAPI, Docker, K8s</span>
+</div>
+<div class="bg-[#f9fbf9] p-3 rounded-xl border border-[#dce4da]">
+<span class="text-[#63766b] uppercase block text-[10px] font-semibold mb-0.5">Cloud &amp; Data Ops</span>
+<span class="text-[#152e25] font-semibold">AWS (SageMaker, EKS), Kafka, Redis</span>
+</div>
+</div>
+</div>
+<!-- Page Budget Meter & Verification Footer -->
+<div class="mt-6 pt-4 border-t border-[#e8eee7] bg-[#edf3eb]/60 p-4 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4">
+<div class="w-full md:w-1/2 flex items-center gap-3">
+<div class="flex-1">
+<div class="flex justify-between items-center text-xs uppercase mb-1.5">
+<span class="text-[#495a51] font-medium">Page Budget Meter</span>
+<span class="text-[#152e25] font-bold">92% • Safe 1-Page Margin</span>
+</div>
+<div class="w-full h-2 bg-[#d8e1d7] rounded-full overflow-hidden">
+<div class="h-full bg-[#152e25] rounded-full" style="width: 92%"></div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3 text-xs">
+<div class="flex items-center gap-1.5 text-[#152e25] font-medium">
+<svg class="w-4 h-4 text-[#2b5945]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+<span>Swvl Keywords: <strong class="text-[#152e25] font-bold">5/5 Matched (100%)</strong></span>
+</div>
+<button class="px-3.5 py-1.5 bg-[#ffffff] hover:bg-[#f5f7f4] text-[#3d4d44] hover:text-[#152e25] rounded-full uppercase tracking-wider text-[11px] border border-[#d2dcd0] transition-all shadow-sm font-medium">Inspect Raw TeX</button>
+</div>
+</div>
+</div>
+</section>
+<!-- RIGHT PANEL: Conversational AI Copilot & 5D Telemetry (approx 35% / 4 cols) -->
+<aside class="lg:col-span-4 flex flex-col gap-4 h-full overflow-y-auto pr-1"><div class="bg-white rounded-3xl p-5 border border-[#dce4da] shadow-sm text-[#19221d]"><div class="flex items-center justify-between pb-3 mb-3 bg-[#f9fbf9] p-3 rounded-2xl border border-[#dce4da]"><div class="flex items-center gap-2.5"><div class="w-8 h-8 rounded-full bg-[#dbe7dc] border border-[#c5d6c7] flex items-center justify-center"><svg class="w-4 h-4 text-[#152e25]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect height="12" rx="2" width="18" x="3" y="6"></rect><path d="M12 2v4m4 6h.01m-8 0h.01"></path></svg></div><div><h3 class="text-xs font-bold text-[#152e25] leading-tight">AI Copilot</h3><span class="text-[11px] text-[#2b5945] flex items-center gap-1.5 font-semibold"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Synced with Swvl Spec</span></div></div><button class="w-8 h-8 rounded-full flex items-center justify-center text-[#63766b] hover:text-[#152e25] hover:bg-[#edf3eb] transition-all"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></button></div><div class="space-y-3 mb-4 max-h-[380px] overflow-y-auto pr-1"><div class="bg-[#f9fbf9] p-3 rounded-2xl flex items-start gap-2.5 border border-[#dce4da]"><div class="w-6 h-6 rounded-full bg-[#dbe7dc] flex items-center justify-center shrink-0 mt-0.5 border border-[#c5d6c7]"><svg class="w-3.5 h-3.5 text-[#152e25]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"></circle><path d="M12 2v4m0 12v4M2 12h4m12 0h4"></path></svg></div><div class="space-y-1 text-xs"><p class="text-[#27352d] leading-snug">Injected FastAPI and dynamic pricing optimization, reducing dispatch latency to <strong class="text-[#152e25] font-bold">42%</strong>.</p></div></div><div class="pt-1"><div class="flex flex-wrap gap-1.5"><button class="copilot-chip px-3 py-1.5 bg-[#edf3eb] hover:bg-[#e2ebdf] text-[#27352d] hover:text-[#152e25] rounded-full border border-[#d2dcd0] text-xs font-semibold transition-all shadow-sm" type="button">+ Numbers</button><button class="copilot-chip px-3 py-1.5 bg-[#edf3eb] hover:bg-[#e2ebdf] text-[#27352d] hover:text-[#152e25] rounded-full border border-[#d2dcd0] text-xs font-semibold transition-all shadow-sm" type="button">+ AWS</button><button class="copilot-chip px-3 py-1.5 bg-[#edf3eb] hover:bg-[#e2ebdf] text-[#27352d] hover:text-[#152e25] rounded-full border border-[#d2dcd0] text-xs font-semibold transition-all shadow-sm" type="button">Condense 1-Page</button><button class="copilot-chip px-3 py-1.5 bg-[#edf3eb] hover:bg-[#e2ebdf] text-[#27352d] hover:text-[#152e25] rounded-full border border-[#d2dcd0] text-xs font-semibold transition-all shadow-sm" type="button">Audit Fit</button></div></div><div class="bg-[#f9fbf9] p-3.5 rounded-2xl border border-[#dce4da] space-y-2.5 mt-2" id="proposedUpdateCard"><div class="flex items-center justify-between text-xs"><span class="text-[#152e25] font-bold uppercase tracking-wider flex items-center gap-1.5"><svg class="w-3.5 h-3.5 text-[#2b5945]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>Proposed Diff</span><span class="text-[#5a6a61] text-[10px] bg-[#edf3eb] px-2 py-0.5 rounded-full border border-[#d2dcd0]">Experience #1</span></div><div class="text-xs space-y-1.5"><div class="p-2 bg-[#ffffff] rounded-xl text-[#78887e] line-through border border-[#dce4da]">Baseline: "Developed data pipelines for Swvl routes."</div><div class="p-2 bg-[#edf3eb] rounded-xl text-[#152e25] font-semibold border border-[#c8d8c9]">Tailored: "Engineered PyTorch pipeline cutting compute costs by 35% and query latency by 42%."</div></div><div class="flex items-center gap-2 pt-1"><button class="flex-1 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-[#060a08] text-xs uppercase tracking-wider font-bold rounded-full transition-all shadow-sm" id="acceptUpdateBtn">Accept &amp; Apply</button><button class="px-4 py-1.5 bg-[#ffffff] text-[#5a6a61] hover:text-[#152e25] hover:bg-[#edf3eb] text-xs uppercase tracking-wider rounded-full border border-[#d2dcd0] transition-all font-semibold" id="discardUpdateBtn">Discard</button></div></div></div><form class="relative mt-2" id="copilotForm" onsubmit="event.preventDefault();"><div class="flex items-center bg-[#f9fbf9] rounded-full p-1.5 border border-[#d2dcd0] shadow-sm focus-within:border-[#152e25] transition-all"><input class="w-full bg-transparent px-3.5 py-1 text-xs text-[#19221d] placeholder:text-[#84968b] focus:outline-none" id="copilotInput" placeholder="Ask copilot to tailor, rephrase or trim..." type="text"><button class="px-4 py-1.5 bg-emerald-500 text-[#060a08] hover:bg-emerald-400 rounded-full text-xs font-bold uppercase tracking-wider shrink-0 transition-all flex items-center gap-1.5 shadow-sm" id="copilotSendBtn" type="submit"><span>Send</span><svg class="w-3 h-3 stroke-current" fill="none" stroke-width="2.5" viewBox="0 0 24 24"><line x1="22" x2="11" y1="2" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button></div></form></div><div class="bg-white rounded-3xl p-5 border border-[#dce4da] shadow-sm text-[#19221d] space-y-3.5"><div class="flex items-center justify-between pb-1 border-b border-[#e8eee7]"><h4 class="text-xs uppercase tracking-wider text-[#152e25] font-bold">5D Fit Telemetry</h4><span class="text-xl font-bold text-[#2b5945]">94 / 100</span></div><div class="space-y-2.5 text-xs"><div><div class="flex justify-between text-[#495a51] mb-1 text-[11px]"><span class="font-medium">Semantic Similarity</span><span class="text-[#152e25] font-bold">96%</span></div><div class="w-full h-1.5 bg-[#edf3eb] rounded-full overflow-hidden border border-[#dce4da]"><div class="h-full bg-emerald-500 rounded-full" style="width: 96%"></div></div></div><div><div class="flex justify-between text-[#495a51] mb-1 text-[11px]"><span class="font-medium">Tech Overlap (PyTorch, Kafka, AWS)</span><span class="text-[#152e25] font-bold">92%</span></div><div class="w-full h-1.5 bg-[#edf3eb] rounded-full overflow-hidden border border-[#dce4da]"><div class="h-full bg-emerald-500 rounded-full" style="width: 92%"></div></div></div><div><div class="flex justify-between text-[#495a51] mb-1 text-[11px]"><span class="font-medium">Seniority Fit</span><span class="text-[#152e25] font-bold">100%</span></div><div class="w-full h-1.5 bg-[#edf3eb] rounded-full overflow-hidden border border-[#dce4da]"><div class="h-full bg-emerald-500 rounded-full" style="width: 100%"></div></div></div></div><div class="p-3 bg-[#f9fbf9] rounded-2xl text-xs text-[#27352d] flex items-center justify-between border border-[#dce4da]"><span class="font-medium">ATS Parser Preview:</span><span class="text-[#152e25] text-xs font-bold uppercase tracking-wider bg-[#dbe7dc] px-2.5 py-0.5 rounded-full border border-[#c5d6c7]">Pass Verified</span></div></div></aside>
+</div>
+</div>
+<!-- ========================================================================= -->
+<!-- Interactive Slide-Over Popover Drawers (Modal Architectures)             -->
+<!-- ========================================================================= -->
+<!-- DRAWER 1: Identity Configurator Drawer (Left/Overlay Slide-Over) -->
+<div class="fixed inset-0 z-50 pointer-events-none transition-opacity duration-300 opacity-0" id="identityDrawer">
+<!-- Backdrop Blur Scrim -->
+<div class="absolute inset-0 bg-[#152e25]/30 backdrop-blur-sm pointer-events-auto" id="identityBackdrop"></div>
+<!-- Drawer Panel Content -->
+<div class="absolute inset-y-0 left-0 max-w-md w-full bg-[#ffffff] shadow-2xl p-6 sm:p-8 flex flex-col justify-between pointer-events-auto transform -translate-x-full transition-transform duration-300 ease-out overflow-y-auto border-r border-[#dce4da] rounded-r-3xl" id="identityPanel">
+<div class="space-y-5">
+<div class="flex items-center justify-between pb-3 border-b border-[#e8eee7]">
+<div>
+<span class="text-xs text-[#2b5945] uppercase tracking-widest block font-bold">Formula Configurator</span>
+<h3 class="text-xl font-bold text-[#152e25]">Identity Capsule</h3>
+</div>
+<button class="w-8 h-8 flex items-center justify-center text-[#5a6a61] hover:text-[#152e25] hover:bg-[#edf3eb] rounded-full transition-all" id="closeIdentityDrawerBtn">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+</button>
+</div>
+<p class="text-xs sm:text-sm text-[#495a51] leading-relaxed">
+              Select or configure which professional identity persona and regional metadata to inject into the active canvas.
+            </p>
+<div class="space-y-2">
+<label class="text-xs uppercase tracking-wider text-[#5a6a61] font-semibold">Active Career Persona</label>
+<div class="grid grid-cols-1 gap-2.5">
+<button class="p-3.5 bg-[#edf3eb] hover:bg-[#e2ebdf] rounded-2xl text-left flex items-center justify-between group transition-all border border-[#c5d6c7]" type="button">
+<div>
+<span class="text-xs font-bold text-[#152e25] block">Staff / Lead AI Engineer</span>
+<span class="text-xs text-[#495a51]">Specialized in distributed inference &amp; pricing algorithms</span>
+</div>
+<span class="w-3 h-3 rounded-full bg-[#152e25] shrink-0"></span>
+</button>
+<button class="p-3.5 bg-[#ffffff] hover:bg-[#edf3eb] rounded-2xl text-left flex items-center justify-between group transition-all border border-[#dce4da]" type="button">
+<div>
+<span class="text-xs font-bold text-[#19221d] block">VP of Engineering / Director</span>
+<span class="text-xs text-[#63766b]">Focus on team scaling, P&amp;L, organizational architecture</span>
+</div>
+<span class="w-3 h-3 rounded-full bg-[#d8e1d7] shrink-0"></span>
+</button>
+<button class="p-3.5 bg-[#ffffff] hover:bg-[#edf3eb] rounded-2xl text-left flex items-center justify-between group transition-all border border-[#dce4da]" type="button">
+<div>
+<span class="text-xs font-bold text-[#19221d] block">Applied ML Researcher</span>
+<span class="text-xs text-[#63766b]">Focus on arXiv publications, foundation models, fine-tuning</span>
+</div>
+<span class="w-3 h-3 rounded-full bg-[#d8e1d7] shrink-0"></span>
+</button>
+</div>
+</div>
+<div class="space-y-2 pt-2">
+<label class="text-xs uppercase tracking-wider text-[#5a6a61] font-semibold">Dynamic Regional Phone &amp; Address</label>
+<div class="grid grid-cols-3 gap-2">
+<button class="p-2.5 bg-[#edf3eb] rounded-2xl text-center hover:bg-[#e2ebdf] transition-all border border-[#c5d6c7]" type="button">
+<span class="text-xs font-bold text-[#152e25] block">+20 (Egypt)</span>
+<span class="text-[10px] text-[#63766b]">Cairo HQ</span>
+</button>
+<button class="p-2.5 bg-[#ffffff] rounded-2xl text-center hover:bg-[#edf3eb] transition-all border border-[#dce4da]" type="button">
+<span class="text-xs font-medium text-[#19221d] block">+966 (KSA)</span>
+<span class="text-[10px] text-[#63766b]">Riyadh Flex</span>
+</button>
+<button class="p-2.5 bg-[#ffffff] rounded-2xl text-center hover:bg-[#edf3eb] transition-all border border-[#dce4da]" type="button">
+<span class="text-xs font-medium text-[#19221d] block">+971 (UAE)</span>
+<span class="text-[10px] text-[#63766b]">Dubai Hub</span>
+</button>
+</div>
+</div>
+<div class="bg-[#edf3eb] p-3.5 rounded-2xl space-y-2 border border-[#d8e1d7]">
+<span class="text-[11px] text-[#5a6a61] uppercase tracking-wider block font-semibold">Connected Verified Profiles</span>
+<div class="flex items-center justify-between text-xs text-[#19221d]">
+<span>LinkedIn: linkedin.com/in/mostafa-ai</span>
+<span class="text-[#152e25] text-xs font-bold bg-[#dbe7dc] px-2 py-0.5 rounded-full">SYNCED</span>
+</div>
+<div class="flex items-center justify-between text-xs text-[#19221d]">
+<span>GitHub: github.com/m-ibrahim</span>
+<span class="text-[#152e25] text-xs font-bold bg-[#dbe7dc] px-2 py-0.5 rounded-full">SYNCED</span>
+</div>
+</div>
+</div>
+<div class="pt-6 mt-4">
+<button class="w-full py-3 bg-[#152e25] hover:bg-[#1f4236] text-white rounded-full text-xs font-semibold uppercase tracking-wider transition-all shadow-sm" id="saveIdentityBtn">
+              Update Active Persona Capsule
+            </button>
+</div>
+</div>
+</div>
+<!-- DRAWER 2: List of Interest & Job Switcher Drawer (Right Slide-Over) -->
+<div class="fixed inset-0 z-50 pointer-events-none transition-opacity duration-300 opacity-0" id="jobDrawer">
+<!-- Backdrop Blur Scrim -->
+<div class="absolute inset-0 bg-[#152e25]/30 backdrop-blur-sm pointer-events-auto" id="jobBackdrop"></div>
+<!-- Drawer Panel Content -->
+<div class="absolute inset-y-0 right-0 max-w-lg w-full bg-[#ffffff] shadow-2xl p-6 sm:p-8 flex flex-col justify-between pointer-events-auto transform translate-x-full transition-transform duration-300 ease-out overflow-y-auto border-l border-[#dce4da] rounded-l-3xl" id="jobPanel">
+<div class="space-y-5">
+<div class="flex items-center justify-between pb-3 border-b border-[#e8eee7]">
+<div>
+<span class="text-xs text-[#2b5945] uppercase tracking-widest block font-bold">Radar Feed • Opportunity Library</span>
+<h3 class="text-xl font-bold text-[#152e25]">Target Job Capsule</h3>
+</div>
+<button class="w-8 h-8 flex items-center justify-center text-[#5a6a61] hover:text-[#152e25] hover:bg-[#edf3eb] rounded-full transition-all" id="closeJobDrawerBtn">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+</button>
+</div>
+<!-- Ingest Card -->
+<div class="bg-[#edf3eb] p-5 rounded-2xl border border-dashed border-[#a6bba8] hover:border-[#152e25] transition-all text-center cursor-pointer group">
+<svg class="w-7 h-7 mx-auto text-[#152e25] transition-transform" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m4-5 5-5 5 5m-5-5v12"></path></svg>
+<h4 class="font-bold text-sm text-[#152e25] mt-1.5">Ingest New Job Spec</h4>
+<p class="text-xs text-[#5a6a61] mt-0.5">Drop PDF, paste Job URL, or paste raw description text.</p>
+<div class="mt-3 flex justify-center gap-2">
+<span class="px-2.5 py-1 bg-[#ffffff] rounded-full text-[11px] text-[#495a51] border border-[#d2dcd0]">LinkedIn URL</span>
+<span class="px-2.5 py-1 bg-[#ffffff] rounded-full text-[11px] text-[#495a51] border border-[#d2dcd0]">Wuzzuf</span>
+<span class="px-2.5 py-1 bg-[#ffffff] rounded-full text-[11px] text-[#495a51] border border-[#d2dcd0]">Greenhouse</span>
+</div>
+</div>
+<div class="relative">
+<input class="w-full bg-[#ffffff] px-4 py-2 text-xs text-[#19221d] placeholder:text-[#84968b] rounded-full border border-[#d2dcd0] focus:outline-none focus:border-[#152e25]" placeholder="Filter from interest list (5 saved)..." type="text">
+<svg class="w-4 h-4 absolute right-3.5 top-2.5 text-[#63766b]" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" x2="16.65" y1="21"></line></svg>
+</div>
+<div class="space-y-3">
+<span class="text-xs uppercase tracking-wider text-[#5a6a61] block font-semibold">Saved Opportunities</span>
+<!-- Active Opportunity Card -->
+<div class="p-4 bg-[#edf3eb] rounded-2xl flex flex-col gap-2 border border-[#c5d6c7]">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-[#152e25]"></span>
+<h5 class="text-xs font-bold text-[#152e25]">Swvl Mobility</h5>
+</div>
+<span class="px-2.5 py-0.5 bg-[#152e25] text-white text-[10px] rounded-full font-semibold uppercase tracking-wider">94% Fit • ACTIVE</span>
+</div>
+<p class="text-xs text-[#3d4d44]">Lead Data Scientist • Cairo HQ • Dynamic pricing, routing heuristic optimization, PyTorch.</p>
+<div class="flex justify-end pt-1">
+<span class="text-[11px] text-[#152e25] uppercase font-bold tracking-wider">Synced with Canvas</span>
+</div>
+</div>
+<!-- Other Opportunity Card -->
+<div class="p-4 bg-[#f9fbf9] hover:bg-[#edf3eb] rounded-2xl flex flex-col gap-2 transition-all cursor-pointer group border border-[#dce4da]">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-[#d8e1d7]"></span>
+<h5 class="text-xs font-bold text-[#19221d]">Noon E-Commerce</h5>
+</div>
+<span class="px-2.5 py-0.5 bg-[#ffffff] text-[#495a51] text-[10px] rounded-full border border-[#d2dcd0] font-semibold">89% Fit</span>
+</div>
+<p class="text-xs text-[#63766b]">Staff ML Platform Architect • Riyadh • High concurrency recommendations, Ray, Kubernetes.</p>
+<div class="flex justify-end pt-1">
+<button class="px-3.5 py-1 bg-[#ffffff] group-hover:bg-[#152e25] group-hover:text-white text-[#19221d] text-xs uppercase tracking-wider rounded-full border border-[#d2dcd0] transition-all flex items-center gap-1.5 shadow-sm font-semibold">
+<span>Pair &amp; Tailor</span>
+</button>
+</div>
+</div>
+<!-- Other Opportunity Card -->
+<div class="p-4 bg-[#f9fbf9] hover:bg-[#edf3eb] rounded-2xl flex flex-col gap-2 transition-all cursor-pointer group border border-[#dce4da]">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-[#d8e1d7]"></span>
+<h5 class="text-xs font-bold text-[#19221d]">Vodafone Intelligent Solutions</h5>
+</div>
+<span class="px-2.5 py-0.5 bg-[#ffffff] text-[#495a51] text-[10px] rounded-full border border-[#d2dcd0] font-semibold">81% Fit</span>
+</div>
+<p class="text-xs text-[#63766b]">Principal Data Engineer • Cairo Smart Village • Kafka streams, 5G network telemetry analysis.</p>
+<div class="flex justify-end pt-1">
+<button class="px-3.5 py-1 bg-[#ffffff] group-hover:bg-[#152e25] group-hover:text-white text-[#19221d] text-xs uppercase tracking-wider rounded-full border border-[#d2dcd0] transition-all flex items-center gap-1.5 shadow-sm font-semibold">
+<span>Pair &amp; Tailor</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<div class="pt-6 mt-4">
+<button class="w-full py-3 bg-[#edf3eb] text-[#3d4d44] hover:text-[#152e25] hover:bg-[#e2ebdf] rounded-full text-xs font-semibold uppercase tracking-wider border border-[#d2dcd0] transition-all" id="closeJobDrawerSecondaryBtn">
+              Close Opportunity Drawer
+            </button>
+</div>
+</div>
+</div>
+<!-- MODAL: Detailed Match Analysis Modal -->
+<div class="fixed inset-0 z-50 pointer-events-none transition-opacity duration-300 opacity-0 flex items-center justify-center p-4" id="matchModal">
+<div class="absolute inset-0 bg-[#152e25]/40 backdrop-blur-sm pointer-events-auto" id="matchModalBackdrop"></div>
+<div class="relative bg-[#ffffff] max-w-lg w-full rounded-3xl p-6 sm:p-8 shadow-2xl pointer-events-auto transform scale-95 transition-transform duration-300 space-y-4 border border-[#dce4da]" id="matchModalPanel">
+<div class="flex items-center justify-between border-b border-[#e8eee7] pb-3">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-[#dbe7dc] flex items-center justify-center text-[#152e25]">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>
+</div>
+<h3 class="font-bold text-base text-[#152e25]">94% Fit Analysis Breakdown</h3>
+</div>
+<button class="w-8 h-8 flex items-center justify-center text-[#5a6a61] hover:text-[#152e25] rounded-full" id="closeMatchModalBtn">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+</button>
+</div>
+<p class="text-xs sm:text-sm text-[#495a51]">
+            Target: <strong class="text-[#152e25]">Swvl Mobility • Lead Data Scientist</strong>. This analysis scores canonical resume depth vs. job requirements.
+          </p>
+<div class="space-y-2 text-xs">
+<div class="p-3 bg-[#edf3eb] rounded-2xl flex items-center justify-between border border-[#d8e1d7]">
+<span class="text-[#152e25] font-medium">Dynamic Pricing Algorithms</span>
+<span class="text-[#152e25] font-bold bg-[#dbe7dc] px-2.5 py-0.5 rounded-full">100% INJECTED</span>
+</div>
+<div class="p-3 bg-[#edf3eb] rounded-2xl flex items-center justify-between border border-[#d8e1d7]">
+<span class="text-[#152e25] font-medium">PyTorch Microservices</span>
+<span class="text-[#152e25] font-bold bg-[#dbe7dc] px-2.5 py-0.5 rounded-full">100% INJECTED</span>
+</div>
+<div class="p-3 bg-[#edf3eb] rounded-2xl flex items-center justify-between border border-[#d8e1d7]">
+<span class="text-[#152e25] font-medium">Fleet Telemetry &amp; Routing</span>
+<span class="text-[#152e25] font-bold bg-[#dbe7dc] px-2.5 py-0.5 rounded-full">MATCHED</span>
+</div>
+<div class="p-3 bg-[#edf3eb] rounded-2xl flex items-center justify-between border border-[#d8e1d7]">
+<span class="text-[#152e25] font-medium">AWS Infrastructure Cost Optimization</span>
+<span class="text-[#152e25] font-bold bg-[#dbe7dc] px-2.5 py-0.5 rounded-full">MATCHED (SAVED $14K/MO)</span>
+</div>
+</div>
+<div class="pt-2">
+<button class="w-full py-3 bg-[#152e25] hover:bg-[#1f4236] text-white text-xs font-semibold uppercase tracking-wider rounded-full transition-all shadow-sm" id="closeMatchModalBtn2">
+              Return to Studio Workbench
+            </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Serene Footer -->
+<footer class="w-full bg-transparent py-2.5 border-t border-white/10 shrink-0"><div class="w-full max-w-7xl mx-auto px-4 sm:px-8 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-white/50"><div class="flex items-center gap-3 uppercase tracking-wider text-[11px]"><span>Atelier CV Studio</span><span class="w-1 h-1 rounded-full bg-white/20"></span><span>Strict Clearance</span></div><div class="uppercase tracking-wider text-[11px] text-white/40">© 2024 Tailored CV Studio. Monastic Computation.</div></div></footer>
+<!-- Inline Script for Interactive Micro-Interactions and Drawers -->
+<script>
+    (function initWorkbenchStudio() {
+      // Identity Drawer
+      const identityBtn = document.getElementById('identityToggleBtn');
+      const identityDrawer = document.getElementById('identityDrawer');
+      const identityBackdrop = document.getElementById('identityBackdrop');
+      const identityPanel = document.getElementById('identityPanel');
+      const closeIdentityDrawerBtn = document.getElementById('closeIdentityDrawerBtn');
+      const saveIdentityBtn = document.getElementById('saveIdentityBtn');
+
+      function openIdentityDrawer() {
+        identityDrawer.classList.remove('pointer-events-none', 'opacity-0');
+        identityDrawer.classList.add('opacity-100');
+        identityPanel.classList.remove('-translate-x-full');
+        identityPanel.classList.add('translate-x-0');
+      }
+
+      function closeIdentityDrawer() {
+        identityPanel.classList.remove('translate-x-0');
+        identityPanel.classList.add('-translate-x-full');
+        identityDrawer.classList.remove('opacity-100');
+        identityDrawer.classList.add('opacity-0', 'pointer-events-none');
+      }
+
+      if (identityBtn) identityBtn.addEventListener('click', openIdentityDrawer);
+      if (closeIdentityDrawerBtn) closeIdentityDrawerBtn.addEventListener('click', closeIdentityDrawer);
+      if (identityBackdrop) identityBackdrop.addEventListener('click', closeIdentityDrawer);
+      if (saveIdentityBtn) saveIdentityBtn.addEventListener('click', closeIdentityDrawer);
+
+      // Job Drawer
+      const jobBtn = document.getElementById('jobToggleBtn');
+      const swapTargetBtn = document.getElementById('swapTargetBtn');
+      const jobDrawer = document.getElementById('jobDrawer');
+      const jobBackdrop = document.getElementById('jobBackdrop');
+      const jobPanel = document.getElementById('jobPanel');
+      const closeJobDrawerBtn = document.getElementById('closeJobDrawerBtn');
+      const closeJobDrawerSecondaryBtn = document.getElementById('closeJobDrawerSecondaryBtn');
+
+      function openJobDrawer() {
+        jobDrawer.classList.remove('pointer-events-none', 'opacity-0');
+        jobDrawer.classList.add('opacity-100');
+        jobPanel.classList.remove('translate-x-full');
+        jobPanel.classList.add('translate-x-0');
+      }
+
+      function closeJobDrawer() {
+        jobPanel.classList.remove('translate-x-0');
+        jobPanel.classList.add('translate-x-full');
+        jobDrawer.classList.remove('opacity-100');
+        jobDrawer.classList.add('opacity-0', 'pointer-events-none');
+      }
+
+      if (jobBtn) jobBtn.addEventListener('click', openJobDrawer);
+      if (swapTargetBtn) swapTargetBtn.addEventListener('click', openJobDrawer);
+      if (closeJobDrawerBtn) closeJobDrawerBtn.addEventListener('click', closeJobDrawer);
+      if (closeJobDrawerSecondaryBtn) closeJobDrawerSecondaryBtn.addEventListener('click', closeJobDrawer);
+      if (jobBackdrop) jobBackdrop.addEventListener('click', closeJobDrawer);
+
+      // Match Breakdown Modal
+      const matchModalTrigger = document.getElementById('matchModalTrigger');
+      const matchModal = document.getElementById('matchModal');
+      const matchModalBackdrop = document.getElementById('matchModalBackdrop');
+      const matchModalPanel = document.getElementById('matchModalPanel');
+      const closeMatchModalBtn = document.getElementById('closeMatchModalBtn');
+      const closeMatchModalBtn2 = document.getElementById('closeMatchModalBtn2');
+
+      function openMatchModal() {
+        matchModal.classList.remove('pointer-events-none', 'opacity-0');
+        matchModal.classList.add('opacity-100');
+        matchModalPanel.classList.remove('scale-95');
+        matchModalPanel.classList.add('scale-100');
+      }
+
+      function closeMatchModal() {
+        matchModalPanel.classList.remove('scale-100');
+        matchModalPanel.classList.add('scale-95');
+        matchModal.classList.remove('opacity-100');
+        matchModal.classList.add('opacity-0', 'pointer-events-none');
+      }
+
+      if (matchModalTrigger) matchModalTrigger.addEventListener('click', openMatchModal);
+      if (closeMatchModalBtn) closeMatchModalBtn.addEventListener('click', closeMatchModal);
+      if (closeMatchModalBtn2) closeMatchModalBtn2.addEventListener('click', closeMatchModal);
+      if (matchModalBackdrop) matchModalBackdrop.addEventListener('click', closeMatchModal);
+
+      // View Mode Toggle Switches
+      const btnModeDiffs = document.getElementById('btnModeDiffs');
+      const btnModePdf = document.getElementById('btnModePdf');
+      const btnModeTex = document.getElementById('btnModeTex');
+      const modeButtons = [btnModeDiffs, btnModePdf, btnModeTex];
+
+      modeButtons.forEach(btn => {
+        if (!btn) return;
+        btn.addEventListener('click', () => {
+          modeButtons.forEach(b => {
+            b.classList.remove('bg-[#ffffff]', 'text-[#152e25]', 'shadow-sm');
+            b.classList.add('text-[#495a51]');
+          });
+          btn.classList.add('bg-[#ffffff]', 'text-[#152e25]', 'shadow-sm');
+          btn.classList.remove('text-[#495a51]');
+        });
+      });
+
+      // Quick Prompt Chips
+      const chips = document.querySelectorAll('.copilot-chip');
+      const copilotInput = document.getElementById('copilotInput');
+      chips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          if (copilotInput) {
+            copilotInput.value = chip.innerText.replace('✦', '').trim();
+            copilotInput.focus();
+          }
+        });
+      });
+
+      // Proposed Card Acceptance
+      const acceptBtn = document.getElementById('acceptUpdateBtn');
+      const discardBtn = document.getElementById('discardUpdateBtn');
+      const proposedCard = document.getElementById('proposedUpdateCard');
+
+      if (acceptBtn && proposedCard) {
+        acceptBtn.addEventListener('click', () => {
+          proposedCard.innerHTML = `
+            <div class="p-3 bg-[#dbe7dc] text-[#152e25] border border-[#c5d6c7] rounded-2xl flex items-center gap-2 text-xs font-bold">
+              <span class="material-symbols-outlined text-[18px]">done_all</span>
+              <span>Updated bullet synced directly into Live Canvas!</span>
+            </div>
+          `;
+        });
+      }
+
+      if (discardBtn && proposedCard) {
+        discardBtn.addEventListener('click', () => {
+          proposedCard.style.display = 'none';
+        });
+      }
+
+      // Re-tailor Button Click Micro-Feedback
+      const reTailorBtn = document.getElementById('reTailorBtn');
+      if (reTailorBtn) {
+        reTailorBtn.addEventListener('click', () => {
+          const originalText = reTailorBtn.innerHTML;
+          reTailorBtn.innerHTML = `
+            <svg class="w-3.5 h-3.5 stroke-current animate-spin" fill="none" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-opacity="0.25"></circle><path d="M12 2a10 10 0 0 1 10 10"></path></svg>
+            <span>Syncing Models...</span>
+          `;
+          setTimeout(() => {
+            reTailorBtn.innerHTML = originalText;
+          }, 800);
+        });
+      }
+    })();
+  </script>
+
+
+</body></html>

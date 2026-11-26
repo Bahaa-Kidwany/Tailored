@@ -1,0 +1,318 @@
+[
+  {
+    "source_id": "wuzzuf_rcqxngwvzmck",
+    "canonical_hash": "60fc8eadf1003a10c683b4d1cb6d22201c246ff72a17ce6b22224a97c87a8d08",
+    "raw_title": "Senior FullStack (Python) Engineer",
+    "company_name": "Vertex Technologies    ",
+    "url": "https://wuzzuf.net/jobs/p/rcqxngwvzmck-senior-fullstack-python-engineer-vertex-technologies-cairo-egypt",
+    "extracted_insights": {
+      "normalized_title": "Senior Fullstack Engineer",
+      "seniority_level": "Senior",
+      "employment_type": "Full-time",
+      "work_mode": "On-site",
+      "location": {
+        "city": "Cairo",
+        "country": "Egypt",
+        "is_relocation_offered": false,
+        "geography_restrictions": null
+      },
+      "experience_requirements": {
+        "minimum_years": 5,
+        "maximum_years": null,
+        "education_level": null
+      },
+      "skills_and_technologies": {
+        "mandatory_skills": [
+          "Python",
+          "JavaScript",
+          "TypeScript",
+          "REST services",
+          "FastAPI",
+          "DRF",
+          "Flask",
+          "React",
+          "Vue",
+          "Relational Databases",
+          "Query optimization",
+          "Indexing",
+          "Isolation levels",
+          "Locking",
+          "ORM performance",
+          "CI/CD pipelines",
+          "Docker",
+          "AWS",
+          "AWS Lambda",
+          "API Gateway",
+          "Step Functions",
+          "EventBridge",
+          "DynamoDB",
+          "SQS",
+          "SNS",
+          "ECS",
+          "EKS",
+          "RDS",
+          "S3",
+          "CloudWatch",
+          "IAM",
+          "System architecture design",
+          "Monoliths",
+          "Microservices",
+          "Service boundaries",
+          "Integration patterns",
+          "Event-driven architecture",
+          "Message brokers",
+          "RabbitMQ",
+          "Kafka",
+          "Data consistency",
+          "Observability",
+          "High-performance applications",
+          "Asynchronous processing",
+          "Caching",
+          "Testing strategy",
+          "Unit testing",
+          "Integration testing",
+          "E2E testing",
+          "Mentoring engineers",
+          "Code reviews",
+          "AI-assisted development",
+          "AI coding tools",
+          "LLM API integration",
+          "RAG",
+          "MCP",
+          "Agentic workflows"
+        ],
+        "nice_to_have_skills": [
+          "Business models",
+          "Product roadmaps",
+          "Strategic technical discussions",
+          "Kubernetes",
+          "IaC tools",
+          "AWS CDK",
+          "Terraform",
+          "CloudFormation",
+          "AI services on AWS",
+          "Amazon Bedrock",
+          "Bedrock AgentCore",
+          "SageMaker",
+          "GCP",
+          "Azure",
+          "Frontend architecture",
+          "Micro-frontends",
+          "Modular frontend systems",
+          "Rendering/loading performance profiling",
+          "Node.js",
+          "Go",
+          "Java"
+        ],
+        "soft_skills": [
+          "Upper-Intermediate English level",
+          "Strong communication skills",
+          "Ability to decompose requirements",
+          "Ability to estimate effort",
+          "Ability to identify dependencies and risks",
+          "Open-minded attitude"
+        ]
+      },
+      "core_responsibilities": [
+        "Designing the architecture of web applications and their components, defining data flows, dependencies, and communication between services.",
+        "Developing both backend and frontend parts of web applications with a focus on scalability and maintainability.",
+        "Decomposing project requirements into deliverable parts, estimating work, and planning development phases.",
+        "Reviewing code and effort estimates of team members, mentoring engineers, and supporting their professional growth.",
+        "Improving application performance, reducing technical debt, and driving refactoring initiatives.",
+        "Discussing technical solutions, trade-offs, and risks directly with clients."
+      ],
+      "compensation_and_benefits": {
+        "is_salary_disclosed": true,
+        "currency": "USD",
+        "min_salary": null,
+        "max_salary": null,
+        "benefits": [
+          "Long-term career stability",
+          "Competitive salary paid in USD",
+          "Conditions for steady career development",
+          "Development supported by dedicated mentors",
+          "Variety of programs focused on expertise and innovation",
+          "Private medical insurance",
+          "Well-equipped and cozy office",
+          "Welcoming atmosphere",
+          "Friendly corporate culture"
+        ]
+      },
+      "dealbreakers_and_flags": {
+        "is_unpaid": false,
+        "is_internship": false,
+        "requires_visa_sponsorship": false
+      }
+    }
+  },
+  {
+    "source_id": "wuzzuf_aydk9faexs8n",
+    "canonical_hash": "3e71462ae7fc81da5445274fc9b2085dbb898b327ed485baafb958af93890939",
+    "raw_title": "Middle FullStack (Python) Developer",
+    "company_name": "Vertex Technologies    ",
+    "url": "https://wuzzuf.net/jobs/p/aydk9faexs8n-middle-fullstack-python-developer-vertex-technologies-cairo-egypt",
+    "extracted_insights": {
+      "normalized_title": "Fullstack Python Developer",
+      "seniority_level": "Mid-Level",
+      "employment_type": "Full-time",
+      "work_mode": "On-site",
+      "location": {
+        "city": "Cairo",
+        "country": "Egypt",
+        "is_relocation_offered": false,
+        "geography_restrictions": null
+      },
+      "experience_requirements": {
+        "minimum_years": 3,
+        "maximum_years": null,
+        "education_level": null
+      },
+      "skills_and_technologies": {
+        "mandatory_skills": [
+          "Python",
+          "JavaScript",
+          "TypeScript",
+          "REST services",
+          "FastAPI",
+          "DRF",
+          "Flask",
+          "React",
+          "Vue",
+          "PostgreSQL",
+          "MySQL",
+          "Continuous Integration",
+          "Continuous Deployment",
+          "Docker",
+          "AWS",
+          "GCP",
+          "Azure"
+        ],
+        "nice_to_have_skills": [
+          "Agile development methodologies",
+          "Monolithic Architectures",
+          "Microservices Architectures",
+          "Kubernetes"
+        ],
+        "soft_skills": [
+          "Upper-Intermediate English level",
+          "Communication",
+          "Negotiation",
+          "Quick learning",
+          "Result-orientation"
+        ]
+      },
+      "core_responsibilities": [
+        "Development of interactive web systems and services",
+        "Following best practices of code writing using modern approaches and patterns",
+        "Creating both the frontend and backend components of web applications",
+        "Active collaboration with development teams to determine applications requirements and implementation"
+      ],
+      "compensation_and_benefits": {
+        "is_salary_disclosed": true,
+        "currency": "USD",
+        "min_salary": null,
+        "max_salary": null,
+        "benefits": [
+          "Long-term career stability",
+          "Conditions for steady career development",
+          "Development supported by dedicated mentors",
+          "Private medical insurance",
+          "Well-equipped and cozy office",
+          "Welcoming atmosphere and a friendly corporate culture"
+        ]
+      },
+      "dealbreakers_and_flags": {
+        "is_unpaid": false,
+        "is_internship": false,
+        "requires_visa_sponsorship": false
+      }
+    }
+  },
+  {
+    "source_id": "wuzzuf_7jkhc0bc9ozg",
+    "canonical_hash": "3780f72a4f5209a91d6faca23e5e4483eb3e89a37a9e223ba2e51cf1157fd896",
+    "raw_title": "Senior Python Developer",
+    "company_name": "Nile Bits, LLC  ",
+    "url": "https://wuzzuf.net/jobs/p/7jkhc0bc9ozg-senior-python-developer-nile-bits-llc-giza-egypt",
+    "extracted_insights": {
+      "normalized_title": "Senior Python Developer",
+      "seniority_level": "Senior",
+      "employment_type": "Full-time",
+      "work_mode": "On-site",
+      "location": {
+        "city": "6th of October",
+        "country": "Egypt",
+        "is_relocation_offered": false,
+        "geography_restrictions": null
+      },
+      "experience_requirements": {
+        "minimum_years": 5,
+        "maximum_years": null,
+        "education_level": null
+      },
+      "skills_and_technologies": {
+        "mandatory_skills": [
+          "Python",
+          "Django",
+          "Django ORM",
+          "MySQL",
+          "RESTful APIs",
+          "GraphQL",
+          "Celery",
+          "Git",
+          "Object-oriented programming",
+          "Software design patterns",
+          "Clean architecture",
+          "Distributed system design",
+          "Technical documentation",
+          "Software design specifications",
+          "Debugging",
+          "Troubleshooting",
+          "Performance optimization",
+          "Profiling tools",
+          "SQL execution plans",
+          "Application monitoring tools",
+          "New Relic",
+          "Claude Code",
+          "GitHub Copilot",
+          "Codex"
+        ],
+        "nice_to_have_skills": [
+          "Redis",
+          "Memcached",
+          "Elasticsearch",
+          "Cloud-native services",
+          "Highly scalable backend services",
+          "Agile/Scrum"
+        ],
+        "soft_skills": [
+          "Communication",
+          "Collaboration",
+          "Mentoring",
+          "Ability to work independently",
+          "Ownership",
+          "Prioritization"
+        ]
+      },
+      "core_responsibilities": [
+        "Design, develop, and implement new functionality for decoupled backend services.",
+        "Maintain, enhance, and refactor existing backend applications to improve scalability, reliability, and maintainability.",
+        "Analyze and optimize application performance, database queries, and overall system efficiency.",
+        "Take ownership of backend services throughout their lifecycle, including architecture, deployment, production support, monitoring, and continuous improvement.",
+        "Collaborate with engineers, product managers, and stakeholders to deliver high-quality software solutions."
+      ],
+      "compensation_and_benefits": {
+        "is_salary_disclosed": false,
+        "currency": null,
+        "min_salary": null,
+        "max_salary": null,
+        "benefits": []
+      },
+      "dealbreakers_and_flags": {
+        "is_unpaid": false,
+        "is_internship": false,
+        "requires_visa_sponsorship": false
+      }
+    }
+  }
+]

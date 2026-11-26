@@ -1,0 +1,130 @@
+[
+  {
+    "source_id": "wuzzuf_7jkhc0bc9ozg",
+    "canonical_hash": "3780f72a4f5209a91d6faca23e5e4483eb3e89a37a9e223ba2e51cf1157fd896",
+    "raw_title": "Senior Python Developer",
+    "company_name": "Nile Bits, LLC",
+    "url": "https://wuzzuf.net/jobs/p/7jkhc0bc9ozg-senior-python-developer-nile-bits-llc-giza-egypt",
+    "extracted_insights": {
+      "normalized_title": "Senior Python Developer",
+      "seniority_level": "Senior",
+      "employment_type": "Full-time",
+      "work_mode": "Hybrid",
+      "location": {
+        "city": "6th of October, Giza",
+        "country": "Egypt",
+        "is_relocation_offered": false,
+        "geography_restrictions": null
+      },
+      "experience_requirements": {
+        "minimum_years": 5,
+        "maximum_years": 8,
+        "education_level": "Bachelor's Degree in Computer Science or equivalent"
+      },
+      "skills_and_technologies": {
+        "mandatory_skills": [
+          "Python",
+          "Django",
+          "FastAPI",
+          "PostgreSQL",
+          "REST APIs"
+        ],
+        "nice_to_have_skills": [
+          "Docker",
+          "Redis",
+          "Celery",
+          "AWS"
+        ],
+        "soft_skills": [
+          "Code Reviews",
+          "System Architecture",
+          "Agile Collaboration"
+        ]
+      },
+      "core_responsibilities": [
+        "Design, build, and maintain efficient, reusable, and reliable Python backend code.",
+        "Integrate user-facing elements developed by frontend developers with server-side logic.",
+        "Implement robust security and data protection measures across distributed web services."
+      ],
+      "compensation_and_benefits": {
+        "is_salary_disclosed": false,
+        "currency": null,
+        "min_salary": null,
+        "max_salary": null,
+        "benefits": [
+          "Social & Medical Insurance",
+          "Flexible Working Hours",
+          "Hybrid Work Model"
+        ]
+      },
+      "dealbreakers_and_flags": {
+        "is_unpaid": false,
+        "is_internship": false,
+        "requires_visa_sponsorship": false
+      }
+    }
+  },
+  {
+    "source_id": "linkedin_4384675689",
+    "canonical_hash": "609853d0a59a9c9de88853acae45180c997761bf0e7ce0e17a28aa4a91bf27a8",
+    "raw_title": "Cashier",
+    "company_name": "The Home Depot",
+    "url": "https://www.linkedin.com/jobs/view/cashier-at-the-home-depot-4384675689",
+    "extracted_insights": {
+      "normalized_title": "Retail Cashier / Front End Associate",
+      "seniority_level": "Entry-Level",
+      "employment_type": "Full-time",
+      "work_mode": "On-site",
+      "location": {
+        "city": "Corona",
+        "country": "United States",
+        "is_relocation_offered": false,
+        "geography_restrictions": "In-person store attendance required"
+      },
+      "experience_requirements": {
+        "minimum_years": 1,
+        "maximum_years": 2,
+        "education_level": "High School Diploma or GED preferred"
+      },
+      "skills_and_technologies": {
+        "mandatory_skills": [
+          "Point of Sale (POS)",
+          "Cash Handling",
+          "Customer Service",
+          "Checkout Operations"
+        ],
+        "nice_to_have_skills": [
+          "Inventory Check",
+          "Return Processing",
+          "Tool Rental Basics"
+        ],
+        "soft_skills": [
+          "Friendly Communication",
+          "Patience",
+          "Attention to Detail"
+        ]
+      },
+      "core_responsibilities": [
+        "Process customer checkout and return transactions accurately at cash registers and self-checkout lanes.",
+        "Provide prompt, friendly customer service and assist with price checks.",
+        "Maintain clean, organized, and secure checkout stations in accordance with store shrinkage prevention policies."
+      ],
+      "compensation_and_benefits": {
+        "is_salary_disclosed": false,
+        "currency": null,
+        "min_salary": null,
+        "max_salary": null,
+        "benefits": [
+          "Health & Dental Coverage",
+          "Store Discounts",
+          "401(k) Match"
+        ]
+      },
+      "dealbreakers_and_flags": {
+        "is_unpaid": false,
+        "is_internship": false,
+        "requires_visa_sponsorship": false
+      }
+    }
+  }
+]

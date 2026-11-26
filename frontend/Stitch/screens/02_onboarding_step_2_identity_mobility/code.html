@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TAILORED — Personal Identity &amp; Mobility</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-lowest": "#ffffff",
+            "background": "#f8f9f7",
+            "charcoal-ink": "#18221d",
+            "charcoal-muted": "#5e6962",
+            "forest-primary": "#1b382b",
+            "forest-hover": "#13271e",
+            "sage-border": "#d8e0db",
+            "sage-surface": "#f4f7f4",
+            "sage-pill": "#e8efe9"
+          },
+          "borderRadius": {
+            "3xl": "2rem",
+            "4xl": "2.5rem"
+          },
+          "fontFamily": {
+            "sans": ["Plus Jakarta Sans", "sans-serif"]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 350, 'GRAD' 0, 'opsz' 20;
+    }
+  </style>
+</head>
+<body class="bg-[#f6f7f5] text-stone-900 min-h-screen flex flex-col justify-between antialiased selection:bg-[#1B382B] selection:text-white relative overflow-x-hidden font-sans">
+<!-- Ambient organic muted sage radial backdrop matching Create Account -->
+<div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+<div class="absolute -top-[18%] -left-[12%] w-[680px] h-[680px] rounded-full bg-[#dfe8e2]/65 blur-[120px]"></div>
+<div class="absolute top-[28%] -right-[15%] w-[620px] h-[620px] rounded-full bg-[#d7e4dc]/55 blur-[130px]"></div>
+<div class="absolute -bottom-[20%] left-[25%] w-[580px] h-[580px] rounded-full bg-[#e3ece6]/70 blur-[110px]"></div>
+<div class="absolute top-[45%] left-[8%] w-[380px] h-[380px] rounded-full bg-[#ccdcd2]/30 blur-[90px]"></div>
+</div>
+<!-- Header (Matching Create Account exactly) -->
+<header class="w-full border-b border-stone-200/60 bg-[#f6f7f5]/80 backdrop-blur-md px-6 md:px-12 py-4 flex items-center justify-between z-30 transition-colors">
+<div class="flex items-center">
+<span class="text-[17px] tracking-widest uppercase text-[#1B382B] font-semibold">TAILORED</span>
+</div>
+<a class="inline-flex items-center gap-1.5 text-stone-500 hover:text-stone-900 transition-colors text-sm rounded-full px-3 py-1 hover:bg-white/60" data-path="track-and-career-goal" href="#">
+<span>Save &amp; Exit</span>
+<span class="material-symbols-outlined text-[16px]">close</span>
+</a>
+</header>
+<!-- Main Plinth Card Section -->
+<main class="flex-grow flex items-center justify-center px-4 sm:px-6 md:px-8 py-8 md:py-12 z-10 relative">
+<div class="w-full max-w-2xl">
+<!-- Floating white card with exact rounded geometry & subtle hairline border -->
+<div class="bg-white rounded-[2.5rem] border border-stone-200/50 shadow-xl shadow-stone-200/30 p-7 sm:p-10 md:p-12 relative transition-all">
+<!-- Centered Header -->
+<div class="text-center mb-8">
+<h1 class="text-2xl sm:text-3xl font-bold text-stone-900 tracking-tight">Personal Identity &amp; Mobility</h1>
+<p class="text-stone-500 text-sm mt-1.5">Set your contact details and target locations.</p>
+</div>
+<form class="space-y-6" id="wizard-step-2" onsubmit="event.preventDefault();">
+<!-- Row 1: Full Name & Primary Email -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div>
+<label class="block text-xs font-semibold text-stone-700 uppercase tracking-wider mb-2">Full Legal Name</label>
+<input class="w-full px-4 py-3 rounded-2xl bg-[#f4f7f4] border border-stone-200/60 text-stone-900 text-sm placeholder:text-stone-400 focus:bg-white focus:border-[#1B382B] focus:ring-2 focus:ring-[#1B382B]/10 focus:outline-none transition-all" name="full_name" placeholder="e.g. Adrian Stone" required="" type="text" value="Adrian Stone"/>
+</div>
+<div>
+<label class="block text-xs font-semibold text-stone-700 uppercase tracking-wider mb-2">Primary Email</label>
+<input class="w-full px-4 py-3 rounded-2xl bg-[#f4f7f4] border border-stone-200/60 text-stone-900 text-sm placeholder:text-stone-400 focus:bg-white focus:border-[#1B382B] focus:ring-2 focus:ring-[#1B382B]/10 focus:outline-none transition-all" name="primary_email" placeholder="you@domain.com" required="" type="email" value="adrian.stone@vanguard.io"/>
+</div>
+</div>
+<!-- Regional Contact Numbers -->
+<div>
+<label class="block text-xs font-semibold text-stone-700 uppercase tracking-wider mb-2">Regional Contact Numbers</label>
+<div class="space-y-2.5" id="contact-list">
+<!-- Contact Item 1 -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3 rounded-2xl bg-[#f4f7f4] border border-stone-200/60">
+<div class="flex items-center gap-2.5 flex-1">
+<span class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-white rounded-xl text-xs font-medium text-stone-800 border border-stone-200/60 shadow-xs shrink-0">
+<span>🇪🇬</span> +20
+</span>
+<input class="bg-transparent text-sm text-stone-900 font-medium focus:outline-none flex-1 py-1" type="tel" value="100 248 9120"/>
+<span class="text-xs px-2.5 py-1 rounded-full bg-stone-100 text-stone-600 shrink-0">Egypt</span>
+</div>
+<div class="flex items-center justify-end gap-2 shrink-0">
+<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#1B382B] text-white text-xs font-medium shadow-xs">
+<span class="material-symbols-outlined text-[14px]">check</span> Primary
+</span>
+<button class="text-stone-400 hover:text-red-500 p-1 transition-colors" onclick="this.closest('.flex.flex-col').remove()" title="Remove" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</div>
+<!-- Contact Item 2 -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3 rounded-2xl bg-[#f4f7f4] border border-stone-200/60">
+<div class="flex items-center gap-2.5 flex-1">
+<span class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-white rounded-xl text-xs font-medium text-stone-800 border border-stone-200/60 shadow-xs shrink-0">
+<span>🇸🇦</span> +966
+</span>
+<input class="bg-transparent text-sm text-stone-900 font-medium focus:outline-none flex-1 py-1" type="tel" value="54 391 8820"/>
+<span class="text-xs px-2.5 py-1 rounded-full bg-stone-100 text-stone-600 shrink-0">Saudi</span>
+</div>
+<div class="flex items-center justify-end gap-2 shrink-0">
+<button class="inline-flex items-center px-3 py-1 rounded-full bg-white border border-stone-200 text-stone-600 hover:text-stone-900 hover:border-stone-400 text-xs font-medium transition-colors" onclick="makePrimary(this)" type="button">
+Make Primary
+</button>
+<button class="text-stone-400 hover:text-red-500 p-1 transition-colors" onclick="this.closest('.flex.flex-col').remove()" title="Remove" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Current Residence -->
+<div>
+<label class="block text-xs font-semibold text-stone-700 uppercase tracking-wider mb-2">Current Residence</label>
+<div class="grid grid-cols-2 gap-3">
+<input class="w-full px-4 py-3 rounded-2xl bg-[#f4f7f4] border border-stone-200/60 text-stone-900 text-sm placeholder:text-stone-400 focus:bg-white focus:border-[#1B382B] focus:ring-2 focus:ring-[#1B382B]/10 focus:outline-none transition-all" name="city" placeholder="City" required="" type="text" value="Cairo"/>
+<input class="w-full px-4 py-3 rounded-2xl bg-[#f4f7f4] border border-stone-200/60 text-stone-900 text-sm placeholder:text-stone-400 focus:bg-white focus:border-[#1B382B] focus:ring-2 focus:ring-[#1B382B]/10 focus:outline-none transition-all" name="country" placeholder="Country" required="" type="text" value="Egypt"/>
+</div>
+</div>
+<!-- Target Locations & Work Modes -->
+<div>
+<div class="flex items-center justify-between mb-2">
+<label class="block text-xs font-semibold text-stone-700 uppercase tracking-wider">Target Locations &amp; Modes</label>
+<span class="text-xs text-stone-400">Tailored per market</span>
+</div>
+<div class="space-y-2.5">
+<!-- Riyadh -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3 rounded-2xl bg-[#f4f7f4] border border-stone-200/60">
+<span class="text-sm font-medium text-stone-900 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-[#1B382B]">location_on</span>
+Riyadh, Saudi Arabia
+</span>
+<div class="flex items-center gap-1.5 flex-wrap">
+<button class="px-2.5 py-1 rounded-full text-xs font-medium bg-[#1B382B] text-white transition-colors" onclick="toggleMode(this)" type="button">Remote</button>
+<button class="px-2.5 py-1 rounded-full text-xs font-medium bg-[#1B382B] text-white transition-colors" onclick="toggleMode(this)" type="button">Hybrid</button>
+<button class="px-2.5 py-1 rounded-full text-xs font-medium bg-[#1B382B] text-white transition-colors" onclick="toggleMode(this)" type="button">On-site</button>
+</div>
+</div>
+<!-- Dubai -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3 rounded-2xl bg-[#f4f7f4] border border-stone-200/60">
+<span class="text-sm font-medium text-stone-900 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-[#1B382B]">location_on</span>
+Dubai, UAE
+</span>
+<div class="flex items-center gap-1.5 flex-wrap">
+<button class="px-2.5 py-1 rounded-full text-xs font-medium bg-[#1B382B] text-white transition-colors" onclick="toggleMode(this)" type="button">Remote</button>
+<button class="px-2.5 py-1 rounded-full text-xs font-medium bg-[#1B382B] text-white transition-colors" onclick="toggleMode(this)" type="button">Hybrid</button>
+<button class="px-2.5 py-1 rounded-full text-xs font-medium bg-white text-stone-600 border border-stone-200 transition-colors" onclick="toggleMode(this)" type="button">On-site</button>
+</div>
+</div>
+<!-- London -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3 rounded-2xl bg-[#f4f7f4] border border-stone-200/60">
+<span class="text-sm font-medium text-stone-900 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-[#1B382B]">location_on</span>
+London, UK
+</span>
+<div class="flex items-center gap-1.5 flex-wrap">
+<button class="px-2.5 py-1 rounded-full text-xs font-medium bg-[#1B382B] text-white transition-colors" onclick="toggleMode(this)" type="button">Remote</button>
+<button class="px-2.5 py-1 rounded-full text-xs font-medium bg-white text-stone-600 border border-stone-200 transition-colors" onclick="toggleMode(this)" type="button">Hybrid</button>
+<button class="px-2.5 py-1 rounded-full text-xs font-medium bg-white text-stone-600 border border-stone-200 transition-colors" onclick="toggleMode(this)" type="button">On-site</button>
+</div>
+</div>
+</div>
+<!-- Relocation Toggle -->
+<label class="mt-3 flex items-center gap-3 p-3 rounded-2xl bg-[#f4f7f4] border border-stone-200/60 cursor-pointer select-none">
+<input checked="" class="w-4 h-4 rounded text-[#1B382B] focus:ring-[#1B382B]/20" type="checkbox"/>
+<span class="text-xs sm:text-sm text-stone-700">Open to international relocation &amp; visa sponsorship</span>
+</label>
+</div>
+<!-- Professional Profiles -->
+<div>
+<label class="block text-xs font-semibold text-stone-700 uppercase tracking-wider mb-2">Profiles &amp; Repositories</label>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+<input class="w-full px-3.5 py-2.5 rounded-2xl bg-[#f4f7f4] border border-stone-200/60 text-stone-900 text-xs sm:text-sm placeholder:text-stone-400 focus:bg-white focus:border-[#1B382B] focus:outline-none transition-all" placeholder="LinkedIn handle" type="text" value="linkedin.com/in/adrianstone"/>
+<input class="w-full px-3.5 py-2.5 rounded-2xl bg-[#f4f7f4] border border-stone-200/60 text-stone-900 text-xs sm:text-sm placeholder:text-stone-400 focus:bg-white focus:border-[#1B382B] focus:outline-none transition-all" placeholder="GitHub username" type="text" value="github.com/adrianstone"/>
+<input class="w-full px-3.5 py-2.5 rounded-2xl bg-[#f4f7f4] border border-stone-200/60 text-stone-900 text-xs sm:text-sm placeholder:text-stone-400 focus:bg-white focus:border-[#1B382B] focus:outline-none transition-all" placeholder="Portfolio website" type="text" value="adrianstone.dev"/>
+</div>
+</div>
+<!-- Action CTA & Back Link -->
+<div class="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+<a class="text-xs sm:text-sm font-medium text-stone-500 hover:text-stone-900 transition-colors order-2 sm:order-1" data-path="track-and-career-goal" href="#">
+  ← Back
+</a>
+<button class="w-full sm:w-auto px-8 py-3.5 rounded-full bg-[#1B382B] hover:bg-[#13271e] text-white text-sm font-medium transition-all shadow-sm flex items-center justify-center gap-2 order-1 sm:order-2" type="submit">
+<span>Continue to Skills &amp; Tools</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</form>
+</div>
+</div>
+</main>
+<!-- Canonical Minimal Footer (matching Create Account exactly) -->
+<footer class="w-full border-t border-stone-200/60 bg-[#f6f7f5]/80 backdrop-blur-md px-6 md:px-12 py-4 flex flex-col md:flex-row justify-between items-center gap-2.5 z-30 transition-colors">
+<div class="text-[12px] text-stone-500">
+  © 2025 TAILORED Atelier Inc.
+</div>
+<div class="flex items-center gap-5 text-stone-500 text-[12px]">
+<a class="hover:text-[#1B382B] transition-colors" href="#">Privacy</a>
+<a class="hover:text-[#1B382B] transition-colors" href="#">Terms</a>
+<a class="hover:text-[#1B382B] transition-colors" href="#">Security</a>
+</div>
+</footer>
+<script>
+  function makePrimary(btn) {
+    const parentContainer = document.getElementById('contact-list');
+    parentContainer.querySelectorAll('.primary-btn, [data-primary="true"]').forEach(el => {
+      el.removeAttribute('data-primary');
+      el.outerHTML = `<button type="button" onclick="makePrimary(this)" class="inline-flex items-center px-3 py-1 rounded-full bg-white border border-stone-200 text-stone-600 hover:text-stone-900 hover:border-stone-400 text-xs font-medium transition-colors">Make Primary</button>`;
+    });
+    btn.outerHTML = `<span data-primary="true" class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#1B382B] text-white text-xs font-medium shadow-xs"><span class="material-symbols-outlined text-[14px]">check</span> Primary</span>`;
+  }
+
+  function toggleMode(btn) {
+    const active = btn.classList.contains('bg-[#1B382B]');
+    if (active) {
+      btn.classList.remove('bg-[#1B382B]', 'text-white');
+      btn.classList.add('bg-white', 'text-stone-600', 'border', 'border-stone-200');
+    } else {
+      btn.classList.add('bg-[#1B382B]', 'text-white');
+      btn.classList.remove('bg-white', 'text-stone-600', 'border', 'border-stone-200');
+    }
+  }
+</script>
+</body></html>

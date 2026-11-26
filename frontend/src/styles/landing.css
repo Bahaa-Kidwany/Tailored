@@ -1,0 +1,148 @@
+/* Landing Page — Atelier V2 Scroll Choreography & Showcase Primitives */
+
+.t-landing-reveal {
+  opacity: 0;
+  transform: translate3d(0, 34px, 0) scale(0.985);
+  transition:
+    opacity 0.72s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.72s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.t-landing-reveal.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+.t-landing-reveal-d1 {
+  transition-delay: 90ms;
+}
+
+.t-landing-reveal-d2 {
+  transition-delay: 180ms;
+}
+
+/* Solid Atelier V2 Nav Link — Sentence-Case IBM Plex Sans */
+.t-landing-nav-link {
+  background: transparent;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--chalk);
+  opacity: 0.82;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s ease, opacity 0.2s ease;
+}
+
+.t-landing-nav-link:hover {
+  background: var(--ink-elevated);
+  opacity: 1;
+}
+
+/* Borderless Detached Atelier Showcase Card */
+.t-showcase-card {
+  background: var(--ink);
+  border: none;
+  border-radius: 6px 26px 6px 6px;
+  box-shadow: 0 30px 70px -18px rgba(26, 20, 18, 0.32);
+  overflow: hidden;
+  transition:
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.t-showcase-card:hover {
+  transform: translate3d(0, -4px, 0);
+  box-shadow: 0 38px 84px -18px rgba(26, 20, 18, 0.4);
+}
+
+/* Borderless Tonal Comparison Card */
+.t-tonal-card {
+  background: #ffffff;
+  border: none;
+  border-radius: 6px 22px 6px 6px;
+  box-shadow: 0 14px 36px -14px rgba(26, 20, 18, 0.12);
+  padding: 26px 28px;
+}
+
+/* Neutral Eyebrow Dash (never red downward arrow) */
+.t-eyebrow-dash {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--n500);
+}
+
+.t-eyebrow-dash::before {
+  content: '';
+  display: inline-block;
+  width: 14px;
+  height: 2px;
+  background: var(--n500);
+}
+
+.t-eyebrow-dash--dark {
+  color: var(--chalk);
+  opacity: 0.78;
+}
+
+.t-eyebrow-dash--dark::before {
+  background: var(--kraft);
+}
+
+/* Semantic Signal Pill */
+.t-signal-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.t-signal-pill--pos {
+  background: rgba(30, 138, 90, 0.1);
+  color: var(--ink);
+}
+
+.t-signal-pill--pos-dark {
+  background: rgba(30, 138, 90, 0.18);
+  color: var(--chalk);
+}
+
+.t-signal-pill--neg {
+  background: rgba(233, 69, 63, 0.1);
+  color: var(--ink);
+}
+
+.t-signal-pill--neg-dark {
+  background: rgba(233, 69, 63, 0.16);
+  color: var(--chalk);
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .t-landing-reveal,
+  .t-landing-reveal.is-visible {
+    opacity: 1;
+    transform: none;
+    transition: none;
+    will-change: auto;
+  }
+
+  .t-showcase-card,
+  .t-showcase-card:hover {
+    transform: none;
+    transition: none;
+  }
+}

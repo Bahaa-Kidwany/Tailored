@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TAILORED — Sign In</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-lowest": "#ffffff",
+            "background": "#f8f9f7",
+            "alabaster-canvas": "#f6f7f4",
+            "charcoal-ink": "#18221d",
+            "charcoal-muted": "#5e6962",
+            "forest-primary": "#1b382b",
+            "forest-hover": "#244939",
+            "sage-border": "#d8e0db",
+            "sage-border-subtle": "#e6ede8",
+            "sage-surface": "#f1f5f2",
+            "sage-pill": "#e8efe9",
+            "sage-tint": "#2e4d40",
+            "stone-hairline": "#dce3dd",
+            "accent-green": "#2a5440"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.75rem",
+            "lg": "1.25rem",
+            "xl": "1.75rem",
+            "2xl": "2rem",
+            "3xl": "2.5rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "margin": "3rem",
+            "space-md": "1rem",
+            "space-xl": "2.5rem",
+            "gutter-mobile": "1rem",
+            "space-xs": "0.25rem",
+            "gutter": "1.5rem",
+            "space-sm": "0.5rem",
+            "space-lg": "1.75rem",
+            "margin-mobile": "1.25rem"
+          },
+          "fontFamily": {
+            "display-lg": ["Space Grotesk"],
+            "body-sm": ["Space Grotesk"],
+            "label-md": ["Space Grotesk"],
+            "body-md": ["Space Grotesk"],
+            "headline-sm": ["Space Grotesk"],
+            "headline-md": ["Space Grotesk"],
+            "headline-lg": ["Space Grotesk"],
+            "body-lg": ["Space Grotesk"],
+            "label-sm": ["Space Grotesk"]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 350, 'GRAD' 0, 'opsz' 20;
+    }
+  </style>
+</head>
+<body class="bg-[#f6f7f5] text-charcoal-ink font-body-md min-h-screen flex flex-col justify-between antialiased selection:bg-forest-primary selection:text-white relative overflow-x-hidden">
+<!-- Ambient organic muted sage/dark emerald gradient backdrop -->
+<div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+<div class="absolute -top-[18%] -left-[12%] w-[680px] h-[680px] rounded-full bg-[#dfe8e2]/65 blur-[120px]"></div>
+<div class="absolute top-[28%] -right-[15%] w-[620px] h-[620px] rounded-full bg-[#d7e4dc]/55 blur-[130px]"></div>
+<div class="absolute -bottom-[20%] left-[25%] w-[580px] h-[580px] rounded-full bg-[#e3ece6]/70 blur-[110px]"></div>
+<div class="absolute top-[45%] left-[8%] w-[380px] h-[380px] rounded-full bg-[#ccdcd2]/30 blur-[90px]"></div>
+</div>
+<!-- Header -->
+<header class="w-full border-b border-sage-border/60 bg-[#f6f7f5]/80 backdrop-blur-md px-margin-mobile md:px-margin py-space-md flex items-center justify-between z-30 transition-colors">
+<div class="flex items-center gap-space-sm">
+<span class="font-headline-sm text-[17px] tracking-widest uppercase text-forest-primary font-semibold">TAILORED</span>
+</div>
+<a class="inline-flex items-center gap-1.5 text-charcoal-muted hover:text-forest-primary transition-colors duration-150 font-label-md text-[13px] rounded-full px-3 py-1 hover:bg-white/60" href="#">
+<span>Return to Command Center</span>
+<span class="material-symbols-outlined text-[16px]">close</span>
+</a>
+</header>
+<!-- Main Authentication Plinth -->
+<main class="flex-grow flex items-center justify-center px-margin-mobile md:px-margin py-8 md:py-12 z-10 relative">
+<div class="w-full max-w-[460px]">
+<!-- Softened Plinth Card Structure -->
+<div class="bg-white/80 backdrop-blur-md border border-sage-border/80 p-7 md:p-9 rounded-3xl shadow-[0_12px_40px_-15px_rgba(27,56,43,0.07)] relative transition-all">
+<!-- Streamlined Header -->
+<div class="text-center mb-6">
+<h1 class="font-headline-lg text-2xl md:text-3xl text-charcoal-ink tracking-tight font-semibold" id="panel-title">Access Atelier</h1>
+</div>
+<!-- Pill Toggle (Sign In vs Create Account) -->
+<div class="p-1 rounded-full bg-sage-pill/80 border border-sage-border/60 flex items-center mb-6" role="tablist">
+<button aria-selected="true" class="w-1/2 py-2 text-center rounded-full font-label-md text-[13px] bg-white text-forest-primary font-medium shadow-sm transition-all duration-200" id="tab-signin" role="tab" type="button">
+          Sign In
+        </button>
+<button aria-selected="false" class="w-1/2 py-2 text-center rounded-full font-label-md text-[13px] text-charcoal-muted hover:text-forest-primary transition-all duration-200" id="tab-signup" role="tab" type="button">
+          Create Account
+        </button>
+</div>
+<!-- One-Click Social Auth Buttons -->
+<div class="space-y-3 mb-6">
+<!-- Google Auth -->
+<button class="w-full h-11 rounded-full border border-sage-border/80 bg-white/70 hover:bg-white hover:border-forest-primary/40 text-charcoal-ink font-body-md text-[14px] flex items-center justify-center gap-3 transition-all duration-150 shadow-sm" type="button">
+<svg class="w-4 h-4 fill-current text-charcoal-ink" viewbox="0 0 24 24">
+<path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"></path>
+</svg>
+<span>Continue with Google</span>
+</button>
+<!-- LinkedIn Auth -->
+<button class="w-full h-11 rounded-full border border-sage-border/80 bg-white/70 hover:bg-white hover:border-forest-primary/40 text-charcoal-ink font-body-md text-[14px] flex items-center justify-center gap-3 transition-all duration-150 shadow-sm" type="button">
+<svg class="w-4 h-4 fill-current text-charcoal-ink" viewbox="0 0 24 24">
+<path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"></path>
+</svg>
+<span>Continue with LinkedIn</span>
+</button>
+</div>
+<!-- Hairline Demarcation -->
+<div class="relative flex items-center justify-center mb-6">
+<div class="absolute inset-0 flex items-center">
+<div class="w-full border-t border-sage-border/70"></div>
+</div>
+<span class="relative px-3 bg-white/90 rounded-full font-label-sm text-[11px] uppercase tracking-wider text-charcoal-muted">or continue with credentials</span>
+</div>
+<!-- Credentials Form -->
+<form class="space-y-4" onsubmit="event.preventDefault();">
+<div>
+<label class="block font-label-md text-[13px] text-charcoal-ink mb-1.5 font-medium" for="identifier">Username or Corporate Email</label>
+<input autocomplete="username" class="w-full h-11 px-4 rounded-xl bg-sage-surface/60 border border-sage-border/90 text-charcoal-ink font-body-md text-[14px] placeholder:text-charcoal-muted/70 focus:bg-white focus:border-forest-primary focus:ring-2 focus:ring-forest-primary/15 focus:outline-none transition-all duration-150" id="identifier" name="identifier" placeholder="e.g. adrian.stone@vanguard.io" required="" type="text"/>
+</div>
+<div>
+<div class="flex items-center justify-between mb-1.5">
+<label class="block font-label-md text-[13px] text-charcoal-ink font-medium" for="password">Password</label>
+</div>
+<div class="relative">
+<input autocomplete="current-password" class="w-full h-11 pl-4 pr-11 rounded-xl bg-sage-surface/60 border border-sage-border/90 text-charcoal-ink font-body-md text-[14px] placeholder:text-charcoal-muted/70 focus:bg-white focus:border-forest-primary focus:ring-2 focus:ring-forest-primary/15 focus:outline-none transition-all duration-150" id="password" name="password" placeholder="••••••••••••" required="" type="password"/>
+<button aria-label="Toggle password visibility" class="absolute right-3 top-1/2 -translate-y-1/2 text-charcoal-muted hover:text-forest-primary transition-colors flex items-center justify-center p-1" id="toggle-password" type="button">
+<span class="material-symbols-outlined text-[18px]" id="password-icon">visibility</span>
+</button>
+</div>
+</div>
+<!-- Utility Options Row -->
+<div class="flex items-center justify-between pt-1">
+<label class="flex items-center gap-2 cursor-pointer select-none">
+<input class="w-4 h-4 rounded text-forest-primary bg-sage-surface border-sage-border focus:ring-forest-primary/30 focus:ring-offset-0 transition-colors" name="remember" type="checkbox"/>
+<span class="font-body-sm text-[13px] text-charcoal-muted">Remember session</span>
+</label>
+<a class="font-body-sm text-[13px] text-forest-primary hover:underline underline-offset-4 transition-colors" href="#">
+            Forgot password?
+          </a>
+</div>
+<!-- Primary Submit Button -->
+<button class="w-full h-12 rounded-full bg-forest-primary hover:bg-forest-hover text-white font-body-md text-[14px] font-medium flex items-center justify-center gap-2 transition-all duration-150 shadow-sm focus:outline-none focus:ring-2 focus:ring-forest-primary focus:ring-offset-2 mt-4" id="submit-button" type="submit">
+<span>Sign In to Tailored</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</form>
+<!-- Toggle Switch Alternative Trigger -->
+<div class="mt-6 text-center pt-4 border-t border-sage-border/60">
+<p class="font-body-sm text-[13px] text-charcoal-muted" id="alternate-action">
+          New to Tailored? 
+          <button class="font-medium text-forest-primary underline underline-offset-4 hover:text-forest-hover transition-colors ml-1" id="link-create-account" type="button">
+            Create an account
+          </button>
+</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Canonical Minimal Footer -->
+<footer class="w-full border-t border-sage-border/60 bg-[#f6f7f5]/80 backdrop-blur-md px-margin-mobile md:px-margin py-4 flex flex-col md:flex-row justify-between items-center gap-2.5 z-30 transition-colors">
+<div class="font-label-sm text-[12px] text-charcoal-muted">
+    © 2025 TAILORED Atelier Inc.
+  </div>
+<div class="flex items-center gap-5 text-charcoal-muted font-label-sm text-[12px]">
+<a class="hover:text-forest-primary transition-colors" href="#">Privacy</a>
+<a class="hover:text-forest-primary transition-colors" href="#">Terms</a>
+<a class="hover:text-forest-primary transition-colors" href="#">Security</a>
+</div>
+</footer>
+<!-- Interactive State Script -->
+<script>
+  const tabSignIn = document.getElementById('tab-signin');
+  const tabSignUp = document.getElementById('tab-signup');
+  const panelTitle = document.getElementById('panel-title');
+  const submitBtn = document.getElementById('submit-button');
+  const linkCreateAccount = document.getElementById('link-create-account');
+  const alternateContainer = document.getElementById('alternate-action');
+
+  function setAuthMode(isSignUp) {
+    if (isSignUp) {
+      tabSignUp.className = "w-1/2 py-2 text-center rounded-full font-label-md text-[13px] bg-white text-forest-primary font-medium shadow-sm transition-all duration-200";
+      tabSignUp.setAttribute('aria-selected', 'true');
+      tabSignIn.className = "w-1/2 py-2 text-center rounded-full font-label-md text-[13px] text-charcoal-muted hover:text-forest-primary transition-all duration-200";
+      tabSignIn.setAttribute('aria-selected', 'false');
+
+      panelTitle.innerText = "Create Account";
+      submitBtn.innerHTML = '<span>Create Account</span><span class="material-symbols-outlined text-[18px]">arrow_forward</span>';
+      alternateContainer.innerHTML = 'Already registered? <button id="link-signin-switch" type="button" class="font-medium text-forest-primary underline underline-offset-4 hover:text-forest-hover transition-colors ml-1">Sign in</button>';
+      
+      document.getElementById('link-signin-switch')?.addEventListener('click', () => setAuthMode(false));
+    } else {
+      tabSignIn.className = "w-1/2 py-2 text-center rounded-full font-label-md text-[13px] bg-white text-forest-primary font-medium shadow-sm transition-all duration-200";
+      tabSignIn.setAttribute('aria-selected', 'true');
+      tabSignUp.className = "w-1/2 py-2 text-center rounded-full font-label-md text-[13px] text-charcoal-muted hover:text-forest-primary transition-all duration-200";
+      tabSignUp.setAttribute('aria-selected', 'false');
+
+      panelTitle.innerText = "Access Atelier";
+      submitBtn.innerHTML = '<span>Sign In to Tailored</span><span class="material-symbols-outlined text-[18px]">arrow_forward</span>';
+      alternateContainer.innerHTML = 'New to Tailored? <button id="link-create-account" type="button" class="font-medium text-forest-primary underline underline-offset-4 hover:text-forest-hover transition-colors ml-1">Create an account</button>';
+      
+      document.getElementById('link-create-account')?.addEventListener('click', () => setAuthMode(true));
+    }
+  }
+
+  tabSignIn.addEventListener('click', () => setAuthMode(false));
+  tabSignUp.addEventListener('click', () => setAuthMode(true));
+  linkCreateAccount?.addEventListener('click', () => setAuthMode(true));
+
+  // Password visibility toggle
+  const togglePasswordBtn = document.getElementById('toggle-password');
+  const passwordInput = document.getElementById('password');
+  const passwordIcon = document.getElementById('password-icon');
+
+  togglePasswordBtn.addEventListener('click', () => {
+    const isPassword = passwordInput.getAttribute('type') === 'password';
+    passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+    passwordIcon.textContent = isPassword ? 'visibility_off' : 'visibility';
+  });
+</script>
+</body></html>
