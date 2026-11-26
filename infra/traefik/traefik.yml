@@ -1,0 +1,35 @@
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false
+
+api:
+  dashboard: true
+  insecure: true
+
+ping:
+  entryPoint: traefik
+
+entryPoints:
+  web:
+    address: ":80"
+  traefik:
+    address: ":8080"
+
+providers:
+  file:
+    directory: /etc/traefik/dynamic
+    watch: true
+
+accessLog:
+  format: json
+
+tracing:
+  otlp:
+    grpc:
+      endpoint: otel-collector:4317
+      insecure: true
+  sampleRate: 1.0
+
+metrics:
+  prometheus:
+    entryPoint: traefik

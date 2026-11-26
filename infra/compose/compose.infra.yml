@@ -1,0 +1,182 @@
+services:
+  traefik-gateway:
+    image: traefik:v3.2
+    container_name: tailored-traefik
+    restart: unless-stopped
+    profiles: ["infra"]
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - ../../infra/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ../../infra/traefik/dynamic:/etc/traefik/dynamic:ro
+      - traefik_certs:/letsencrypt
+    networks:
+      - edge_net
+      - internal_mesh
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: tailored-postgres
+    restart: unless-stopped
+    profiles: ["infra"]
+    environment:
+      POSTGRES_USER: ${POSTGRES_SUPERUSER:-tailored_admin}
+      POSTGRES_PASSWORD: ${POSTGRES_SUPERPASS:-tailored_dev_superpass}
+      POSTGRES_DB: postgres
+      AUTH_DB_PASSWORD: ${AUTH_DB_PASSWORD:-tailored_auth_pass}
+      PRIVACY_VAULT_DB_PASSWORD: ${PRIVACY_VAULT_DB_PASSWORD:-tailored_vault_pass}
+      PROFILE_DB_PASSWORD: ${PROFILE_DB_PASSWORD:-tailored_profile_pass}
+      JOBS_DB_PASSWORD: ${JOBS_DB_PASSWORD:-tailored_jobs_pass}
+      DOCUMENTS_DB_PASSWORD: ${DOCUMENTS_DB_PASSWORD:-tailored_docs_pass}
+      PIPELINE_DB_PASSWORD: ${PIPELINE_DB_PASSWORD:-tailored_pipeline_pass}
+      BILLING_DB_PASSWORD: ${BILLING_DB_PASSWORD:-tailored_billing_pass}
+      AI_AGENT_DB_PASSWORD: ${AI_AGENT_DB_PASSWORD:-tailored_ai_pass}
+      NOTIFICATIONS_DB_PASSWORD: ${NOTIFICATIONS_DB_PASSWORD:-tailored_notif_pass}
+      LANGFUSE_DB_PASSWORD: ${LANGFUSE_DB_PASSWORD:-tailored_langfuse_pass}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ../../infra/postgres/init:/docker-entrypoint-initdb.d:ro
+      - tailored_pgdata:/var/lib/postgresql/data
+    networks:
+      - data_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redpanda:
+    image: redpandadata/redpanda:v24.2.11
+    container_name: tailored-redpanda
+    restart: unless-stopped
+    profiles: ["infra"]
+    command:
+      - redpanda
+      - start
+      - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:19092
+      - --advertise-kafka-addr internal://redpanda:9092,external://localhost:19092
+      - --pandaproxy-addr internal://0.0.0.0:8082,external://0.0.0.0:18082
+      - --advertise-pandaproxy-addr internal://redpanda:8082,external://localhost:18082
+      - --schema-registry-addr internal://0.0.0.0:8081,external://0.0.0.0:18081
+      - --rpc-addr redpanda:33145
+      - --advertise-rpc-addr redpanda:33145
+      - --mode dev-container
+      - --smp 1
+      - --default-log-level=warn
+    ports:
+      - "19092:19092"
+      - "9644:9644"
+    volumes:
+      - redpanda_data:/var/lib/redpanda/data
+    networks:
+      - data_net
+      - internal_mesh
+    healthcheck:
+      test: ["CMD-SHELL", "rpk cluster health | grep -E 'Healthy:.+true'"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  redpanda-init:
+    image: redpandadata/redpanda:v24.2.11
+    container_name: tailored-redpanda-init
+    profiles: ["infra"]
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    environment:
+      REDPANDA_BROKERS: redpanda:9092
+    volumes:
+      - ../../infra/redpanda/init_topics.sh:/init/init_topics.sh:ro
+    entrypoint: ["/bin/bash", "/init/init_topics.sh"]
+    networks:
+      - data_net
+    restart: "no"
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.8-alpine
+    container_name: tailored-clickhouse
+    restart: unless-stopped
+    profiles: ["infra"]
+    environment:
+      CLICKHOUSE_USER: ${CLICKHOUSE_USER:-tailored_ch}
+      CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-tailored_ch_dev_pass}
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
+    ports:
+      - "8123:8123"
+      - "9008:9000"
+    volumes:
+      - ../../infra/clickhouse/init/01_init_schemas.sql:/docker-entrypoint-initdb.d/01_init_schemas.sql:ro
+      - clickhouse_data:/var/lib/clickhouse
+    networks:
+      - data_net
+    healthcheck:
+      test: ["CMD-SHELL", "clickhouse-client --user $${CLICKHOUSE_USER} --password $${CLICKHOUSE_PASSWORD} -q 'SELECT 1'"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  redis:
+    image: redis:7-alpine
+    container_name: tailored-redis
+    restart: unless-stopped
+    profiles: ["infra"]
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - data_net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  minio:
+    image: minio/minio:RELEASE.2024-10-13T13-34-11Z
+    container_name: tailored-minio
+    restart: unless-stopped
+    profiles: ["infra"]
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-tailored_minio}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-tailored_minio_dev_pass}
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - data_net
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  minio-init:
+    image: minio/mc:latest
+    container_name: tailored-minio-init
+    profiles: ["infra"]
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-tailored_minio}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-tailored_minio_dev_pass}
+    volumes:
+      - ../../infra/minio/init_buckets.sh:/init/init_buckets.sh:ro
+    entrypoint: ["/bin/sh", "/init/init_buckets.sh"]
+    networks:
+      - data_net
+    restart: "no"

@@ -1,0 +1,30 @@
+http:
+  middlewares:
+    sse-no-buffer:
+      headers:
+        customResponseHeaders:
+          X-Accel-Buffering: "no"
+          Cache-Control: "no-cache"
+
+  serversTransports:
+    sse-transport:
+      forwardingTimeouts:
+        responseHeaderTimeout: 0s
+
+  routers:
+    telemetry-public:
+      entryPoints:
+        - web
+      rule: "PathPrefix(`/api/v1/telemetry`)"
+      service: telemetry-audit-svc
+    phase0-probe:
+      entryPoints:
+        - web
+      rule: "PathPrefix(`/internal/phase0`) || PathPrefix(`/api/v1/admin/audit`)"
+      service: telemetry-audit-svc
+
+  services:
+    telemetry-audit-svc:
+      loadBalancer:
+        servers:
+          - url: "http://telemetry-audit-service:8009"
