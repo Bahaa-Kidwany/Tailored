@@ -27,6 +27,19 @@ services:
       OTEL_ENABLED: ${OTEL_ENABLED:-true}
       INTERNAL_HMAC_SECRET: ${INTERNAL_HMAC_SECRET:-dev_internal_hmac_secret_change_in_prod}
       AUDIT_ACTOR_SALT: ${AUDIT_ACTOR_SALT:-dev_audit_actor_salt_change_in_prod}
+      RSA_KEY_DIR: /data/auth_keys
+      ADMIN_BOOTSTRAP_EMAIL: ${ADMIN_BOOTSTRAP_EMAIL:-admin@tailored.test}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-noreply@tailored.app}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      LINKEDIN_CLIENT_ID: ${LINKEDIN_CLIENT_ID:-}
+      LINKEDIN_CLIENT_SECRET: ${LINKEDIN_CLIENT_SECRET:-}
+    volumes:
+      - auth_keys_data:/data/auth_keys
     ports:
       - "8001:8001"
     networks:
@@ -305,6 +318,7 @@ services:
       SERVICE_NAME: telemetry-audit-service
       ENVIRONMENT: ${ENVIRONMENT:-development}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      AUTH_SERVICE_URL: http://auth-service:8001
       REDPANDA_BROKERS: ${REDPANDA_BROKERS:-redpanda:9092}
       REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
       CLICKHOUSE_HOST: ${CLICKHOUSE_HOST:-clickhouse}

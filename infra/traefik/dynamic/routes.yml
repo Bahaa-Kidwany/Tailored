@@ -6,6 +6,22 @@ http:
           X-Accel-Buffering: "no"
           Cache-Control: "no-cache"
 
+    security-headers:
+      headers:
+        contentTypeNosniff: true
+        frameDeny: true
+        referrerPolicy: "strict-origin-when-cross-origin"
+
+    rate-limit-auth:
+      rateLimit:
+        average: 50
+        burst: 100
+
+    rate-limit-telemetry:
+      rateLimit:
+        average: 150
+        burst: 300
+
     auth-forward:
       forwardAuth:
         address: "http://auth-service:8001/internal/verify"
@@ -24,17 +40,25 @@ http:
         responseHeaderTimeout: 0s
 
   routers:
+    auth-admin-protected:
+      entryPoints: [web]
+      priority: 110
+      rule: "PathPrefix(`/api/v1/admin/flags`)"
+      middlewares: [auth-forward, security-headers]
+      service: auth-svc
+
     auth-public:
       entryPoints: [web]
       priority: 100
-      rule: "PathPrefix(`/api/v1/auth/register`) || PathPrefix(`/api/v1/auth/login`) || PathPrefix(`/api/v1/auth/refresh`) || PathPrefix(`/api/v1/auth/verify-email`) || PathPrefix(`/api/v1/auth/otp`) || PathPrefix(`/api/v1/auth/forgot-password`) || PathPrefix(`/api/v1/auth/reset-password`) || PathPrefix(`/api/v1/auth/oauth`) || PathPrefix(`/.well-known/jwks.json`) || PathPrefix(`/api/v1/flags`) || PathPrefix(`/api/v1/admin/flags`)"
+      rule: "PathPrefix(`/api/v1/auth/register`) || PathPrefix(`/api/v1/auth/login`) || PathPrefix(`/api/v1/auth/refresh`) || PathPrefix(`/api/v1/auth/verify-email`) || PathPrefix(`/api/v1/auth/otp`) || PathPrefix(`/api/v1/auth/forgot-password`) || PathPrefix(`/api/v1/auth/reset-password`) || PathPrefix(`/api/v1/auth/oauth`) || PathPrefix(`/.well-known/jwks.json`) || PathPrefix(`/api/v1/flags`)"
+      middlewares: [rate-limit-auth, security-headers]
       service: auth-svc
 
     auth-protected:
       entryPoints: [web]
       priority: 50
       rule: "PathPrefix(`/api/v1/auth/logout`) || PathPrefix(`/api/v1/account`)"
-      middlewares: [auth-forward]
+      middlewares: [auth-forward, security-headers]
       service: auth-svc
 
     profile-public-parse:
@@ -121,12 +145,21 @@ http:
       entryPoints: [web]
       priority: 80
       rule: "PathPrefix(`/api/v1/telemetry`)"
+      middlewares: [rate-limit-telemetry, security-headers]
+      service: telemetry-audit-svc
+
+    audit-admin-protected:
+      entryPoints: [web]
+      priority: 110
+      rule: "PathPrefix(`/api/v1/admin/audit`)"
+      middlewares: [auth-forward, security-headers]
       service: telemetry-audit-svc
 
     phase0-probe:
       entryPoints: [web]
       priority: 80
-      rule: "PathPrefix(`/internal/phase0`) || PathPrefix(`/api/v1/admin/audit`)"
+      rule: "PathPrefix(`/internal/phase0`)"
+      middlewares: [security-headers]
       service: telemetry-audit-svc
 
   services:

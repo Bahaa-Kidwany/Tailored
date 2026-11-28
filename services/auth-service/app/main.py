@@ -1,15 +1,19 @@
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import json
 import logging
 import os
 import secrets
+import smtplib
 from contextlib import asynccontextmanager
 from datetime import datetime, timedelta, timezone
+from email.message import EmailMessage
 from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
+import httpx
 import pyotp
 import redis.asyncio as aioredis
 from fastapi import Depends, FastAPI, HTTPException, Query, Request, Response, status
@@ -33,6 +37,7 @@ from tailored_kit import (
     UnauthorizedError,
     audit_feature,
     create_service_app,
+    require_admin,
     require_user,
 )
 from tailored_kit.auth.jwks_client import sign_identity_headers
@@ -70,12 +75,48 @@ class AuthSettings(ServiceSettings):
         "postgresql+psycopg://privacy_vault_svc:tailored_vault_pass@postgres:5432/privacy_vault_db"
     )
     documents_service_url: str = "http://documents-service:8004"
-    rsa_key_dir: str = "/tmp/tailored_auth_keys"
+    rsa_key_dir: str = "/data/auth_keys"
     access_token_ttl_minutes: int = 15
     refresh_token_ttl_days: int = 30
+    admin_bootstrap_email: str = ""
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_pass: str = ""
+    smtp_from: str = "noreply@tailored.app"
+    google_client_id: str = ""
+    google_client_secret: str = ""
+    linkedin_client_id: str = ""
+    linkedin_client_secret: str = ""
+    oauth_redirect_base_url: str = "http://localhost"
 
 
 settings = AuthSettings()
+
+
+def _send_email_sync(to_email: str, subject: str, body: str) -> None:
+    if not settings.smtp_host:
+        logger.debug("SMTP_HOST unset; skipping email delivery to %s (%s)", to_email, subject)
+        return
+    msg = EmailMessage()
+    msg["From"] = settings.smtp_from
+    msg["To"] = to_email
+    msg["Subject"] = subject
+    msg.set_content(body)
+    try:
+        with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=10) as smtp:
+            smtp.ehlo()
+            if settings.smtp_port in (587, 2525):
+                smtp.starttls()
+            if settings.smtp_user and settings.smtp_pass:
+                smtp.login(settings.smtp_user, settings.smtp_pass)
+            smtp.send_message(msg)
+    except Exception as exc:
+        logger.warning("SMTP email delivery failed for %s: %s", to_email, exc)
+
+
+async def _send_email_async(to_email: str, subject: str, body: str) -> None:
+    await asyncio.to_thread(_send_email_sync, to_email, subject, body)
 
 auth_engine = create_engine(settings.database_url, pool_pre_ping=True)
 vault_engine = create_engine(settings.privacy_vault_database_url, pool_pre_ping=True)
@@ -259,9 +300,11 @@ class ResetPasswordRequest(BaseModel):
 
 
 class OAuthCallbackRequest(BaseModel):
-    provider_user_id: str
-    email: str
+    provider_user_id: Optional[str] = None
+    email: Optional[str] = None
     full_name: str = ""
+    code: Optional[str] = None
+    redirect_uri: Optional[str] = None
     device_label: Optional[str] = "OAuth Web"
 
 
@@ -449,11 +492,17 @@ async def register(payload: RegisterRequest, request: Request) -> Dict[str, Any]
         if existing:
             raise ConflictError("An account with this email already exists.")
 
+        assigned_role = (
+            "admin"
+            if settings.admin_bootstrap_email and email == settings.admin_bootstrap_email.lower().strip()
+            else "user"
+        )
         user = UserDB(
             email=email,
             full_name=payload.full_name.strip() or email.split("@")[0],
             password_hash=hash_password(payload.password),
             email_verified=False,
+            role=assigned_role,
         )
         session.add(user)
         session.flush()
@@ -493,6 +542,11 @@ async def register(payload: RegisterRequest, request: Request) -> Dict[str, Any]
         session.commit()
 
     await _cache_user_privacy_and_anon(request.app.state.redis, uid, anon_id, consent_dict)
+    await _send_email_async(
+        email,
+        "Verify your Tailored account",
+        f"Your 6-digit verification code is: {otp_code}\n\nExpires in 15 minutes.",
+    )
     if settings.environment == "development":
         tokens["dev_otp"] = otp_code
     return tokens
@@ -667,6 +721,7 @@ async def resend_otp(payload: ResendOtpRequest) -> Dict[str, Any]:
             return {"sent": True}
         code = _create_otp(session, user.id, email, payload.purpose)
         session.commit()
+    await _send_email_async(email, "Your Tailored verification code", f"Code: {code}")
     resp: Dict[str, Any] = {"sent": True}
     if settings.environment == "development":
         resp["dev_otp"] = code
@@ -682,6 +737,8 @@ async def forgot_password(payload: ForgotPasswordRequest) -> Dict[str, Any]:
         if user:
             dev_code = _create_otp(session, user.id, email, "reset_pw")
             session.commit()
+    if dev_code:
+        await _send_email_async(email, "Reset your Tailored password", f"Reset code: {dev_code}")
     resp: Dict[str, Any] = {"sent": True}
     if settings.environment == "development" and dev_code:
         resp["dev_otp"] = dev_code
@@ -748,12 +805,66 @@ async def oauth_callback(
 ) -> Dict[str, Any]:
     if provider not in ("google", "linkedin"):
         raise HTTPException(status_code=400, detail="Unsupported OAuth provider")
-    email = payload.email.lower().strip()
+
+    provider_uid = payload.provider_user_id or ""
+    raw_email = payload.email or ""
+    full_name = payload.full_name or ""
+
+    if payload.code:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            if provider == "google" and settings.google_client_id and settings.google_client_secret:
+                tok_r = await client.post(
+                    "https://oauth2.googleapis.com/token",
+                    data={
+                        "code": payload.code,
+                        "client_id": settings.google_client_id,
+                        "client_secret": settings.google_client_secret,
+                        "redirect_uri": payload.redirect_uri or f"{settings.oauth_redirect_base_url}/auth/oauth/google/callback",
+                        "grant_type": "authorization_code",
+                    },
+                )
+                tok_r.raise_for_status()
+                access_tok = tok_r.json()["access_token"]
+                prof_r = await client.get(
+                    "https://www.googleapis.com/oauth2/v3/userinfo",
+                    headers={"Authorization": f"Bearer {access_tok}"},
+                )
+                prof_r.raise_for_status()
+                info = prof_r.json()
+                provider_uid = str(info.get("sub") or provider_uid)
+                raw_email = str(info.get("email") or raw_email)
+                full_name = str(info.get("name") or full_name)
+            elif provider == "linkedin" and settings.linkedin_client_id and settings.linkedin_client_secret:
+                tok_r = await client.post(
+                    "https://www.linkedin.com/oauth/v2/accessToken",
+                    data={
+                        "grant_type": "authorization_code",
+                        "code": payload.code,
+                        "redirect_uri": payload.redirect_uri or f"{settings.oauth_redirect_base_url}/auth/oauth/linkedin/callback",
+                        "client_id": settings.linkedin_client_id,
+                        "client_secret": settings.linkedin_client_secret,
+                    },
+                )
+                tok_r.raise_for_status()
+                access_tok = tok_r.json()["access_token"]
+                prof_r = await client.get(
+                    "https://api.linkedin.com/v2/userinfo",
+                    headers={"Authorization": f"Bearer {access_tok}"},
+                )
+                prof_r.raise_for_status()
+                info = prof_r.json()
+                provider_uid = str(info.get("sub") or provider_uid)
+                raw_email = str(info.get("email") or raw_email)
+                full_name = str(info.get("name") or full_name)
+
+    if not provider_uid or not raw_email:
+        raise UnauthorizedError("OAuth identity payload missing verified subject or email.")
+    email = raw_email.lower().strip()
     with Session(auth_engine) as session:
         oauth_row = session.exec(
             select(OAuthIdentityDB).where(
                 OAuthIdentityDB.provider == provider,
-                OAuthIdentityDB.provider_user_id == payload.provider_user_id,
+                OAuthIdentityDB.provider_user_id == provider_uid,
             )
         ).first()
         newly_verified = False
@@ -764,7 +875,7 @@ async def oauth_callback(
             if not user:
                 user = UserDB(
                     email=email,
-                    full_name=payload.full_name.strip() or email.split("@")[0],
+                    full_name=full_name.strip() or email.split("@")[0],
                     password_hash=None,
                     email_verified=True,
                 )
@@ -777,7 +888,7 @@ async def oauth_callback(
                 OAuthIdentityDB(
                     user_id=user.id,
                     provider=provider,
-                    provider_user_id=payload.provider_user_id,
+                    provider_user_id=provider_uid,
                     provider_email=email,
                 )
             )
@@ -1112,7 +1223,10 @@ async def list_flags(request: Request) -> Dict[str, Any]:
 
 @app.put("/api/v1/admin/flags/{key}")
 async def upsert_flag(
-    key: str, payload: FeatureFlagPutRequest, request: Request
+    key: str,
+    payload: FeatureFlagPutRequest,
+    request: Request,
+    _: RequestContext = Depends(require_admin),
 ) -> Dict[str, Any]:
     with Session(auth_engine) as session:
         row = session.get(FeatureFlagDB, key)

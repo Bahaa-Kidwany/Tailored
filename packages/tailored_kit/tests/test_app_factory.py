@@ -3,7 +3,7 @@ from fastapi.testclient import TestClient
 
 from tailored_kit.app_factory import create_service_app
 from tailored_kit.auth.context import RequestContext
-from tailored_kit.auth.dependencies import require_internal_service, require_user
+from tailored_kit.auth.dependencies import require_admin, require_internal_service, require_user
 from tailored_kit.auth.jwks_client import sign_identity_headers
 from tailored_kit.config import ServiceSettings
 from tailored_kit.errors import InsufficientCreditsError
@@ -25,6 +25,10 @@ def test_app_factory_health_and_rfc7807_and_hmac_auth():
     @app.get("/internal-ping")
     async def internal_ping(ctx: RequestContext = Depends(require_internal_service)):
         return {"internal": ctx.is_internal}
+
+    @app.get("/admin-only")
+    async def admin_only(ctx: RequestContext = Depends(require_admin)):
+        return {"role": ctx.role}
 
     @app.get("/no-credits")
     async def no_credits():
@@ -62,3 +66,19 @@ def test_app_factory_health_and_rfc7807_and_hmac_auth():
     assert body["error_code"] == "INSUFFICIENT_CREDITS"
     assert body["feature_key"] == "studio.cv.tailor"
     assert body["metadata"]["required_credits"] == 1
+
+    # Admin RBAC check: regular user blocked with 403, admin user & internal HMAC allowed
+    assert client.get("/admin-only").status_code == 401
+    assert client.get("/admin-only", headers=headers).status_code == 403
+    admin_headers = sign_identity_headers(
+        secret="unit-test-secret",
+        user_id="admin-001",
+        role="admin",
+    )
+    assert client.get("/admin-only", headers=admin_headers).status_code == 200
+    assert client.get("/admin-only", headers=internal_headers).status_code == 200
+
+    # Prometheus /metrics endpoint active
+    m_resp = client.get("/metrics")
+    assert m_resp.status_code == 200
+    assert "tailored_http_requests_total" in m_resp.text

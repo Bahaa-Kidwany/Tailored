@@ -9,8 +9,7 @@ from typing import Any, Dict, List, Optional
 from uuid import UUID, uuid4
 
 import clickhouse_connect
-import httpx
-from fastapi import FastAPI, Request, status
+from fastapi import Depends, FastAPI, Request, status
 from pydantic import BaseModel, Field
 
 from tailored_kit import (
@@ -18,10 +17,13 @@ from tailored_kit import (
     EventEnvelope,
     RedpandaConsumer,
     RedpandaProducer,
+    RequestContext,
     ServiceSettings,
     audit_feature,
     create_service_app,
+    require_admin,
 )
+from tailored_kit.auth.jwks_client import JWKSClient
 from tailored_kit.feature_context import get_current_feature_key
 from tailored_kit.telemetry_otel.setup import get_current_trace_context
 
@@ -100,107 +102,173 @@ def _get_ch_client():
     )
 
 
-def _insert_audit_row(envelope: EventEnvelope) -> None:
+def _to_audit_row(envelope: EventEnvelope) -> List[Any]:
     p = envelope.payload
-    client = _get_ch_client()
-    try:
-        client.insert(
-            table="tailored_audit.feature_audit_logs",
-            data=[[
-                _parse_uuid(envelope.event_id, uuid4()),
-                envelope.occurred_at.astimezone(timezone.utc).replace(tzinfo=None),
-                _fixed(envelope.trace_id, 32),
-                _fixed(envelope.span_id, 16),
-                p.get("feature_key") or envelope.feature_key or "unknown",
-                p.get("service_name") or envelope.producer_service,
-                p.get("action") or "execute",
-                p.get("outcome") or "success",
-                _fixed(p.get("actor_user_id_hash"), 64),
-                p.get("resource_type") or "generic",
-                str(p.get("resource_id") or ""),
-                _fixed(p.get("before_hash"), 64),
-                _fixed(p.get("after_hash"), 64),
-                str(p.get("diff_summary") or "{}"),
-                int(p.get("credit_delta") or 0),
-                int(p.get("duration_ms") or 0),
-                str(p.get("active_flags_json") or "{}"),
-                str(p.get("error_code") or ""),
-            ]],
-            column_names=[
-                "audit_id",
-                "occurred_at",
-                "trace_id",
-                "span_id",
-                "feature_key",
-                "service_name",
-                "action",
-                "outcome",
-                "actor_user_id_hash",
-                "resource_type",
-                "resource_id",
-                "before_hash",
-                "after_hash",
-                "diff_summary",
-                "credit_delta",
-                "duration_ms",
-                "active_flags_json",
-                "error_code",
-            ],
-        )
-    finally:
-        client.close()
+    return [
+        _parse_uuid(envelope.event_id, uuid4()),
+        envelope.occurred_at.astimezone(timezone.utc).replace(tzinfo=None),
+        _fixed(envelope.trace_id, 32),
+        _fixed(envelope.span_id, 16),
+        p.get("feature_key") or envelope.feature_key or "unknown",
+        p.get("service_name") or envelope.producer_service,
+        p.get("action") or "execute",
+        p.get("outcome") or "success",
+        _fixed(p.get("actor_user_id_hash"), 64),
+        p.get("resource_type") or "generic",
+        str(p.get("resource_id") or ""),
+        _fixed(p.get("before_hash"), 64),
+        _fixed(p.get("after_hash"), 64),
+        str(p.get("diff_summary") or "{}"),
+        int(p.get("credit_delta") or 0),
+        int(p.get("duration_ms") or 0),
+        str(p.get("active_flags_json") or "{}"),
+        str(p.get("error_code") or ""),
+    ]
 
 
-def _insert_analytics_row(envelope: EventEnvelope) -> None:
+AUDIT_COLUMNS = [
+    "audit_id",
+    "occurred_at",
+    "trace_id",
+    "span_id",
+    "feature_key",
+    "service_name",
+    "action",
+    "outcome",
+    "actor_user_id_hash",
+    "resource_type",
+    "resource_id",
+    "before_hash",
+    "after_hash",
+    "diff_summary",
+    "credit_delta",
+    "duration_ms",
+    "active_flags_json",
+    "error_code",
+]
+
+
+def _to_analytics_row(envelope: EventEnvelope) -> List[Any]:
     p = envelope.payload
-    client = _get_ch_client()
-    try:
-        occurred = envelope.occurred_at.astimezone(timezone.utc).replace(tzinfo=None)
-        received = datetime.now(timezone.utc).replace(tzinfo=None)
-        anon_uuid = _parse_uuid(envelope.actor.analytics_anon_id, UUID(int=0))
-        sess_uuid = _parse_uuid(p.get("session_id"), UUID(int=0))
-        job_uuid = _parse_uuid(p.get("job_id"), None)
-        client.insert(
-            table="tailored_analytics.user_behavior_events",
-            data=[[
-                _parse_uuid(envelope.event_id, uuid4()),
-                occurred,
-                received,
-                anon_uuid,
-                sess_uuid,
-                _fixed(envelope.trace_id, 32),
-                p.get("feature_key") or envelope.feature_key or "unknown",
-                p.get("event_name") or envelope.event_type,
-                str(p.get("route") or "/"),
-                str(p.get("persona_track") or "unknown"),
-                job_uuid,
-                p.get("doc_id"),
-                int(p.get("duration_ms") or 0),
-                int(p.get("scroll_depth_pct") or 0),
-                float(p.get("numeric_value") or 0.0),
-                json.dumps(p.get("properties") or {}, ensure_ascii=False),
-            ]],
-            column_names=[
-                "event_id",
-                "occurred_at",
-                "received_at",
-                "analytics_anon_id",
-                "session_id",
-                "trace_id",
-                "feature_key",
-                "event_name",
-                "route",
-                "persona_track",
-                "job_id",
-                "doc_id",
-                "duration_ms",
-                "scroll_depth_pct",
-                "numeric_value",
-                "properties_json",
-            ],
-        )
-    finally:
-        client.close()
+    occurred = envelope.occurred_at.astimezone(timezone.utc).replace(tzinfo=None)
+    received = datetime.now(timezone.utc).replace(tzinfo=None)
+    anon_uuid = _parse_uuid(envelope.actor.analytics_anon_id, UUID(int=0))
+    sess_uuid = _parse_uuid(p.get("session_id"), UUID(int=0))
+    job_uuid = _parse_uuid(p.get("job_id"), None)
+    return [
+        _parse_uuid(envelope.event_id, uuid4()),
+        occurred,
+        received,
+        anon_uuid,
+        sess_uuid,
+        _fixed(envelope.trace_id, 32),
+        p.get("feature_key") or envelope.feature_key or "unknown",
+        p.get("event_name") or envelope.event_type,
+        str(p.get("route") or "/"),
+        str(p.get("persona_track") or "unknown"),
+        job_uuid,
+        p.get("doc_id"),
+        int(p.get("duration_ms") or 0),
+        int(p.get("scroll_depth_pct") or 0),
+        float(p.get("numeric_value") or 0.0),
+        json.dumps(p.get("properties") or {}, ensure_ascii=False),
+    ]
+
+
+ANALYTICS_COLUMNS = [
+    "event_id",
+    "occurred_at",
+    "received_at",
+    "analytics_anon_id",
+    "session_id",
+    "trace_id",
+    "feature_key",
+    "event_name",
+    "route",
+    "persona_track",
+    "job_id",
+    "doc_id",
+    "duration_ms",
+    "scroll_depth_pct",
+    "numeric_value",
+    "properties_json",
+]
+
+
+class _ClickHouseBatchWriter:
+    """Async micro-batcher reducing ClickHouse insert overhead across high-rate streams."""
+
+    def __init__(self, flush_interval_s: float = 0.4, max_batch: int = 100) -> None:
+        self.flush_interval_s = flush_interval_s
+        self.max_batch = max_batch
+        self._audit_buf: List[List[Any]] = []
+        self._analytics_buf: List[List[Any]] = []
+        self._lock = asyncio.Lock()
+        self._task: Optional[asyncio.Task[None]] = None
+        self._stop = False
+
+    def start(self) -> None:
+        self._stop = False
+        self._task = asyncio.create_task(self._loop())
+
+    async def stop(self) -> None:
+        self._stop = True
+        if self._task:
+            self._task.cancel()
+            try:
+                await self._task
+            except asyncio.CancelledError:
+                pass
+        await self.flush()
+
+    async def enqueue_audit(self, env: EventEnvelope) -> None:
+        flush_now = False
+        async with self._lock:
+            self._audit_buf.append(_to_audit_row(env))
+            flush_now = len(self._audit_buf) >= self.max_batch
+        if flush_now:
+            await self.flush()
+
+    async def enqueue_analytics(self, env: EventEnvelope) -> None:
+        flush_now = False
+        async with self._lock:
+            self._analytics_buf.append(_to_analytics_row(env))
+            flush_now = len(self._analytics_buf) >= self.max_batch
+        if flush_now:
+            await self.flush()
+
+    async def flush(self) -> None:
+        async with self._lock:
+            audit_batch = self._audit_buf[:]
+            analytics_batch = self._analytics_buf[:]
+            self._audit_buf.clear()
+            self._analytics_buf.clear()
+        if not audit_batch and not analytics_batch:
+            return
+        await asyncio.to_thread(self._write_batches, audit_batch, analytics_batch)
+
+    @staticmethod
+    def _write_batches(audit_batch: List[List[Any]], analytics_batch: List[List[Any]]) -> None:
+        client = _get_ch_client()
+        try:
+            if audit_batch:
+                client.insert("tailored_audit.feature_audit_logs", audit_batch, column_names=AUDIT_COLUMNS)
+            if analytics_batch:
+                client.insert(
+                    "tailored_analytics.user_behavior_events",
+                    analytics_batch,
+                    column_names=ANALYTICS_COLUMNS,
+                )
+        finally:
+            client.close()
+
+    async def _loop(self) -> None:
+        while not self._stop:
+            await asyncio.sleep(self.flush_interval_s)
+            try:
+                await self.flush()
+            except Exception as exc:
+                logger.warning("ClickHouse batch flush error: %s", exc)
 
 
 def _query_audit_by_trace(trace_id: str) -> List[Dict[str, Any]]:
@@ -252,12 +320,16 @@ async def lifespan(app: FastAPI):
             logger.warning("Waiting for Redpanda (%s/10): %s", attempt, exc)
             await asyncio.sleep(2)
     app.state.redpanda_producer = producer
+    app.state.jwks_client = JWKSClient(f"{settings.auth_service_url}/.well-known/jwks.json")
+
+    writer = _ClickHouseBatchWriter(flush_interval_s=0.4, max_batch=100)
+    writer.start()
 
     async def on_audit(env: EventEnvelope) -> None:
-        await asyncio.to_thread(_insert_audit_row, env)
+        await writer.enqueue_audit(env)
 
     async def on_analytics(env: EventEnvelope) -> None:
-        await asyncio.to_thread(_insert_analytics_row, env)
+        await writer.enqueue_analytics(env)
 
     audit_consumer = RedpandaConsumer(
         brokers=settings.redpanda_brokers,
@@ -280,6 +352,7 @@ async def lifespan(app: FastAPI):
     finally:
         await analytics_consumer.stop()
         await audit_consumer.stop()
+        await writer.stop()
         await producer.stop()
 
 
@@ -301,17 +374,13 @@ async def ingest_telemetry_events(payload: TelemetryBatchRequest, request: Reque
     trace_id, span_id = get_current_trace_context()
     anon_id = request.headers.get("X-Analytics-Anon-Id") or str(UUID(int=0))
     user_id = request.headers.get("X-User-Id")
-    auth_header = request.headers.get("Authorization")
-    if not user_id and auth_header:
+    auth_header = request.headers.get("Authorization", "")
+    if not user_id and auth_header.lower().startswith("bearer "):
+        token = auth_header.split(" ", 1)[1].strip()
         try:
-            async with httpx.AsyncClient(timeout=2.0) as client:
-                vr = await client.get(
-                    f"{settings.auth_service_url}/internal/verify",
-                    headers={"Authorization": auth_header},
-                )
-            if vr.status_code == 200:
-                user_id = vr.headers.get("X-User-Id") or str(vr.json().get("user_id") or "") or None
-                anon_id = vr.headers.get("X-Analytics-Anon-Id") or anon_id
+            claims = await request.app.state.jwks_client.verify_token(token)
+            user_id = str(claims.get("sub") or "") or None
+            anon_id = str(claims.get("anon_id") or anon_id)
         except Exception:
             pass
     producer: RedpandaProducer = request.app.state.redpanda_producer
@@ -362,6 +431,9 @@ async def phase0_probe(request: Request) -> Dict[str, Any]:
 
 
 @app.get("/api/v1/admin/audit/traces/{trace_id}")
-async def get_audit_trace(trace_id: str) -> Dict[str, Any]:
+async def get_audit_trace(
+    trace_id: str,
+    _: RequestContext = Depends(require_admin),
+) -> Dict[str, Any]:
     rows = await asyncio.to_thread(_query_audit_by_trace, trace_id)
     return {"trace_id": trace_id, "count": len(rows), "records": rows}

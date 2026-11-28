@@ -28,3 +28,4 @@ volumes:
   loki_data:
   prometheus_data:
   grafana_data:
+  auth_keys_data:

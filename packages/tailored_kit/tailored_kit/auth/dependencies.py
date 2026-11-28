@@ -5,7 +5,7 @@ from fastapi import Request
 from tailored_kit.feature_context import get_current_feature_key
 from tailored_kit.auth.context import RequestContext
 from tailored_kit.auth.jwks_client import verify_identity_headers
-from tailored_kit.errors import UnauthorizedError
+from tailored_kit.errors import ForbiddenError, UnauthorizedError
 from tailored_kit.telemetry_otel.setup import get_current_trace_context
 
 
@@ -89,3 +89,15 @@ async def require_internal_service(request: Request) -> RequestContext:
         trace_id=trace_id,
         feature_key=feature_key,
     )
+
+
+async def require_admin(request: Request) -> RequestContext:
+    """FastAPI dependency requiring either an authenticated admin user or valid internal HMAC."""
+    try:
+        return await require_internal_service(request)
+    except UnauthorizedError:
+        pass
+    ctx = await require_user(request)
+    if (ctx.role or "").lower() != "admin":
+        raise ForbiddenError("Administrator privileges required.")
+    return ctx

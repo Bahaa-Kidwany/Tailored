@@ -16,7 +16,7 @@ RUN pip install --no-cache-dir --upgrade pip \
 
 COPY services/auth-service/app /app/app
 
-RUN chown -R appuser:appuser /app
+RUN mkdir -p /data/auth_keys && chown -R appuser:appuser /app /data/auth_keys
 USER appuser
 
 EXPOSE 8001
