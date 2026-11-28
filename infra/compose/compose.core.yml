@@ -1,4 +1,79 @@
 services:
+  auth-service:
+    build:
+      context: ../..
+      dockerfile: services/auth-service/Dockerfile
+    container_name: tailored-auth
+    restart: unless-stopped
+    profiles: ["core"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      redpanda:
+        condition: service_healthy
+      redpanda-init:
+        condition: service_completed_successfully
+    environment:
+      SERVICE_NAME: auth-service
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      DATABASE_URL: postgresql+psycopg://auth_svc:${AUTH_DB_PASSWORD:-tailored_auth_pass}@postgres:5432/auth_db
+      PRIVACY_VAULT_DATABASE_URL: postgresql+psycopg://privacy_vault_svc:${PRIVACY_VAULT_DB_PASSWORD:-tailored_vault_pass}@postgres:5432/privacy_vault_db
+      REDPANDA_BROKERS: ${REDPANDA_BROKERS:-redpanda:9092}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      OTLP_ENDPOINT: ${OTLP_ENDPOINT:-http://otel-collector:4317}
+      OTEL_ENABLED: ${OTEL_ENABLED:-true}
+      INTERNAL_HMAC_SECRET: ${INTERNAL_HMAC_SECRET:-dev_internal_hmac_secret_change_in_prod}
+      AUDIT_ACTOR_SALT: ${AUDIT_ACTOR_SALT:-dev_audit_actor_salt_change_in_prod}
+    ports:
+      - "8001:8001"
+    networks:
+      - internal_mesh
+      - data_net
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/health')\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  profile-service:
+    build:
+      context: ../..
+      dockerfile: services/profile-service/Dockerfile
+    container_name: tailored-profile
+    restart: unless-stopped
+    profiles: ["core"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redpanda:
+        condition: service_healthy
+      redpanda-init:
+        condition: service_completed_successfully
+    environment:
+      SERVICE_NAME: profile-service
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      DATABASE_URL: postgresql+psycopg://profile_svc:${PROFILE_DB_PASSWORD:-tailored_profile_pass}@postgres:5432/profile_db
+      REDPANDA_BROKERS: ${REDPANDA_BROKERS:-redpanda:9092}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      OTLP_ENDPOINT: ${OTLP_ENDPOINT:-http://otel-collector:4317}
+      OTEL_ENABLED: ${OTEL_ENABLED:-true}
+      INTERNAL_HMAC_SECRET: ${INTERNAL_HMAC_SECRET:-dev_internal_hmac_secret_change_in_prod}
+      AUDIT_ACTOR_SALT: ${AUDIT_ACTOR_SALT:-dev_audit_actor_salt_change_in_prod}
+    ports:
+      - "8002:8002"
+    networks:
+      - internal_mesh
+      - data_net
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8002/health')\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
   telemetry-audit-service:
     build:
       context: ../..

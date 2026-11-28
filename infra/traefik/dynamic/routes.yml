@@ -6,24 +6,71 @@ http:
           X-Accel-Buffering: "no"
           Cache-Control: "no-cache"
 
+    auth-forward:
+      forwardAuth:
+        address: "http://auth-service:8001/internal/verify"
+        trustForwardHeader: true
+        authResponseHeaders:
+          - "X-User-Id"
+          - "X-Session-Id"
+          - "X-Analytics-Anon-Id"
+          - "X-User-Role"
+          - "X-Identity-Ts"
+          - "X-Identity-Sig"
+
   serversTransports:
     sse-transport:
       forwardingTimeouts:
         responseHeaderTimeout: 0s
 
   routers:
+    auth-public:
+      entryPoints: [web]
+      priority: 100
+      rule: "PathPrefix(`/api/v1/auth/register`) || PathPrefix(`/api/v1/auth/login`) || PathPrefix(`/api/v1/auth/refresh`) || PathPrefix(`/api/v1/auth/verify-email`) || PathPrefix(`/api/v1/auth/otp`) || PathPrefix(`/api/v1/auth/forgot-password`) || PathPrefix(`/api/v1/auth/reset-password`) || PathPrefix(`/api/v1/auth/oauth`) || PathPrefix(`/.well-known/jwks.json`) || PathPrefix(`/api/v1/flags`) || PathPrefix(`/api/v1/admin/flags`)"
+      service: auth-svc
+
+    auth-protected:
+      entryPoints: [web]
+      priority: 50
+      rule: "PathPrefix(`/api/v1/auth/logout`) || PathPrefix(`/api/v1/account`)"
+      middlewares: [auth-forward]
+      service: auth-svc
+
+    profile-public-parse:
+      entryPoints: [web]
+      priority: 100
+      rule: "PathPrefix(`/api/v1/profiles/parse-latex`)"
+      service: profile-svc
+
+    profile-protected:
+      entryPoints: [web]
+      priority: 50
+      rule: "PathPrefix(`/api/v1/profiles`)"
+      middlewares: [auth-forward]
+      service: profile-svc
+
     telemetry-public:
-      entryPoints:
-        - web
+      entryPoints: [web]
+      priority: 80
       rule: "PathPrefix(`/api/v1/telemetry`)"
       service: telemetry-audit-svc
+
     phase0-probe:
-      entryPoints:
-        - web
+      entryPoints: [web]
+      priority: 80
       rule: "PathPrefix(`/internal/phase0`) || PathPrefix(`/api/v1/admin/audit`)"
       service: telemetry-audit-svc
 
   services:
+    auth-svc:
+      loadBalancer:
+        servers:
+          - url: "http://auth-service:8001"
+    profile-svc:
+      loadBalancer:
+        servers:
+          - url: "http://profile-service:8002"
     telemetry-audit-svc:
       loadBalancer:
         servers:
