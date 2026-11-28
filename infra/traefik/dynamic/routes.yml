@@ -65,80 +65,84 @@ http:
       entryPoints: [web]
       priority: 100
       rule: "PathPrefix(`/api/v1/profiles/parse-latex`)"
+      middlewares: [security-headers]
       service: profile-svc
 
     profile-protected:
       entryPoints: [web]
       priority: 50
       rule: "PathPrefix(`/api/v1/profiles`)"
-      middlewares: [auth-forward]
+      middlewares: [auth-forward, security-headers]
       service: profile-svc
 
     jobs-explore-public:
       entryPoints: [web]
       priority: 100
       rule: "PathPrefix(`/api/v1/explore`)"
+      middlewares: [security-headers]
       service: jobs-svc
 
     jobs-protected:
       entryPoints: [web]
       priority: 50
       rule: "PathPrefix(`/api/v1/jobs`) || PathPrefix(`/api/v1/interest`)"
-      middlewares: [auth-forward]
+      middlewares: [auth-forward, security-headers]
       service: jobs-svc
 
     billing-webhooks-public:
       entryPoints: [web]
       priority: 100
       rule: "PathPrefix(`/api/v1/webhooks`)"
+      middlewares: [security-headers]
       service: billing-svc
 
     billing-packs-public:
       entryPoints: [web]
       priority: 100
       rule: "PathPrefix(`/api/v1/credits/packs`)"
+      middlewares: [security-headers]
       service: billing-svc
 
     billing-protected:
       entryPoints: [web]
       priority: 50
       rule: "PathPrefix(`/api/v1/credits`)"
-      middlewares: [auth-forward]
+      middlewares: [auth-forward, security-headers]
       service: billing-svc
 
     documents-protected:
       entryPoints: [web]
       priority: 50
       rule: "PathPrefix(`/api/v1/cv-fit`) || PathPrefix(`/api/v1/cover-letter`) || PathPrefix(`/api/v1/documents`)"
-      middlewares: [auth-forward]
+      middlewares: [auth-forward, security-headers]
       service: documents-svc
 
     ai-agent-protected:
       entryPoints: [web]
       priority: 50
       rule: "PathPrefix(`/api/v1/agent`)"
-      middlewares: [auth-forward, sse-no-buffer]
+      middlewares: [auth-forward, sse-no-buffer, security-headers]
       service: ai-agent-svc
 
     pipeline-protected:
       entryPoints: [web]
       priority: 50
       rule: "PathPrefix(`/api/v1/pipeline`)"
-      middlewares: [auth-forward]
+      middlewares: [auth-forward, security-headers]
       service: pipeline-svc
 
     notifications-stream-protected:
       entryPoints: [web]
       priority: 100
       rule: "PathPrefix(`/api/v1/notifications/stream`)"
-      middlewares: [auth-forward, sse-no-buffer]
+      middlewares: [auth-forward, sse-no-buffer, security-headers]
       service: notifications-sse-svc
 
     notifications-protected:
       entryPoints: [web]
       priority: 50
       rule: "PathPrefix(`/api/v1/notifications`)"
-      middlewares: [auth-forward]
+      middlewares: [auth-forward, security-headers]
       service: notifications-svc
 
     telemetry-public:

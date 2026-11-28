@@ -174,7 +174,27 @@ def check_infrastructure_and_databases() -> None:
         for port in range(8001, 8010):
             r = client.get(f"http://127.0.0.1:{port}/health")
             assert r.status_code == 200, f"Port {port} /health failed: {r.status_code}"
-    print("[PASS] All 9 Tailored HTTP microservices returned 200 on /health (8001..8009).")
+            m = client.get(f"http://127.0.0.1:{port}/metrics")
+            assert m.status_code == 200 and "tailored_http_requests_total" in m.text, (
+                f"Port {port} /metrics invalid ({m.status_code})"
+            )
+    print("[PASS] All 9 Tailored HTTP microservices returned 200 on /health & Prometheus /metrics (8001..8009).")
+
+    pdflatex_bin = subprocess.check_output(
+        ["docker", "exec", "tailored-latex-worker", "which", "pdflatex"],
+        text=True,
+    ).strip()
+    assert pdflatex_bin == "/usr/bin/pdflatex", f"Unexpected pdflatex path: {pdflatex_bin}"
+    egress_probe = subprocess.run(
+        [
+            "docker", "exec", "tailored-latex-worker",
+            "python", "-c", "import urllib.request; urllib.request.urlopen('https://1.1.1.1', timeout=2)",
+        ],
+        capture_output=True,
+        text=True,
+    )
+    assert egress_probe.returncode != 0, "tailored-latex-worker must have outbound internet blocked!"
+    print("[PASS] Offline /usr/bin/pdflatex verified inside egress-blocked sandbox_net.")
 
     print("\n--- 2. PostgreSQL (10 DBs + pgvector), ClickHouse, Redpanda & MinIO Audit ---")
     total_pg_tables = 0
@@ -190,6 +210,15 @@ def check_infrastructure_and_databases() -> None:
         found = {x.strip() for x in out.splitlines() if x.strip()}
         missing_tbls = [t for t in expected if t not in found]
         assert not missing_tbls, f"{db} missing tables: {missing_tbls}"
+        alembic_ver = subprocess.check_output(
+            [
+                "docker", "exec", "tailored-postgres",
+                "psql", "-U", "tailored_admin", "-d", db, "-Atc",
+                "SELECT version_num FROM alembic_version LIMIT 1;",
+            ],
+            text=True,
+        ).strip()
+        assert alembic_ver == "0001_initial_schema", f"{db} unexpected alembic_version: {alembic_ver!r}"
         total_pg_tables += len(expected)
 
     db_list = subprocess.check_output(
@@ -213,7 +242,16 @@ def check_infrastructure_and_databases() -> None:
         text=True,
     ).strip()
     assert vec_ext == "vector", "pgvector extension missing on ai_agent_db"
-    print(f"[PASS] All 10 PostgreSQL DBs verified ({total_pg_tables} domain tables + langfuse_db + pgvector).")
+    ai_indexes = subprocess.check_output(
+        [
+            "docker", "exec", "tailored-postgres",
+            "psql", "-U", "tailored_admin", "-d", "ai_agent_db", "-Atc",
+            "SELECT indexname FROM pg_indexes WHERE tablename='behavioral_memory_facts';",
+        ],
+        text=True,
+    )
+    assert "ix_behavioral_memory_embedding_hnsw" in ai_indexes, "Missing pgvector HNSW index on ai_agent_db"
+    print(f"[PASS] All 10 PostgreSQL DBs verified ({total_pg_tables} domain tables + 9x Alembic 0001 + langfuse_db + pgvector HNSW).")
 
     ch_tables = subprocess.check_output(
         [
@@ -249,9 +287,39 @@ def check_infrastructure_and_databases() -> None:
     print(f"[PASS] All {len(EXPECTED_BUCKETS)} MinIO buckets verified.")
 
 
-def check_auth_and_security_matrix() -> None:
-    print("\n--- 3. Auth, Login, 2FA TOTP, OAuth Unlink Guard & Revocation Matrix ---")
+def _get_bootstrap_admin_headers(client: httpx.Client) -> dict[str, str]:
+    admin_email = "admin@tailored.test"
+    admin_pwd = "AdminVerifyPass123!"
+    reg = client.post(
+        "/api/v1/auth/register",
+        json={"email": admin_email, "password": admin_pwd, "full_name": "Tailored Admin"},
+    )
+    if reg.status_code == 201:
+        return {"Authorization": f"Bearer {reg.json()['access_token']}"}
+    login = client.post("/api/v1/auth/login", json={"email": admin_email, "password": admin_pwd})
+    if login.status_code == 200:
+        return {"Authorization": f"Bearer {login.json()['access_token']}"}
+    forgot = client.post("/api/v1/auth/forgot-password", json={"email": admin_email})
+    assert forgot.status_code == 200 and forgot.json().get("dev_otp"), f"Cannot recover bootstrap admin: {forgot.text}"
+    otp = forgot.json()["dev_otp"]
+    reset = client.post(
+        "/api/v1/auth/reset-password",
+        json={"email": admin_email, "code": otp, "new_password": admin_pwd},
+    )
+    assert reset.status_code == 200
+    login2 = client.post("/api/v1/auth/login", json={"email": admin_email, "password": admin_pwd})
+    assert login2.status_code == 200, login2.text
+    return {"Authorization": f"Bearer {login2.json()['access_token']}"}
+
+
+def check_auth_and_security_matrix() -> dict[str, str]:
+    print("\n--- 3. Auth, Login, 2FA TOTP, OAuth Unlink Guard, Admin RBAC & Security Headers ---")
     with httpx.Client(base_url=BASE, timeout=15.0) as client:
+        gw_probe = client.get("/api/v1/explore/jobs")
+        assert gw_probe.headers.get("x-content-type-options") == "nosniff", (
+            f"Missing Traefik security header X-Content-Type-Options: {gw_probe.headers}"
+        )
+
         for path in [
             "/api/v1/profiles/me",
             "/api/v1/jobs",
@@ -314,8 +382,23 @@ def check_auth_and_security_matrix() -> None:
         assert client.get("/api/v1/profiles/me", headers={"Authorization": f"Bearer {tok2}"}).status_code == 200
         print("[PASS] Password auth, 2FA TOTP, Refresh rotation & immediate Redis session revocation verified.")
 
+        # Admin RBAC + Traefik Security Headers verification (401 unauth / 403 user / 200 admin)
+        admin_headers = _get_bootstrap_admin_headers(client)
+        user_headers = {"Authorization": f"Bearer {tok2}"}
+        flag_payload = {"enabled": True, "rollout_percent": 100, "description": "RBAC verification flag"}
+        assert client.put("/api/v1/admin/flags/verify_rbac_flag", json=flag_payload).status_code == 401
+        assert client.put("/api/v1/admin/flags/verify_rbac_flag", headers=user_headers, json=flag_payload).status_code == 403
+        assert client.put("/api/v1/admin/flags/verify_rbac_flag", headers=admin_headers, json=flag_payload).status_code == 200
 
-def check_full_e2e_workflow_and_benchmark() -> None:
+        dummy_trace = "0" * 32
+        assert client.get(f"/api/v1/admin/audit/traces/{dummy_trace}").status_code == 401
+        assert client.get(f"/api/v1/admin/audit/traces/{dummy_trace}", headers=user_headers).status_code == 403
+        assert client.get(f"/api/v1/admin/audit/traces/{dummy_trace}", headers=admin_headers).status_code == 200
+        print("[PASS] Admin RBAC (401/403/200) on /admin/flags & /admin/audit + security headers verified.")
+        return admin_headers
+
+
+def check_full_e2e_workflow_and_benchmark(admin_headers: dict[str, str]) -> None:
     print("\n--- 4. Full End-to-End Cross-Service Workflow + Telemetry/Trace + GDPR ---")
     email = f"full_e2e_{secrets.token_hex(4)}@tailored.test"
     pwd = "E2EPassword123!"
@@ -448,10 +531,10 @@ def check_full_e2e_workflow_and_benchmark() -> None:
             time.sleep(0.6)
         assert notif_ok
 
-        # 8. Audit Trace Correlation across ClickHouse
+        # 8. Audit Trace Correlation across ClickHouse (Admin RBAC protected)
         audit_ok = False
         for _ in range(15):
-            ar = client.get(f"/api/v1/admin/audit/traces/{trace_id_hex}")
+            ar = client.get(f"/api/v1/admin/audit/traces/{trace_id_hex}", headers=admin_headers)
             if ar.status_code == 200 and ar.json()["count"] >= 2:
                 audit_ok = True
                 break
@@ -542,8 +625,8 @@ def check_full_e2e_workflow_and_benchmark() -> None:
 
 def main() -> int:
     check_infrastructure_and_databases()
-    check_auth_and_security_matrix()
-    check_full_e2e_workflow_and_benchmark()
+    admin_headers = check_auth_and_security_matrix()
+    check_full_e2e_workflow_and_benchmark(admin_headers)
     print("\nALL FULL-SYSTEM VERIFICATION & PERFORMANCE GATES PASSED.")
     return 0
 

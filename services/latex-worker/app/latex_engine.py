@@ -744,6 +744,34 @@ def compile_latex(artifact_folder: Path) -> Tuple[str, List[str], List[str]]:
             tectonic_pdf_path = (artifact_folder / "cv_tectonic.pdf").resolve()
             compile_tex_path.write_text(source, encoding="utf-8")
 
+        if compiler != "tectonic":
+            raw_src = tex_path.read_text(encoding="utf-8")
+            if r"\usepackage{fontawesome5}" in raw_src:
+                kpse = shutil.which("kpsewhich")
+                has_fa5 = bool(
+                    kpse
+                    and subprocess.run(
+                        [kpse, "fontawesome5.sty"], capture_output=True, check=False
+                    ).returncode
+                    == 0
+                )
+                if not has_fa5:
+                    fa_fallback = (
+                        "% fontawesome5 fallback for minimal offline TeX image\n"
+                        r"\providecommand{\faPhone}{Tel:}" "\n"
+                        r"\providecommand{\faMobile}{Tel:}" "\n"
+                        r"\providecommand{\faEnvelope}{Email:}" "\n"
+                        r"\providecommand{\faLinkedin}{LinkedIn:}" "\n"
+                        r"\providecommand{\faGithub}{GitHub:}" "\n"
+                        r"\providecommand{\faGlobe}{Web:}" "\n"
+                        r"\providecommand{\faLink}{}" "\n"
+                        r"\providecommand{\faMapMarker}{}" "\n"
+                    )
+                    tex_path.write_text(
+                        raw_src.replace(r"\usepackage{fontawesome5}", fa_fallback, 1),
+                        encoding="utf-8",
+                    )
+
         passes = 1 if compiler == "tectonic" else 2
         for _ in range(passes):
             command = (

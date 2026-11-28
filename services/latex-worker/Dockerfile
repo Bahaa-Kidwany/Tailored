@@ -11,6 +11,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     texlive-latex-extra \
     && rm -rf /var/lib/apt/lists/*
 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    texlive-fonts-recommended \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 RUN useradd --create-home --uid 10001 appuser
