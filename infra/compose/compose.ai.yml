@@ -1,3 +1,42 @@
-# Phase 2 / Phase 4 AI Agent Service container definitions will be activated here.
-# Planned service: ai-agent-service (port 8007, profile: ["ai"])
-services: {}
+services:
+  ai-agent-service:
+    build:
+      context: ../..
+      dockerfile: services/ai-agent-service/Dockerfile
+    container_name: tailored-ai-agent
+    restart: unless-stopped
+    profiles: ["ai"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redpanda:
+        condition: service_healthy
+      redpanda-init:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    environment:
+      SERVICE_NAME: ai-agent-service
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      DATABASE_URL: postgresql+psycopg://ai_agent_svc:${AI_AGENT_DB_PASSWORD:-tailored_ai_pass}@postgres:5432/ai_agent_db
+      PROFILE_SERVICE_URL: http://profile-service:8002
+      JOBS_SERVICE_URL: http://jobs-service:8003
+      DOCUMENTS_SERVICE_URL: http://documents-service:8004
+      PIPELINE_SERVICE_URL: http://pipeline-service:8005
+      REDPANDA_BROKERS: ${REDPANDA_BROKERS:-redpanda:9092}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      OTLP_ENDPOINT: ${OTLP_ENDPOINT:-http://otel-collector:4317}
+      OTEL_ENABLED: ${OTEL_ENABLED:-true}
+      INTERNAL_HMAC_SECRET: ${INTERNAL_HMAC_SECRET:-dev_internal_hmac_secret_change_in_prod}
+      AUDIT_ACTOR_SALT: ${AUDIT_ACTOR_SALT:-dev_audit_actor_salt_change_in_prod}
+    ports:
+      - "8007:8007"
+    networks:
+      - internal_mesh
+      - data_net
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8007/health')\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10

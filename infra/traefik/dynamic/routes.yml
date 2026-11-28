@@ -89,6 +89,13 @@ http:
       middlewares: [auth-forward]
       service: documents-svc
 
+    ai-agent-protected:
+      entryPoints: [web]
+      priority: 50
+      rule: "PathPrefix(`/api/v1/agent`)"
+      middlewares: [auth-forward, sse-no-buffer]
+      service: ai-agent-svc
+
     telemetry-public:
       entryPoints: [web]
       priority: 80
@@ -122,6 +129,11 @@ http:
       loadBalancer:
         servers:
           - url: "http://billing-service:8006"
+    ai-agent-svc:
+      loadBalancer:
+        serversTransport: sse-transport
+        servers:
+          - url: "http://ai-agent-service:8007"
     telemetry-audit-svc:
       loadBalancer:
         servers:

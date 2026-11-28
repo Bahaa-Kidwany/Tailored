@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Optional
 from uuid import UUID, uuid4
 
 import clickhouse_connect
+import httpx
 from fastapi import FastAPI, Request, status
 from pydantic import BaseModel, Field
 
@@ -40,6 +41,7 @@ FORBIDDEN_PII_KEYS = {
 
 class TelemetrySettings(ServiceSettings):
     service_name: str = "telemetry-audit-service"
+    auth_service_url: str = "http://auth-service:8001"
     clickhouse_host: str = "clickhouse"
     clickhouse_port: int = 8123
     clickhouse_user: str = "tailored_ch"
@@ -299,6 +301,19 @@ async def ingest_telemetry_events(payload: TelemetryBatchRequest, request: Reque
     trace_id, span_id = get_current_trace_context()
     anon_id = request.headers.get("X-Analytics-Anon-Id") or str(UUID(int=0))
     user_id = request.headers.get("X-User-Id")
+    auth_header = request.headers.get("Authorization")
+    if not user_id and auth_header:
+        try:
+            async with httpx.AsyncClient(timeout=2.0) as client:
+                vr = await client.get(
+                    f"{settings.auth_service_url}/internal/verify",
+                    headers={"Authorization": auth_header},
+                )
+            if vr.status_code == 200:
+                user_id = vr.headers.get("X-User-Id") or str(vr.json().get("user_id") or "") or None
+                anon_id = vr.headers.get("X-Analytics-Anon-Id") or anon_id
+        except Exception:
+            pass
     producer: RedpandaProducer = request.app.state.redpanda_producer
 
     published = 0
