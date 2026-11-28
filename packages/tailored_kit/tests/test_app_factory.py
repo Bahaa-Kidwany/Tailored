@@ -1,3 +1,4 @@
+import pytest
 from fastapi import Depends
 from fastapi.testclient import TestClient
 
@@ -8,6 +9,7 @@ from tailored_kit.auth.jwks_client import sign_identity_headers
 from tailored_kit.config import ServiceSettings
 from tailored_kit.errors import InsufficientCreditsError
 from tailored_kit.http_client.internal import InternalHttpClient
+from tailored_kit.llm import LangfuseClient, LlmClient
 
 
 def test_app_factory_health_and_rfc7807_and_hmac_auth():
@@ -82,3 +84,16 @@ def test_app_factory_health_and_rfc7807_and_hmac_auth():
     m_resp = client.get("/metrics")
     assert m_resp.status_code == 200
     assert "tailored_http_requests_total" in m_resp.text
+
+
+@pytest.mark.asyncio
+async def test_llm_and_langfuse_unconfigured_fallback():
+    llm = LlmClient(gemini_api_key="", openai_api_key="")
+    assert llm.is_configured is False
+    assert await llm.generate_text("sys", "user") is None
+    assert await llm.embed_text("Senior Python Engineer") is None
+
+    lf = LangfuseClient(host="", public_key="", secret_key="")
+    assert lf.is_configured is False
+    await lf.record_trace("tr-1", "coach.turn", "u-1", {"prompt": "hi"}, {"text": "ok"})
+    await lf.record_score("tr-1", "proposal_resolution", 1.0, "applied")

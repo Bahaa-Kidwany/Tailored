@@ -18,6 +18,8 @@ from tailored_kit import (
     ActorContext,
     EventEnvelope,
     InternalHttpClient,
+    LangfuseClient,
+    LlmClient,
     NotFoundError,
     OutboxEvent,
     OutboxRelay,
@@ -34,11 +36,10 @@ from tailored_kit import (
 from tailored_kit.telemetry_otel.setup import get_current_trace_context
 
 from app.ambient import (
-    deterministic_embedding_768,
     evaluate_distillation_and_proactive_rules,
     update_tier0_behavior_aggregates,
 )
-from app.coach import build_coach_turn
+from app.coach import _get_top_memory_facts, generate_coach_reply
 from app.models import (
     AgentCheckpointDB,
     AgentMessageDB,
@@ -64,6 +65,8 @@ class AiAgentSettings(ServiceSettings):
 
 settings = AiAgentSettings()
 engine = create_engine(settings.database_url, pool_pre_ping=True)
+llm_client = LlmClient()
+langfuse_client = LangfuseClient()
 
 AI_TABLES = [
     UserBehaviorProfileDB.__table__,
@@ -147,25 +150,23 @@ async def _is_passive_learning_allowed(redis_client: aioredis.Redis, user_id: st
         return True
 
 
-def _get_top_memory_facts(session: Session, user_id: str, query_text: str, limit: int = 5) -> List[str]:
-    facts = session.exec(
-        select(BehavioralMemoryFactDB)
-        .where(
-            BehavioralMemoryFactDB.user_id == user_id,
-            BehavioralMemoryFactDB.status == "active",
-        )
-        .order_by(BehavioralMemoryFactDB.last_reinforced_at.desc())
-        .limit(limit)
-    ).all()
-    return [f.fact_text for f in facts]
-
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     with engine.connect() as conn:
         conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
         conn.commit()
     SQLModel.metadata.create_all(engine, tables=AI_TABLES)
+    try:
+        with engine.connect() as conn:
+            conn.execute(
+                text(
+                    "CREATE INDEX IF NOT EXISTS ix_behavioral_memory_embedding_hnsw "
+                    "ON behavioral_memory_facts USING hnsw (embedding vector_cosine_ops)"
+                )
+            )
+            conn.commit()
+    except Exception as exc:
+        logger.warning("HNSW index creation skipped (%s)", exc)
 
     redis_client = aioredis.from_url(settings.redis_url, decode_responses=True)
     app.state.redis = redis_client
@@ -225,6 +226,7 @@ async def lifespan(app: FastAPI):
                 redis_client,
                 prof=prof,
                 latest_event_id=env.event_id,
+                llm_client=llm_client,
             )
             if distilled:
                 _enqueue_outbox(
@@ -414,7 +416,12 @@ async def _run_coach_turn_and_stream(
             .order_by(AgentMessageDB.created_at.asc())
         ).all()
         prior_user_texts = [m.content_text for m in prior_msgs]
-        memory_facts = _get_top_memory_facts(session, ctx.user_id, prompt)
+        memory_facts = await _get_top_memory_facts(
+            session,
+            ctx.user_id,
+            prompt,
+            llm_client=llm_client,
+        )
 
         user_msg = AgentMessageDB(
             thread_id=thread.id,
@@ -450,7 +457,7 @@ async def _run_coach_turn_and_stream(
         except Exception:
             pass
 
-    reply = build_coach_turn(
+    reply = await generate_coach_reply(
         prompt=prompt,
         surface=surface,
         mode=mode,
@@ -459,7 +466,22 @@ async def _run_coach_turn_and_stream(
         prior_user_texts=prior_user_texts,
         memory_facts=memory_facts,
         focused_anchor=focused_anchor,
+        llm_client=llm_client,
     )
+
+    if trace_id:
+        await langfuse_client.record_trace(
+            trace_id=trace_id,
+            name=f"coach.{surface}",
+            user_id=ctx.user_id,
+            input_data={"prompt": prompt, "mode": mode, "surface": surface},
+            output_data={
+                "text": reply.get("text"),
+                "has_proposal": bool(reply.get("proposal")),
+                "has_action_card": bool(reply.get("action_card")),
+            },
+            metadata={"thread_id": thread_id, "job_id": eff_job_id, "doc_id": eff_doc_id},
+        )
 
     with Session(engine) as session:
         assistant_msg = AgentMessageDB(
@@ -627,6 +649,8 @@ async def resolve_proposal(
 
         score_map = {"applied": 1.0, "skipped": 0.0, "undone": -1.0, "pending": 0.5}
         eval_score = score_map.get(card.status, 0.5)
+        msg_obj = session.get(AgentMessageDB, card.message_id)
+        trace_id_for_score = (msg_obj.langfuse_trace_id if msg_obj else None) or get_current_trace_context()[0]
         session.add(card)
         _enqueue_outbox(
             session,
@@ -643,7 +667,16 @@ async def resolve_proposal(
         )
         session.commit()
         session.refresh(card)
-        return {"proposal": card.model_dump(), "langfuse_eval_score": eval_score}
+        out_card = card.model_dump()
+
+    if trace_id_for_score:
+        await langfuse_client.record_score(
+            trace_id=trace_id_for_score,
+            name="proposal_resolution",
+            value=eval_score,
+            comment=f"action={action},status={out_card['status']}",
+        )
+    return {"proposal": out_card, "langfuse_eval_score": eval_score}
 
 
 @app.post("/api/v1/agent/actions/{action_id}/confirm")

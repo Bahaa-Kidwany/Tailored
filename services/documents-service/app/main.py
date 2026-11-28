@@ -21,6 +21,7 @@ from tailored_kit import (
     EventEnvelope,
     InsufficientCreditsError,
     InternalHttpClient,
+    LlmClient,
     NotFoundError,
     OutboxEvent,
     OutboxRelay,
@@ -60,6 +61,7 @@ class DocumentsSettings(ServiceSettings):
 
 settings = DocumentsSettings()
 engine = create_engine(settings.database_url, pool_pre_ping=True)
+llm_client = LlmClient()
 
 DOCS_TABLES = [
     GeneratedDocumentDB.__table__,
@@ -183,6 +185,61 @@ def _apply_tailoring(
         "enforced_mandatory_keys": ["header", "profile", "skills", "education"],
         "section_order": ["header", "profile", "skills", "experience", "education"],
     }
+    return tailored, diffs, section_plan
+
+
+async def _apply_tailoring_with_llm(
+    base_latex: str,
+    *,
+    job_title: str,
+    company_name: str,
+    skills: List[str],
+    user_comments: Optional[str],
+) -> tuple[str, List[Dict[str, str]], Dict[str, Any]]:
+    tailored, diffs, section_plan = _apply_tailoring(
+        base_latex,
+        job_title=job_title,
+        company_name=company_name,
+        skills=skills,
+        user_comments=user_comments,
+    )
+    if (user_comments and "\\FAIL_COMPILE_TEST" in user_comments) or not llm_client.is_configured:
+        return tailored, diffs, section_plan
+
+    sys_prompt = (
+        "You are Tailored CV Tailor. Write a single grounded, plain-text tailored summary sentence "
+        "and short rationale for why it fits the role. Do NOT invent numbers or add LaTeX commands. "
+        "Return strict JSON: {\"tailored_bullet\": \"...\", \"rationale\": \"...\"}."
+    )
+    user_prompt = json.dumps(
+        {
+            "job_title": job_title,
+            "company_name": company_name,
+            "skills": skills[:8],
+            "user_comments": user_comments or "",
+        }
+    )
+    raw = await llm_client.generate_text(sys_prompt, user_prompt, temperature=0.2, max_tokens=280)
+    if raw:
+        cleaned = raw.strip().strip("`")
+        if cleaned.startswith("json"):
+            cleaned = cleaned[4:].strip()
+        try:
+            parsed = json.loads(cleaned)
+            tb = str(parsed.get("tailored_bullet") or "").strip().replace("%", "\\%")
+            rat = str(parsed.get("rationale") or "").strip()
+            if tb:
+                diffs[0]["tailored_bullet"] = tb
+            if rat:
+                diffs[0]["rationale"] = rat
+            if tb and "\\section{Profile}" in tailored:
+                tailored = tailored.replace(
+                    "\\section{Profile}",
+                    f"\\section{{Profile}}\n% LLM Tailored Focus: {tb[:200]}",
+                    1,
+                )
+        except Exception:
+            pass
     return tailored, diffs, section_plan
 
 
@@ -459,7 +516,7 @@ async def create_cv_fit(
         raise HTTPException(status_code=hold_resp.status_code, detail=hold_resp.text)
     hold_id = hold_resp.json()["hold_id"]
 
-    tailored_latex, diffs, section_plan = _apply_tailoring(
+    tailored_latex, diffs, section_plan = await _apply_tailoring_with_llm(
         base_latex,
         job_title=job_title,
         company_name=company_name,
@@ -750,6 +807,26 @@ async def draft_cover_letter(
         "My experience shipping reliable production services and measurable technical outcomes maps directly to your team's roadmap.\n\n"
         "My tailored CV is attached for review—I welcome the opportunity to connect.\n\nSincerely,\nCandidate"
     )
+    if llm_client.is_configured:
+        llm_body = await llm_client.generate_text(
+            (
+                "You are Tailored Cover Letter Writer. Draft a concise, factual Markdown cover letter "
+                "using only facts from the provided CV/JD without fabricating numbers."
+            ),
+            json.dumps(
+                {
+                    "role": role,
+                    "company": company,
+                    "tone": payload.tone,
+                    "base_cv_text": payload.base_cv_text[:2500],
+                    "job_description_text": (payload.job_description_text or "")[:2000],
+                }
+            ),
+            temperature=0.3,
+            max_tokens=500,
+        )
+        if llm_body and len(llm_body.strip()) > 60:
+            body = llm_body.strip()
     with Session(engine) as session:
         doc = GeneratedDocumentDB(
             doc_id=doc_id,

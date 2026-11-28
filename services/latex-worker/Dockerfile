@@ -1,7 +1,15 @@
 FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    HOME=/tmp \
+    TEXMFVAR=/tmp/texmf-var \
+    TEXMFCONFIG=/tmp/texmf-config
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    texlive-latex-base \
+    texlive-latex-extra \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 

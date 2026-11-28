@@ -21,7 +21,11 @@ services:
       REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
       OTLP_ENDPOINT: ${OTLP_ENDPOINT:-http://otel-collector:4317}
       OTEL_ENABLED: ${OTEL_ENABLED:-true}
+      APIFY_API_TOKEN: ${APIFY_API_TOKEN:-}
+      APIFY_ACTOR_ID: ${APIFY_ACTOR_ID:-curious_coder~linkedin-jobs-scraper}
       APIFY_MAX_ITEMS_PER_ACTOR: ${APIFY_MAX_ITEMS_PER_ACTOR:-2}
+      APIFY_DAILY_CAP: ${APIFY_DAILY_CAP:-100}
+      RADAR_SWEEP_INTERVAL_MIN: ${RADAR_SWEEP_INTERVAL_MIN:-0}
     networks:
       - internal_mesh
       - data_net
@@ -54,6 +58,9 @@ services:
       MINIO_ENDPOINT: ${MINIO_ENDPOINT:-http://minio:9000}
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-tailored_minio}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-tailored_minio_dev_pass}
+      HOME: /tmp
+      TEXMFVAR: /tmp/texmf-var
+      TEXMFCONFIG: /tmp/texmf-config
       OTEL_ENABLED: "false"
     networks:
       - sandbox_net

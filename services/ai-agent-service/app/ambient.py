@@ -7,6 +7,8 @@ from uuid import uuid4
 import redis.asyncio as aioredis
 from sqlmodel import Session, select
 
+from tailored_kit import LlmClient
+
 from app.models import (
     BehavioralMemoryFactDB,
     ProactiveSuggestionDB,
@@ -99,7 +101,9 @@ def _upsert_memory_fact(
     fact_text: str,
     source_event_id: str,
     confidence: float = 0.85,
+    embedding: Optional[List[float]] = None,
 ) -> BehavioralMemoryFactDB:
+    vec = embedding if embedding is not None else deterministic_embedding_768(fact_text)
     existing = session.exec(
         select(BehavioralMemoryFactDB).where(
             BehavioralMemoryFactDB.user_id == user_id,
@@ -109,7 +113,7 @@ def _upsert_memory_fact(
     ).first()
     if existing:
         existing.fact_text = fact_text
-        existing.embedding = deterministic_embedding_768(fact_text)
+        existing.embedding = vec
         existing.confidence = confidence
         src_ids = json.loads(existing.source_event_ids_json or "[]")
         if source_event_id not in src_ids:
@@ -124,7 +128,7 @@ def _upsert_memory_fact(
         user_id=user_id,
         category=category,
         fact_text=fact_text,
-        embedding=deterministic_embedding_768(fact_text),
+        embedding=vec,
         confidence=confidence,
         source_event_ids_json=json.dumps([source_event_id]),
     )
@@ -139,6 +143,7 @@ async def evaluate_distillation_and_proactive_rules(
     *,
     prof: UserBehaviorProfileDB,
     latest_event_id: str,
+    llm_client: Optional[LlmClient] = None,
 ) -> Tuple[List[BehavioralMemoryFactDB], Optional[Dict[str, Any]]]:
     """
     Tier 1 memory distillation + Calm Proactive Suggestion evaluation with strict cooldowns.
@@ -146,6 +151,17 @@ async def evaluate_distillation_and_proactive_rules(
     """
     distilled: List[BehavioralMemoryFactDB] = []
     emitted_suggestion: Optional[Dict[str, Any]] = None
+
+    async def _store_fact(category: str, fact_text: str) -> BehavioralMemoryFactDB:
+        emb = await llm_client.embed_text(fact_text, dim=768) if llm_client else None
+        return _upsert_memory_fact(
+            session,
+            user_id=prof.user_id,
+            category=category,
+            fact_text=fact_text,
+            source_event_id=latest_event_id,
+            embedding=emb,
+        )
 
     locs = json.loads(prof.dominant_locations_json or "{}")
     roles = json.loads(prof.implicit_role_drift_json or "{}")
@@ -155,48 +171,40 @@ async def evaluate_distillation_and_proactive_rules(
     # Distill grounded memory facts whenever thresholds are met (or >= 5 signals)
     for role, cnt in roles.items():
         if not role.startswith("hidden:") and cnt >= 4:
-            f = _upsert_memory_fact(
-                session,
-                user_id=prof.user_id,
-                category="role_drift",
-                fact_text=f"Frequently dwells on {role} opportunities ({cnt} recent sessions).",
-                source_event_id=latest_event_id,
+            distilled.append(
+                await _store_fact(
+                    "role_drift",
+                    f"Frequently dwells on {role} opportunities ({cnt} recent sessions).",
+                )
             )
-            distilled.append(f)
 
     for loc, cnt in locs.items():
         if not loc.startswith("hidden:") and loc != "Unknown" and cnt >= 4:
-            f = _upsert_memory_fact(
-                session,
-                user_id=prof.user_id,
-                category="location_drift",
-                fact_text=f"Shows strong browsing affinity for {loc} roles ({cnt} dwell signals).",
-                source_event_id=latest_event_id,
+            distilled.append(
+                await _store_fact(
+                    "location_drift",
+                    f"Shows strong browsing affinity for {loc} roles ({cnt} dwell signals).",
+                )
             )
-            distilled.append(f)
 
     for key, cnt in style.items():
         if key.startswith("refine:") and cnt >= 3:
             pref = key.split(":", 1)[1]
-            f = _upsert_memory_fact(
-                session,
-                user_id=prof.user_id,
-                category="writing_style",
-                fact_text=f"Prefers '{pref}' bullet phrasing during Studio CV refinements.",
-                source_event_id=latest_event_id,
+            distilled.append(
+                await _store_fact(
+                    "writing_style",
+                    f"Prefers '{pref}' bullet phrasing during Studio CV refinements.",
+                )
             )
-            distilled.append(f)
 
     for sk, cnt in gaps.items():
         if sk != "Unknown" and cnt >= 3:
-            f = _upsert_memory_fact(
-                session,
-                user_id=prof.user_id,
-                category="skill_gap",
-                fact_text=f"Repeatedly inspects missing '{sk}' skill requirements across target jobs.",
-                source_event_id=latest_event_id,
+            distilled.append(
+                await _store_fact(
+                    "skill_gap",
+                    f"Repeatedly inspects missing '{sk}' skill requirements across target jobs.",
+                )
             )
-            distilled.append(f)
 
     if distilled:
         prof.events_since_last_distill = 0

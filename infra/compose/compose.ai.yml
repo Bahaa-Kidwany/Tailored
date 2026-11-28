@@ -30,6 +30,15 @@ services:
       OTEL_ENABLED: ${OTEL_ENABLED:-true}
       INTERNAL_HMAC_SECRET: ${INTERNAL_HMAC_SECRET:-dev_internal_hmac_secret_change_in_prod}
       AUDIT_ACTOR_SALT: ${AUDIT_ACTOR_SALT:-dev_audit_actor_salt_change_in_prod}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}
+      GEMINI_EMBED_MODEL: ${GEMINI_EMBED_MODEL:-text-embedding-004}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
+      OPENAI_EMBED_MODEL: ${OPENAI_EMBED_MODEL:-text-embedding-3-small}
+      LANGFUSE_HOST: ${LANGFUSE_HOST:-}
+      LANGFUSE_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY:-}
+      LANGFUSE_SECRET_KEY: ${LANGFUSE_SECRET_KEY:-}
     ports:
       - "8007:8007"
     networks:

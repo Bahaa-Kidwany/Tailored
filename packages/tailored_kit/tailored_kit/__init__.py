@@ -20,6 +20,7 @@ from tailored_kit.errors import (
 )
 from tailored_kit.feature_flags.client import FeatureFlagClient
 from tailored_kit.http_client.internal import InternalHttpClient
+from tailored_kit.llm import LangfuseClient, LlmClient
 from tailored_kit.messaging_redpanda.consumer import RedpandaConsumer
 from tailored_kit.messaging_redpanda.envelope import ActorContext, EventEnvelope
 from tailored_kit.messaging_redpanda.producer import RedpandaProducer
@@ -34,6 +35,8 @@ __all__ = [
     "ForbiddenError",
     "InsufficientCreditsError",
     "InternalHttpClient",
+    "LangfuseClient",
+    "LlmClient",
     "NotFoundError",
     "OutboxEvent",
     "OutboxRelay",
