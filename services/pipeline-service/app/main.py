@@ -641,3 +641,29 @@ async def internal_update_by_job(
         session.commit()
         session.refresh(item)
         return _item_to_dict(session, item)
+
+
+@app.get("/internal/pipeline/overdue-followups")
+async def internal_overdue_followups(
+    _: RequestContext = Depends(require_internal_service),
+) -> List[Dict[str, Any]]:
+    now = utc_now()
+    with Session(engine) as session:
+        rows = session.exec(
+            select(PipelineItemDB).where(
+                PipelineItemDB.status == "applied",
+                PipelineItemDB.follow_up_due_at.is_not(None),
+                PipelineItemDB.follow_up_due_at <= now,
+            )
+        ).all()
+        return [
+            {
+                "id": it.id,
+                "user_id": it.user_id,
+                "job_id": it.job_id,
+                "company_name": it.company_snapshot,
+                "job_title": it.job_title_snapshot,
+                "recruiter_email": it.recruiter_email,
+            }
+            for it in rows
+        ]

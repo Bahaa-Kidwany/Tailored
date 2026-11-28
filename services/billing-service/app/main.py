@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import hmac
 import io
@@ -11,6 +12,7 @@ from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
 import boto3
+import httpx
 from botocore.client import Config as BotoConfig
 from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request, Response, status
 from pydantic import BaseModel, Field
@@ -56,7 +58,11 @@ class BillingSettings(ServiceSettings):
     minio_root_user: str = "tailored_minio"
     minio_root_password: str = "tailored_minio_dev_pass"
     paymob_hmac_secret: str = "dev_paymob_hmac_secret"
+    paymob_api_key: str = ""
+    paymob_integration_id: int = 0
     stripe_webhook_secret: str = "dev_stripe_webhook_secret"
+    stripe_api_key: str = ""
+    checkout_redirect_base: str = "http://localhost/plans"
 
 
 settings = BillingSettings()
@@ -422,9 +428,42 @@ async def lifespan(app: FastAPI):
     except Exception as exc:
         logger.warning("Consumer delayed (%s)", exc)
 
+    stop_evt = asyncio.Event()
+
+    async def _expired_holds_reaper() -> None:
+        while not stop_evt.is_set():
+            try:
+                now = utc_now()
+                with Session(engine) as session:
+                    expired_ids = [
+                        h.id
+                        for h in session.exec(
+                            select(CreditHoldDB).where(
+                                CreditHoldDB.status == "held",
+                                CreditHoldDB.expires_at <= now,
+                            )
+                        ).all()
+                    ]
+                for hid in expired_ids:
+                    _refund_hold_tx(hid, reason="hold_expired")
+            except Exception as exc:
+                logger.warning("Expired hold reaper error: %s", exc)
+            try:
+                await asyncio.wait_for(stop_evt.wait(), timeout=60.0)
+            except asyncio.TimeoutError:
+                pass
+
+    reaper_task = asyncio.create_task(_expired_holds_reaper())
+
     try:
         yield
     finally:
+        stop_evt.set()
+        reaper_task.cancel()
+        try:
+            await reaper_task
+        except asyncio.CancelledError:
+            pass
         await consumer.stop()
         await relay.stop()
         await producer.stop()
@@ -564,9 +603,52 @@ async def create_checkout(
         session.add(order)
         session.commit()
         session.refresh(order)
+        checkout_url = f"https://checkout.tailored.app/{provider}/{order.provider_order_id}"
+        if provider == "paymob" and settings.paymob_api_key:
+            try:
+                async with httpx.AsyncClient(timeout=8.0) as hc:
+                    auth_r = await hc.post("https://accept.paymob.com/api/auth/tokens", json={"api_key": settings.paymob_api_key})
+                    auth_r.raise_for_status()
+                    pm_tok = auth_r.json()["token"]
+                    ord_r = await hc.post(
+                        "https://accept.paymob.com/api/ecommerce/orders",
+                        json={"auth_token": pm_tok, "delivery_needed": "false", "amount_cents": str(order.amount_minor), "currency": order.currency, "merchant_order_id": order.provider_order_id, "items": []},
+                    )
+                    ord_r.raise_for_status()
+                    pm_oid = ord_r.json()["id"]
+                    if settings.paymob_integration_id:
+                        pk_r = await hc.post(
+                            "https://accept.paymob.com/api/acceptance/payment_keys",
+                            json={"auth_token": pm_tok, "amount_cents": str(order.amount_minor), "expiration": 3600, "order_id": pm_oid, "currency": order.currency, "integration_id": settings.paymob_integration_id, "billing_data": {"email": f"{ctx.user_id}@tailored.app", "first_name": "Tailored", "last_name": "User", "phone_number": "NA", "city": "Cairo", "country": "EG"}},
+                        )
+                        pk_r.raise_for_status()
+                        checkout_url = f"https://accept.paymob.com/api/acceptance/iframes/default?payment_token={pk_r.json()['token']}"
+            except Exception as exc:
+                logger.warning("Paymob live session fallback to sandbox URL: %s", exc)
+        elif provider == "stripe" and settings.stripe_api_key:
+            try:
+                async with httpx.AsyncClient(timeout=8.0) as hc:
+                    sr = await hc.post(
+                        "https://api.stripe.com/v1/checkout/sessions",
+                        headers={"Authorization": f"Bearer {settings.stripe_api_key}"},
+                        data={
+                            "mode": "payment",
+                            "success_url": f"{settings.checkout_redirect_base}?paid=1",
+                            "cancel_url": f"{settings.checkout_redirect_base}?cancelled=1",
+                            "line_items[0][price_data][currency]": order.currency.lower(),
+                            "line_items[0][price_data][unit_amount]": str(order.amount_minor),
+                            "line_items[0][price_data][product_data][name]": f"Tailored {pack.name} ({pack.credits} credits)",
+                            "line_items[0][quantity]": "1",
+                            "client_reference_id": order.provider_order_id,
+                        },
+                    )
+                    sr.raise_for_status()
+                    checkout_url = sr.json().get("url") or checkout_url
+            except Exception as exc:
+                logger.warning("Stripe live session fallback to sandbox URL: %s", exc)
         res = order.model_dump()
         res["created_at"] = order.created_at.isoformat()
-        res["checkout_url"] = f"https://checkout.tailored.app/{provider}/{order.provider_order_id}"
+        res["checkout_url"] = checkout_url
         return res
 
 

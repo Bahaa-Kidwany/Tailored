@@ -203,7 +203,10 @@ services:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-tailored_minio}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-tailored_minio_dev_pass}
       PAYMOB_HMAC_SECRET: ${PAYMOB_HMAC_SECRET:-dev_paymob_hmac_secret}
+      PAYMOB_API_KEY: ${PAYMOB_API_KEY:-}
+      PAYMOB_INTEGRATION_ID: ${PAYMOB_INTEGRATION_ID:-0}
       STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-dev_stripe_webhook_secret}
+      STRIPE_API_KEY: ${STRIPE_API_KEY:-}
       OTLP_ENDPOINT: ${OTLP_ENDPOINT:-http://otel-collector:4317}
       OTEL_ENABLED: ${OTEL_ENABLED:-true}
       INTERNAL_HMAC_SECRET: ${INTERNAL_HMAC_SECRET:-dev_internal_hmac_secret_change_in_prod}
@@ -281,6 +284,12 @@ services:
       ENVIRONMENT: ${ENVIRONMENT:-development}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       DATABASE_URL: postgresql+psycopg://notifications_svc:${NOTIFICATIONS_DB_PASSWORD:-tailored_notif_pass}@postgres:5432/notifications_db
+      PIPELINE_SERVICE_URL: http://pipeline-service:8005
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-alerts@tailored.app}
       REDPANDA_BROKERS: ${REDPANDA_BROKERS:-redpanda:9092}
       REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
       OTLP_ENDPOINT: ${OTLP_ENDPOINT:-http://otel-collector:4317}

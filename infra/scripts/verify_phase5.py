@@ -52,6 +52,15 @@ def main() -> int:
         h = {"Authorization": f"Bearer {tok}"}
         client.post("/api/v1/auth/verify-email", json={"email": email, "code": otp})
 
+        # Wait for async user.verified starter credit grant (+2 credits)
+        for _ in range(30):
+            bal = client.get("/api/v1/credits/balance", headers=h)
+            if bal.status_code == 200 and bal.json().get("available_credits", 0) >= 2:
+                break
+            time.sleep(0.5)
+        else:
+            raise AssertionError("Starter credits not granted after email verification within 15s")
+
         # 2. Tailor a CV so we have a document to freeze
         jobs = client.get("/api/v1/explore/jobs").json()
         job = next((j for j in jobs if "TechStart" in j["company_name"]), jobs[0])

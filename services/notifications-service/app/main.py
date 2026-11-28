@@ -3,8 +3,10 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import smtplib
 from contextlib import asynccontextmanager
 from datetime import datetime, timedelta
+from email.message import EmailMessage
 from typing import Any, Dict, List, Optional
 
 import redis.asyncio as aioredis
@@ -16,6 +18,7 @@ from sqlmodel import Session, SQLModel, select
 
 from tailored_kit import (
     EventEnvelope,
+    InternalHttpClient,
     NotFoundError,
     OutboxEvent,
     ProcessedEvent,
@@ -36,6 +39,12 @@ logger = logging.getLogger(__name__)
 class NotificationsSettings(ServiceSettings):
     service_name: str = "notifications-service"
     database_url: str = "postgresql+psycopg://notifications_svc:tailored_notif_pass@postgres:5432/notifications_db"
+    pipeline_service_url: str = "http://pipeline-service:8005"
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_pass: str = ""
+    smtp_from: str = "alerts@tailored.app"
 
 
 settings = NotificationsSettings()
@@ -67,6 +76,28 @@ def _notif_to_dict(n: NotificationDB) -> Dict[str, Any]:
     }
 
 
+def _send_notif_email_sync(subject: str, body: str, to_addr: str) -> str:
+    if not settings.smtp_host or not to_addr:
+        return "logged_local"
+    msg = EmailMessage()
+    msg["From"] = settings.smtp_from
+    msg["To"] = to_addr
+    msg["Subject"] = subject
+    msg.set_content(body)
+    try:
+        with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=10) as smtp:
+            smtp.ehlo()
+            if settings.smtp_port in (587, 2525):
+                smtp.starttls()
+            if settings.smtp_user and settings.smtp_pass:
+                smtp.login(settings.smtp_user, settings.smtp_pass)
+            smtp.send_message(msg)
+        return "sent_smtp"
+    except Exception as exc:
+        logger.warning("Notification SMTP delivery error: %s", exc)
+        return "smtp_failed"
+
+
 async def _create_and_push_notif(
     redis_client: aioredis.Redis,
     *,
@@ -79,8 +110,20 @@ async def _create_and_push_notif(
     job_id: Optional[str] = None,
     pipeline_id: Optional[str] = None,
     dedup_key: Optional[str] = None,
+    fit_score: Optional[float] = None,
 ) -> Optional[Dict[str, Any]]:
     with Session(engine) as session:
+        rule = session.get(NotificationRuleDB, user_id)
+        if rule:
+            if rule.digest_cadence == "off":
+                return None
+            if category == "followup" and not rule.followup_reminders:
+                return None
+            if category == "credit" and "low credit" in title.lower() and not rule.low_credit_alerts:
+                return None
+            if category == "match" and fit_score is not None and fit_score < float(rule.min_match_alert_score):
+                return None
+
         if dedup_key:
             exists = session.exec(
                 select(NotificationDB).where(
@@ -102,6 +145,16 @@ async def _create_and_push_notif(
             dedup_key=dedup_key,
         )
         session.add(row)
+        session.flush()
+        dispatch_status = await asyncio.to_thread(_send_notif_email_sync, title, subtitle, "")
+        session.add(
+            EmailDispatchLogDB(
+                user_id=user_id,
+                template_key=f"notif.{category}",
+                provider_msg_id=row.id,
+                status=dispatch_status,
+            )
+        )
         session.commit()
         session.refresh(row)
         data = _notif_to_dict(row)
@@ -115,6 +168,13 @@ async def lifespan(app: FastAPI):
     SQLModel.metadata.create_all(engine, tables=NOTIF_TABLES)
     redis_client = aioredis.from_url(settings.redis_url, decode_responses=True)
     app.state.redis = redis_client
+
+    internal_http = InternalHttpClient(
+        caller_service=settings.service_name,
+        hmac_secret=settings.internal_hmac_secret,
+        timeout_seconds=4.0,
+    )
+    app.state.internal_http = internal_http
 
     producer = RedpandaProducer(settings.redpanda_brokers)
     try:
@@ -138,16 +198,18 @@ async def lifespan(app: FastAPI):
             return
 
         if env.event_type == "job.high_match.detected":
+            raw_fit = float(p.get("fit_score", 90))
             await _create_and_push_notif(
                 redis_client,
                 user_id=uid,
                 category="match",
-                title=f"{p.get('fit_score', 90)}% Match: {p.get('company_name', '')} — {p.get('title', '')}",
+                title=f"{raw_fit}% Match: {p.get('company_name', '')} — {p.get('title', '')}",
                 subtitle="High-fit role discovered in your Radar feed.",
                 action_label="Tailor CV · 1 cr",
                 target_path="/studio",
                 job_id=p.get("job_id"),
                 dedup_key=f"match:{p.get('job_id')}",
+                fit_score=raw_fit,
             )
         elif env.event_type == "latex.compile.succeeded":
             await _create_and_push_notif(
@@ -235,10 +297,46 @@ async def lifespan(app: FastAPI):
     except Exception as exc:
         logger.warning("Consumer delayed (%s)", exc)
 
+    stop_evt = asyncio.Event()
+
+    async def _followup_and_digest_scheduler() -> None:
+        await asyncio.sleep(5.0)
+        while not stop_evt.is_set():
+            try:
+                resp = await internal_http.get(f"{settings.pipeline_service_url}/internal/pipeline/overdue-followups")
+                if resp.status_code == 200:
+                    for item in resp.json():
+                        await _create_and_push_notif(
+                            redis_client,
+                            user_id=item["user_id"],
+                            category="followup",
+                            title=f"7-Day Follow-Up Due: {item.get('company_name', '')}",
+                            subtitle=f"Check in on your {item.get('job_title', 'application')} submission.",
+                            action_label="Draft Follow-Up",
+                            target_path=f"/pipeline/{item['id']}",
+                            pipeline_id=item["id"],
+                            dedup_key=f"overdue_7d:{item['id']}",
+                        )
+            except Exception as exc:
+                logger.warning("Overdue follow-up check skipped: %s", exc)
+            try:
+                await asyncio.wait_for(stop_evt.wait(), timeout=300.0)
+            except asyncio.TimeoutError:
+                pass
+
+    sched_task = asyncio.create_task(_followup_and_digest_scheduler())
+
     try:
         yield
     finally:
+        stop_evt.set()
+        sched_task.cancel()
+        try:
+            await sched_task
+        except asyncio.CancelledError:
+            pass
         await consumer.stop()
+        await internal_http.close()
         await producer.stop()
         await redis_client.aclose()
 
