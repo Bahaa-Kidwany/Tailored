@@ -206,6 +206,85 @@ services:
       timeout: 5s
       retries: 10
 
+  pipeline-service:
+    build:
+      context: ../..
+      dockerfile: services/pipeline-service/Dockerfile
+    container_name: tailored-pipeline
+    restart: unless-stopped
+    profiles: ["core"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redpanda:
+        condition: service_healthy
+      redpanda-init:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    environment:
+      SERVICE_NAME: pipeline-service
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      DATABASE_URL: postgresql+psycopg://pipeline_svc:${PIPELINE_DB_PASSWORD:-tailored_pipeline_pass}@postgres:5432/pipeline_db
+      JOBS_SERVICE_URL: http://jobs-service:8003
+      PROFILE_SERVICE_URL: http://profile-service:8002
+      DOCUMENTS_SERVICE_URL: http://documents-service:8004
+      REDPANDA_BROKERS: ${REDPANDA_BROKERS:-redpanda:9092}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      OTLP_ENDPOINT: ${OTLP_ENDPOINT:-http://otel-collector:4317}
+      OTEL_ENABLED: ${OTEL_ENABLED:-true}
+      INTERNAL_HMAC_SECRET: ${INTERNAL_HMAC_SECRET:-dev_internal_hmac_secret_change_in_prod}
+      AUDIT_ACTOR_SALT: ${AUDIT_ACTOR_SALT:-dev_audit_actor_salt_change_in_prod}
+    ports:
+      - "8005:8005"
+    networks:
+      - internal_mesh
+      - data_net
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8005/health')\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  notifications-service:
+    build:
+      context: ../..
+      dockerfile: services/notifications-service/Dockerfile
+    container_name: tailored-notifications
+    restart: unless-stopped
+    profiles: ["core"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redpanda:
+        condition: service_healthy
+      redpanda-init:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    environment:
+      SERVICE_NAME: notifications-service
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      DATABASE_URL: postgresql+psycopg://notifications_svc:${NOTIFICATIONS_DB_PASSWORD:-tailored_notif_pass}@postgres:5432/notifications_db
+      REDPANDA_BROKERS: ${REDPANDA_BROKERS:-redpanda:9092}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      OTLP_ENDPOINT: ${OTLP_ENDPOINT:-http://otel-collector:4317}
+      OTEL_ENABLED: ${OTEL_ENABLED:-true}
+      INTERNAL_HMAC_SECRET: ${INTERNAL_HMAC_SECRET:-dev_internal_hmac_secret_change_in_prod}
+      AUDIT_ACTOR_SALT: ${AUDIT_ACTOR_SALT:-dev_audit_actor_salt_change_in_prod}
+    ports:
+      - "8008:8008"
+    networks:
+      - internal_mesh
+      - data_net
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8008/health')\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
   telemetry-audit-service:
     build:
       context: ../..

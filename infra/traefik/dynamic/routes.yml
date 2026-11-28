@@ -96,6 +96,27 @@ http:
       middlewares: [auth-forward, sse-no-buffer]
       service: ai-agent-svc
 
+    pipeline-protected:
+      entryPoints: [web]
+      priority: 50
+      rule: "PathPrefix(`/api/v1/pipeline`)"
+      middlewares: [auth-forward]
+      service: pipeline-svc
+
+    notifications-stream-protected:
+      entryPoints: [web]
+      priority: 100
+      rule: "PathPrefix(`/api/v1/notifications/stream`)"
+      middlewares: [auth-forward, sse-no-buffer]
+      service: notifications-sse-svc
+
+    notifications-protected:
+      entryPoints: [web]
+      priority: 50
+      rule: "PathPrefix(`/api/v1/notifications`)"
+      middlewares: [auth-forward]
+      service: notifications-svc
+
     telemetry-public:
       entryPoints: [web]
       priority: 80
@@ -125,6 +146,10 @@ http:
       loadBalancer:
         servers:
           - url: "http://documents-service:8004"
+    pipeline-svc:
+      loadBalancer:
+        servers:
+          - url: "http://pipeline-service:8005"
     billing-svc:
       loadBalancer:
         servers:
@@ -134,6 +159,15 @@ http:
         serversTransport: sse-transport
         servers:
           - url: "http://ai-agent-service:8007"
+    notifications-svc:
+      loadBalancer:
+        servers:
+          - url: "http://notifications-service:8008"
+    notifications-sse-svc:
+      loadBalancer:
+        serversTransport: sse-transport
+        servers:
+          - url: "http://notifications-service:8008"
     telemetry-audit-svc:
       loadBalancer:
         servers:
