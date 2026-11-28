@@ -38,6 +38,10 @@ import {
   type CvFitDetail,
 } from '../services/cvFitApi';
 import type { JobItem } from '../services/jobsApi';
+import { resolveServerJobId } from '../services/jobsApi';
+import { AgentAPI } from '../services/agentApi';
+import { getAccessToken } from '../services/apiClient';
+import { TelemetrySDK } from '../services/telemetrySdk';
 
 interface VersionSnapshot {
   version: number;
@@ -941,6 +945,14 @@ export const CvStudioPage: React.FC = () => {
     if (pulseTimerRef.current) window.clearTimeout(pulseTimerRef.current);
     appliedTimerRef.current = window.setTimeout(() => setAppliedAnchorId(null), 1100);
     pulseTimerRef.current = window.setTimeout(() => setFitPulse(false), 700);
+    if (getAccessToken()) {
+      void AgentAPI.resolveProposal(proposalId, 'apply').catch(() => {});
+    }
+    TelemetrySDK.track('ui.proposal.resolved', 'ai.coach.proposal.resolve', {
+      docId: activeStudioDoc?.doc_id,
+      isMicroSignal: true,
+      properties: { resolution: 'applied' },
+    });
     pushToast('Applied edit to living document.', {
       variant: 'success',
       undoLabel: 'Undo',
@@ -1100,6 +1112,9 @@ export const CvStudioPage: React.FC = () => {
         m.actionCard?.id === actionId ? { ...m, actionCard: { ...m.actionCard, status: 'confirmed' } } : m
       )
     );
+    if (getAccessToken()) {
+      void AgentAPI.confirmAction(actionId, true).catch(() => {});
+    }
   };
 
   const handleAuditAction = (aud: AiAuditItem) => {
@@ -1128,7 +1143,9 @@ export const CvStudioPage: React.FC = () => {
     }
   };
 
-  const handleSendCoachMessage = (prompt: string, mode: string) => {
+  const agentThreadIdRef = useRef<Record<string, string>>({});
+
+  const handleSendCoachMessage = async (prompt: string, mode: string) => {
     const userMsg: AiChatMessage = {
       id: `u_${Date.now()}`,
       role: 'user',
@@ -1136,6 +1153,65 @@ export const CvStudioPage: React.FC = () => {
     };
     setMessagesForJob((prev) => [...prev, userMsg]);
     setIsStreaming(true);
+
+    if (getAccessToken()) {
+      const assistantId = `a_${Date.now()}`;
+      try {
+        const key = String(activeStudioJob.id);
+        let threadId = agentThreadIdRef.current[key];
+        if (!threadId) {
+          const th = await AgentAPI.createThread({
+            surface: 'cv',
+            job_id: resolveServerJobId(activeStudioJob.id, activeStudioJob.server_id),
+            doc_id: activeStudioDoc?.doc_id,
+            title: `${targetCompany} — ${cleanTargetJobTitle(activeStudioJob.title)}`,
+          });
+          threadId = th.id;
+          agentThreadIdRef.current[key] = threadId;
+        }
+        setMessagesForJob((prev) => [...prev, { id: assistantId, role: 'assistant', text: '' }]);
+        await AgentAPI.streamMessage(
+          threadId,
+          {
+            prompt,
+            mode,
+            focused_anchor: focusedAnchor,
+            job_id: resolveServerJobId(activeStudioJob.id, activeStudioJob.server_id),
+            doc_id: activeStudioDoc?.doc_id,
+          },
+          {
+            onThinkingStep: (step) =>
+              setMessagesForJob((prev) =>
+                prev.map((m) => (m.id === assistantId ? { ...m, thinkingSummary: step } : m))
+              ),
+            onTextDelta: (delta) =>
+              setMessagesForJob((prev) =>
+                prev.map((m) => (m.id === assistantId ? { ...m, text: `${m.text}${delta}` } : m))
+              ),
+            onProposalCard: (proposal) =>
+              setMessagesForJob((prev) =>
+                prev.map((m) => (m.id === assistantId ? { ...m, proposal } : m))
+              ),
+            onActionCard: (actionCard) =>
+              setMessagesForJob((prev) =>
+                prev.map((m) => (m.id === assistantId ? { ...m, actionCard } : m))
+              ),
+            onResourceList: (resources) =>
+              setMessagesForJob((prev) =>
+                prev.map((m) => (m.id === assistantId ? { ...m, resources } : m))
+              ),
+            onAuditSummary: (audit) =>
+              setMessagesForJob((prev) =>
+                prev.map((m) => (m.id === assistantId ? { ...m, audit } : m))
+              ),
+          }
+        );
+        setIsStreaming(false);
+        return;
+      } catch {
+        setMessagesForJob((prev) => prev.filter((m) => m.id !== assistantId));
+      }
+    }
 
     const workspaceReply = buildWorkspaceCoachReply({
       prompt,

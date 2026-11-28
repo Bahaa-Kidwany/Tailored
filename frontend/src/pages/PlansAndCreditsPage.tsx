@@ -18,7 +18,7 @@ export const PlansAndCreditsPage: React.FC = () => {
 
   const completeCheckout = () => {
     if (!checkoutPack) return;
-    purchaseCreditPack(checkoutPack.id);
+    purchaseCreditPack(checkoutPack.id, paymentMethod);
     setCheckoutPack(null);
   };
 

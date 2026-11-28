@@ -2,8 +2,11 @@
  * Jobs API Client for Tailored Job Radar & Automated Ingestion
  */
 
+import { apiFetchRaw, getAccessToken } from './apiClient';
+
 export interface JobItem {
   id: number;
+  server_id?: string;
   source_id: string;
   title: string;
   company_name: string;
@@ -18,6 +21,72 @@ export interface JobItem {
   location_type: string;
   created_at: string;
   recruiter_email?: string | null;
+}
+
+const JOB_ID_MAP_KEY = 'tailored_job_uuid_map_v1';
+
+function hashToSafeInt(val: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < val.length; i += 1) {
+    h ^= val.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return (h >>> 1) % 90000000 + 10000;
+}
+
+function loadIdMap(): Record<string, string> {
+  try {
+    const raw = localStorage.getItem(JOB_ID_MAP_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveIdMapping(numId: number, serverId: string): void {
+  try {
+    const m = loadIdMap();
+    m[String(numId)] = serverId;
+    localStorage.setItem(JOB_ID_MAP_KEY, JSON.stringify(m));
+  } catch {
+    // ignore storage quota
+  }
+}
+
+export function resolveServerJobId(jobId: number | string, explicitServerId?: string): string {
+  if (explicitServerId) return explicitServerId;
+  const s = String(jobId);
+  if (/^[0-9a-f]{8}-[0-9a-f]{4}-/i.test(s)) return s;
+  const map = loadIdMap();
+  return map[s] || s;
+}
+
+export function normalizeServerJob(raw: any): JobItem {
+  const rawId = raw?.id ?? raw?.source_id ?? Date.now();
+  const isDigits = typeof rawId === 'number' || /^\d+$/.test(String(rawId));
+  const numericId = isDigits ? Number(rawId) : hashToSafeInt(String(rawId));
+  const serverId = typeof rawId === 'string' && !/^\d+$/.test(rawId) ? rawId : raw?.server_id;
+  if (serverId) {
+    saveIdMapping(numericId, serverId);
+  }
+  return {
+    id: numericId,
+    server_id: serverId || (isDigits ? undefined : String(rawId)),
+    source_id: String(raw?.source_id || rawId),
+    title: String(raw?.title || 'Engineering Role'),
+    company_name: String(raw?.company_name || 'Company'),
+    location: String(raw?.location || 'MENA / Remote'),
+    url: String(raw?.url || ''),
+    raw_description: String(raw?.raw_description || ''),
+    fit_score: Number(raw?.fit_score ?? 80),
+    is_high_match: Boolean(raw?.is_high_match ?? (Number(raw?.fit_score ?? 80) >= 80)),
+    source_type: String(raw?.source_type || 'web'),
+    parsed_skills: Array.isArray(raw?.parsed_skills) ? raw.parsed_skills : [],
+    responsibilities: Array.isArray(raw?.responsibilities) ? raw.responsibilities : [],
+    location_type: String(raw?.location_type || raw?.work_mode || 'Hybrid'),
+    created_at: String(raw?.created_at || new Date().toISOString()),
+    recruiter_email: raw?.recruiter_email ?? null,
+  };
 }
 
 export function extractEmail(text: string): string | null {
@@ -65,8 +134,6 @@ export interface JobFilters {
   limit?: number;
   skip?: number;
 }
-
-const API_BASE = 'http://127.0.0.1:8000/api/v1';
 
 // Fallback high-quality curated dataset for offline resilience
 const FALLBACK_RADAR_JOBS: JobItem[] = [
@@ -201,15 +268,16 @@ export const JobsAPI = {
    */
   async triggerAutoSearch(params: AutoSearchParams): Promise<{ jobs: JobItem[]; isOffline: boolean }> {
     try {
-      const res = await fetch(`${API_BASE}/jobs/auto-search`, {
+      const res = await apiFetchRaw('/jobs/auto-search', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(params),
+        body: params,
+        featureKey: 'jobs.radar.search',
       });
 
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      return { jobs: data, isOffline: false };
+      const jobs = Array.isArray(data) ? data.map(normalizeServerJob) : [];
+      return { jobs, isOffline: false };
     } catch (err) {
       console.warn('Backend auto-search unreachable. Using curated local dataset:', err);
       // Filter fallback jobs if query or location specified
@@ -233,15 +301,15 @@ export const JobsAPI = {
    */
   async ingestJobFromUrl(params: IngestUrlParams): Promise<{ job: JobItem; isOffline: boolean }> {
     try {
-      const res = await fetch(`${API_BASE}/jobs/ingest-url`, {
+      const res = await apiFetchRaw('/jobs/ingest-url', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(params),
+        body: params,
+        featureKey: 'jobs.ingest.url',
       });
 
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      return { job: data, isOffline: false };
+      return { job: normalizeServerJob(data), isOffline: false };
     } catch (err) {
       console.warn('Backend URL ingestion unavailable, resolving via local heuristics:', err);
       // Fallback matching against curated dataset or synthesizing a job item
@@ -317,14 +385,14 @@ export const JobsAPI = {
    */
   async extractJobFromDescription(params: ExtractDescriptionParams): Promise<{ job: JobItem; isOffline: boolean }> {
     try {
-      const res = await fetch(`${API_BASE}/jobs/extract-description`, {
+      const res = await apiFetchRaw('/jobs/extract-description', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(params),
+        body: params,
+        featureKey: 'jobs.ingest.description',
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const job: JobItem = await res.json();
-      return { job, isOffline: false };
+      const raw = await res.json();
+      return { job: normalizeServerJob(raw), isOffline: false };
     } catch {
       // Offline fallback heuristic
       const email = extractEmail(params.description);
@@ -377,10 +445,14 @@ export const JobsAPI = {
       if (filters.limit) queryParams.set('limit', filters.limit.toString());
       if (filters.skip) queryParams.set('skip', filters.skip.toString());
 
-      const res = await fetch(`${API_BASE}/jobs?${queryParams.toString()}`);
+      const qs = queryParams.toString();
+      const hasToken = Boolean(getAccessToken());
+      const endpoint = hasToken ? `/jobs${qs ? `?${qs}` : ''}` : '/explore/jobs';
+      const res = await apiFetchRaw(endpoint, { skipAuth: !hasToken });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      return { jobs: data, isOffline: false };
+      const jobs = Array.isArray(data) ? data.map(normalizeServerJob) : [];
+      return { jobs, isOffline: false };
     } catch {
       let filtered = [...FALLBACK_RADAR_JOBS];
       if (filters.query) {
@@ -408,11 +480,37 @@ export const JobsAPI = {
    */
   async getJobDetail(id: number): Promise<JobItem | null> {
     try {
-      const res = await fetch(`${API_BASE}/jobs/${id}`);
+      const serverId = resolveServerJobId(id);
+      const res = await apiFetchRaw(`/jobs/${serverId}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return await res.json();
+      const raw = await res.json();
+      return normalizeServerJob(raw);
     } catch {
       return FALLBACK_RADAR_JOBS.find((j) => j.id === id) || null;
     }
+  },
+
+  async saveInterestRemote(jobId: number, serverId?: string): Promise<void> {
+    if (!getAccessToken()) return;
+    const target = resolveServerJobId(jobId, serverId);
+    await apiFetchRaw(`/interest/${target}`, { method: 'POST', featureKey: 'jobs.interest.save' }).catch(() => {});
+  },
+
+  async removeInterestRemote(jobId: number, serverId?: string): Promise<void> {
+    if (!getAccessToken()) return;
+    const target = resolveServerJobId(jobId, serverId);
+    await apiFetchRaw(`/interest/${target}`, { method: 'DELETE', featureKey: 'jobs.interest.remove' }).catch(() => {});
+  },
+
+  async hideJobRemote(jobId: number, serverId?: string): Promise<void> {
+    if (!getAccessToken()) return;
+    const target = resolveServerJobId(jobId, serverId);
+    await apiFetchRaw(`/jobs/${target}/hide`, { method: 'POST', featureKey: 'jobs.radar.hide' }).catch(() => {});
+  },
+
+  async unhideJobRemote(jobId: number, serverId?: string): Promise<void> {
+    if (!getAccessToken()) return;
+    const target = resolveServerJobId(jobId, serverId);
+    await apiFetchRaw(`/jobs/${target}/hide`, { method: 'DELETE', featureKey: 'jobs.radar.unhide' }).catch(() => {});
   },
 };

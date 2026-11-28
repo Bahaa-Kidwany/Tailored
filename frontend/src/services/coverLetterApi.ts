@@ -3,7 +3,7 @@
  * Handles generation and persistence of targeted cover letters
  */
 
-const API_BASE = 'http://127.0.0.1:8000/api/v1';
+import { apiFetchRaw } from './apiClient';
 
 export interface CoverLetterItem {
   doc_id: string;
@@ -30,10 +30,10 @@ export interface GenerateCoverLetterParams {
 export const CoverLetterAPI = {
   async generateCoverLetter(params: GenerateCoverLetterParams): Promise<{ coverLetter: CoverLetterItem; isOffline: boolean }> {
     try {
-      const res = await fetch(`${API_BASE}/cover-letter`, {
+      const res = await apiFetchRaw('/cover-letter', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(params),
+        body: params,
+        featureKey: 'studio.cover_letter.generate',
       });
 
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -82,7 +82,7 @@ Candidate`;
 
   async listCoverLetters(): Promise<{ coverLetters: CoverLetterItem[]; isOffline: boolean }> {
     try {
-      const res = await fetch(`${API_BASE}/cover-letter`);
+      const res = await apiFetchRaw('/cover-letter');
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       return { coverLetters: data, isOffline: false };

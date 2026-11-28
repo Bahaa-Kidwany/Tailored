@@ -51,9 +51,9 @@ export const AuthPage: React.FC<{ initialMode: 'signin' | 'signup' }> = ({ initi
       return;
     }
     if (mode === 'signin') {
-      signIn(email.trim());
+      void signIn(email.trim(), password);
     } else {
-      registerAccount(fullName.trim() || 'Mostafa Ibrahim', email.trim());
+      void registerAccount(fullName.trim() || 'Mostafa Ibrahim', email.trim(), password);
     }
   };
 

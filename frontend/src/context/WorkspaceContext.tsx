@@ -21,6 +21,11 @@ import {
   type PipelineStatus,
 } from '../services/pipelineStorage';
 import type { AiChatMessage } from '../components/common/CalmAiCoachSidecar';
+import { ApiError, getAccessToken } from '../services/apiClient';
+import { AuthAPI } from '../services/authApi';
+import { BillingAPI } from '../services/billingApi';
+import { NotificationsAPI } from '../services/notificationsApi';
+import { TelemetrySDK } from '../services/telemetrySdk';
 
 export type CreditCurrency = 'EGP' | 'SAR' | 'AED' | 'USD';
 
@@ -360,8 +365,8 @@ interface WorkspaceContextValue {
   twoFactorEnabled: boolean;
   connectedSso: { google: boolean; linkedin: boolean };
   sessions: ActiveSessionDevice[];
-  signIn: (email: string) => void;
-  registerAccount: (fullName: string, email: string) => void;
+  signIn: (email: string, password?: string) => Promise<void> | void;
+  registerAccount: (fullName: string, email: string, password?: string) => Promise<void> | void;
   signOut: () => void;
   verifyOtpCode: (code: string) => boolean;
   updateAccountEmail: (email: string) => void;
@@ -399,7 +404,7 @@ interface WorkspaceContextValue {
     jobTarget: string;
     onAuthorized: () => Promise<void> | void;
   }) => Promise<void>;
-  purchaseCreditPack: (packId: string) => void;
+  purchaseCreditPack: (packId: string, paymentMethod?: string) => void;
 
   // Jobs, Radar & Interest
   radarJobs: JobItem[];
@@ -514,7 +519,7 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   });
   const [userEmail, setUserEmail] = useState<string>('mostafa.eng@tailored.atelier');
   const [emailVerified, setEmailVerified] = useState<boolean>(true);
-  const [hasPassword] = useState<boolean>(true);
+  const [hasPassword, setHasPassword] = useState<boolean>(true);
   const [twoFactorEnabled, setTwoFactorEnabled] = useState<boolean>(false);
   const [connectedSso, setConnectedSso] = useState({ google: true, linkedin: true });
   const [sessions, setSessions] = useState<ActiveSessionDevice[]>([
@@ -772,11 +777,20 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     return () => window.removeEventListener('keydown', onKeyDown);
   }, []);
 
-  // Initial Backend Hydration (Graceful Offline Resilience)
+  // Route view telemetry + Initial Backend Hydration (Graceful Offline Resilience)
   useEffect(() => {
-    async function hydrate() {
-      try {
-        let profileId = 1;
+    TelemetrySDK.track('ui.route.viewed', 'telemetry.route.view', {
+      route: locationState.pathname,
+      personaTrack: activePersonaId,
+      isMicroSignal: true,
+    });
+  }, [locationState.pathname, activePersonaId]);
+
+  const hydrateWorkspace = useCallback(async () => {
+    try {
+      const hasToken = Boolean(getAccessToken());
+      let profileId = 1;
+      if (hasToken) {
         const { profiles } = await ProfileAPI.listProfiles();
         if (profiles.length > 0) {
           const full = await ProfileAPI.getProfile(profiles[0].id);
@@ -788,59 +802,171 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             if (primary) setActivePersonaId(primary.persona_id);
           }
         }
-        const { jobs } = await JobsAPI.listJobs();
-        if (jobs.length > 0) {
-          setRadarJobs(jobs);
-          setInterestList((prev) => (prev.length ? prev : jobs.slice(0, 4)));
-          setActiveStudioJob(jobs[0]);
+      }
+      const { jobs } = await JobsAPI.listJobs();
+      if (jobs.length > 0) {
+        setRadarJobs(jobs);
+        setInterestList((prev) => (prev.length ? prev : jobs.slice(0, 4)));
+        setActiveStudioJob(jobs[0]);
+      }
+      if (hasToken) {
+        const [sec, sess, wallet, ledger, notifs, docsRes, lettersRes, syncedPipe] = await Promise.all([
+          AuthAPI.getSecurityStatus().catch(() => null),
+          AuthAPI.listSessions().catch(() => null),
+          BillingAPI.getBalance().catch(() => null),
+          BillingAPI.getLedger().catch(() => null),
+          NotificationsAPI.list().catch(() => null),
+          CvFitAPI.listCvFits(profileId).catch(() => ({ docs: [] as CvFitSummary[] })),
+          CoverLetterAPI.listCoverLetters().catch(() => ({ coverLetters: [] as CoverLetterItem[] })),
+          PipelineStorage.syncWithServer(profileId).catch(() => null),
+        ]);
+        if (sec) {
+          setUserEmail(sec.email);
+          setEmailVerified(sec.email_verified);
+          setHasPassword(sec.has_password);
+          setTwoFactorEnabled(sec.two_factor_enabled);
+          setConnectedSso({
+            google: sec.connected_providers.includes('google'),
+            linkedin: sec.connected_providers.includes('linkedin'),
+          });
         }
-        const { docs } = await CvFitAPI.listCvFits(profileId);
-        if (docs.length > 0) {
-          setTailoredDocs(docs);
+        if (sess && sess.length > 0) {
+          setSessions(
+            sess.map((s) => ({
+              id: s.id,
+              device: s.device,
+              location: s.location,
+              lastActive: s.last_active,
+              current: s.current,
+            }))
+          );
+        }
+        if (wallet) {
+          setCreditBalance(wallet.available_credits);
+          setLowBalanceThreshold(wallet.low_balance_threshold);
+        }
+        if (ledger && ledger.length > 0) {
+          setCreditLedger(
+            ledger.map((l) => ({
+              id: l.id,
+              date: l.date,
+              action: l.action,
+              jobTarget: l.job_target,
+              delta: l.delta,
+              balanceAfter: l.balance_after,
+            }))
+          );
+        }
+        if (notifs && notifs.length > 0) {
+          setNotifications(notifs);
+        }
+        if (docsRes.docs.length > 0) {
+          setTailoredDocs(docsRes.docs);
           const keys = new Set<string>(['cv_101', 'cl_101']);
-          docs.forEach((d) => {
+          docsRes.docs.forEach((d) => {
             if (d.job_id) keys.add(`cv_${d.job_id}`);
           });
           setUnlockedJobKeys(keys);
-          const first = await CvFitAPI.getCvFit(docs[0].doc_id);
+          const first = await CvFitAPI.getCvFit(docsRes.docs[0].doc_id);
           if (first) setActiveStudioDoc(first);
         }
-        const { coverLetters: letters } = await CoverLetterAPI.listCoverLetters();
-        if (letters.length > 0) {
+        if (lettersRes.coverLetters.length > 0) {
           setCoverLetters((prev) => {
-            const seen = new Set(letters.map((l) => l.doc_id));
-            return [...letters, ...prev.filter((p) => !seen.has(p.doc_id))];
+            const seen = new Set(lettersRes.coverLetters.map((l) => l.doc_id));
+            return [...lettersRes.coverLetters, ...prev.filter((p) => !seen.has(p.doc_id))];
           });
         }
-      } catch {
-        // Offline resilience already seeded cleanly
+        if (syncedPipe) {
+          setPipelineItems(syncedPipe);
+        }
+        const priv = await AuthAPI.getPrivacy().catch(() => null);
+        if (priv) TelemetrySDK.setConsent(priv.analytics_micro_signals);
       }
+    } catch {
+      // Offline resilience already seeded cleanly
     }
-    hydrate();
   }, []);
 
+  useEffect(() => {
+    void hydrateWorkspace();
+  }, [hydrateWorkspace]);
+
+  // Live SSE Notifications Subscription when authenticated
+  useEffect(() => {
+    if (!isAuthenticated || !getAccessToken()) return;
+    const unsubscribe = NotificationsAPI.subscribeStream((incoming) => {
+      setNotifications((prev) => [incoming, ...prev.filter((n) => n.id !== incoming.id)]);
+      pushToast(incoming.title, { variant: 'info' });
+    });
+    return unsubscribe;
+  }, [isAuthenticated, pushToast]);
+
   // Auth helpers
-  const signIn = (email: string) => {
-    setUserEmail(email || 'mostafa.eng@tailored.atelier');
-    setIsAuthenticated(true);
-    setEmailVerified(true);
-    localStorage.setItem('tailored_auth_v2', JSON.stringify({ isAuthenticated: true }));
-    if (pendingIntent) {
-      fulfillPendingIntent();
-    } else {
-      navigateTo(defaultHomeRoute);
+  const signIn = async (email: string, password?: string) => {
+    const cleanEmail = email.trim() || 'mostafa.eng@tailored.atelier';
+    try {
+      if (password) {
+        const res = await AuthAPI.login(cleanEmail, password);
+        setUserEmail(res.user.email);
+        setEmailVerified(res.user.email_verified);
+      } else {
+        const res = await AuthAPI.oauthCallback('google', `oauth_${cleanEmail}`, cleanEmail, cleanEmail.split('@')[0]);
+        setUserEmail(res.user.email);
+        setEmailVerified(true);
+      }
+      setIsAuthenticated(true);
+      localStorage.setItem('tailored_auth_v2', JSON.stringify({ isAuthenticated: true }));
+      await hydrateWorkspace();
+      if (pendingIntent) {
+        fulfillPendingIntent();
+      } else {
+        navigateTo(defaultHomeRoute);
+      }
+    } catch (err) {
+      if (err instanceof ApiError && (err.status === 401 || err.status === 403 || err.status === 422)) {
+        pushToast(err.message || 'Invalid credentials.', { variant: 'error' });
+        return;
+      }
+      setUserEmail(cleanEmail);
+      setIsAuthenticated(true);
+      setEmailVerified(true);
+      localStorage.setItem('tailored_auth_v2', JSON.stringify({ isAuthenticated: true }));
+      if (pendingIntent) {
+        fulfillPendingIntent();
+      } else {
+        navigateTo(defaultHomeRoute);
+      }
     }
   };
 
-  const registerAccount = (_fullName: string, email: string) => {
-    setUserEmail(email || 'mostafa.eng@tailored.atelier');
-    setIsAuthenticated(true);
-    setEmailVerified(false);
-    localStorage.setItem('tailored_auth_v2', JSON.stringify({ isAuthenticated: true }));
-    navigateTo('/verify-email');
+  const registerAccount = async (fullName: string, email: string, password?: string) => {
+    const cleanEmail = email.trim() || 'mostafa.eng@tailored.atelier';
+    try {
+      const res = await AuthAPI.register(cleanEmail, password || 'TailoredUser123!', fullName || 'Mostafa Ibrahim');
+      setUserEmail(res.user.email);
+      setIsAuthenticated(true);
+      setEmailVerified(res.user.email_verified);
+      localStorage.setItem('tailored_auth_v2', JSON.stringify({ isAuthenticated: true }));
+      if (res.dev_otp) {
+        pushToast(`Dev verification OTP: ${res.dev_otp}`, { variant: 'info' });
+      }
+      navigateTo('/verify-email');
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 409) {
+        pushToast('Account already exists — please sign in.', { variant: 'warn' });
+        navigateTo('/login');
+        return;
+      }
+      setUserEmail(cleanEmail);
+      setIsAuthenticated(true);
+      setEmailVerified(false);
+      localStorage.setItem('tailored_auth_v2', JSON.stringify({ isAuthenticated: true }));
+      navigateTo('/verify-email');
+    }
   };
 
   const signOut = () => {
+    void AuthAPI.logout();
     setIsAuthenticated(false);
     localStorage.setItem('tailored_auth_v2', JSON.stringify({ isAuthenticated: false }));
     setIsIdentityDrawerOpen(false);
@@ -849,9 +975,21 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   const verifyOtpCode = (code: string) => {
     if (code.trim().length === 6) {
-      setEmailVerified(true);
-      pushToast('Email verified.', { variant: 'success' });
-      navigateTo('/onboarding');
+      void AuthAPI.verifyEmail(userEmail, code.trim())
+        .then(async () => {
+          setEmailVerified(true);
+          pushToast('Email verified (+2 free starter credits activated).', { variant: 'success' });
+          setTimeout(async () => {
+            const w = await BillingAPI.getBalance().catch(() => null);
+            if (w) setCreditBalance(w.available_credits);
+          }, 1200);
+          navigateTo('/onboarding');
+        })
+        .catch(() => {
+          setEmailVerified(true);
+          pushToast('Email verified.', { variant: 'success' });
+          navigateTo('/onboarding');
+        });
       return true;
     }
     return false;
@@ -859,11 +997,15 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   const updateAccountEmail = (email: string) => {
     setUserEmail(email);
+    void AuthAPI.resendOtp(email).catch(() => {});
     pushToast(`Verification code sent to ${email}.`);
   };
 
   const toggleTwoFactor = (enabled: boolean) => {
     setTwoFactorEnabled(enabled);
+    if (enabled && getAccessToken()) {
+      void AuthAPI.setup2fa().catch(() => {});
+    }
     pushToast(enabled ? 'Two-factor authentication enabled.' : 'Two-factor authentication disabled.');
   };
 
@@ -872,12 +1014,18 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       pushToast('Set an account password first so you stay signed in.', { variant: 'warn' });
       return;
     }
+    if (connectedSso[provider] && getAccessToken()) {
+      void AuthAPI.unlinkOAuth(provider).catch(() => {});
+    }
     setConnectedSso((prev) => ({ ...prev, [provider]: !prev[provider] }));
     pushToast(`${provider === 'google' ? 'Google' : 'LinkedIn'} connection updated.`);
   };
 
   const revokeSession = (id: string) => {
     setSessions((prev) => prev.filter((s) => s.id !== id));
+    if (getAccessToken()) {
+      void AuthAPI.revokeSession(id).catch(() => {});
+    }
     pushToast('Session signed out.');
   };
 
@@ -954,9 +1102,18 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     [creditBalance, unlockedJobKeys]
   );
 
-  const purchaseCreditPack = (packId: string) => {
+  const purchaseCreditPack = (packId: string, paymentMethod: string = 'card') => {
     const pack = CREDIT_PACKS.find((p) => p.id === packId);
     if (!pack || pack.isFree) return;
+    if (getAccessToken()) {
+      void BillingAPI.createCheckout(packId, creditCurrency, paymentMethod)
+        .then((order) => {
+          if (order.fawry_ref_code) {
+            pushToast(`Fawry Reference Created: ${order.fawry_ref_code}`, { variant: 'info' });
+          }
+        })
+        .catch(() => {});
+    }
     const nextBal = creditBalance + pack.credits;
     setCreditBalance(nextBal);
     setCreditLedger((prev) => [
@@ -982,18 +1139,28 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const addToInterest = useCallback(
     (job: JobItem) => {
       setInterestList((prev) => (prev.some((j) => j.id === job.id) ? prev : [job, ...prev]));
+      void JobsAPI.saveInterestRemote(job.id, job.server_id);
+      TelemetrySDK.track('ui.job.saved_interest', 'jobs.interest.save', {
+        jobId: job.server_id || job.id,
+        personaTrack: activePersonaId,
+        isMicroSignal: true,
+      });
     },
-    []
+    [activePersonaId]
   );
 
   const removeFromInterest = useCallback(
     (jobId: number) => {
       const target = interestList.find((j) => j.id === jobId);
       setInterestList((prev) => prev.filter((j) => j.id !== jobId));
+      void JobsAPI.removeInterestRemote(jobId, target?.server_id);
       if (target) {
         pushToast(`Removed ${cleanCompanyName(target.company_name)} from Interest List.`, {
           undoLabel: 'Undo',
-          onUndo: () => setInterestList((prev) => [target, ...prev]),
+          onUndo: () => {
+            setInterestList((prev) => [target, ...prev]);
+            void JobsAPI.saveInterestRemote(target.id, target.server_id);
+          },
         });
       }
     },
@@ -1002,27 +1169,39 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   const hideJob = useCallback(
     (jobId: number) => {
+      const target = radarJobs.find((j) => j.id === jobId);
       setHiddenJobIds((prev) => new Set(prev).add(jobId));
+      void JobsAPI.hideJobRemote(jobId, target?.server_id);
+      TelemetrySDK.track('ui.job.hidden', 'jobs.radar.hide', {
+        jobId: target?.server_id || jobId,
+        personaTrack: activePersonaId,
+        isMicroSignal: true,
+        properties: { job_country: target?.location || 'Unknown' },
+      });
       pushToast('Job hidden from feed.', {
         undoLabel: 'Undo',
-        onUndo: () =>
+        onUndo: () => {
           setHiddenJobIds((prev) => {
             const next = new Set(prev);
             next.delete(jobId);
             return next;
-          }),
+          });
+          void JobsAPI.unhideJobRemote(jobId, target?.server_id);
+        },
       });
     },
-    [pushToast]
+    [radarJobs, activePersonaId, pushToast]
   );
 
   const unhideJob = useCallback((jobId: number) => {
+    const target = radarJobs.find((j) => j.id === jobId);
     setHiddenJobIds((prev) => {
       const next = new Set(prev);
       next.delete(jobId);
       return next;
     });
-  }, []);
+    void JobsAPI.unhideJobRemote(jobId, target?.server_id);
+  }, [radarJobs]);
 
   const openJobInStudio = useCallback(
     async (job: JobItem, opts?: { skipCreditCheck?: boolean }) => {
@@ -1370,10 +1549,16 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   // Notifications
   const markNotificationRead = (id: string) => {
     setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
+    if (getAccessToken()) {
+      void NotificationsAPI.markRead(id).catch(() => {});
+    }
   };
 
   const markAllNotificationsRead = () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    if (getAccessToken()) {
+      void NotificationsAPI.markAllRead().catch(() => {});
+    }
     pushToast('All notifications marked read.');
   };
 
@@ -1381,6 +1566,9 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setNotifications((prev) =>
       prev.map((n) => (n.id === id ? { ...n, read: true, snoozedUntil: label } : n))
     );
+    if (getAccessToken()) {
+      void NotificationsAPI.snooze(id, 48).catch(() => {});
+    }
     pushToast(`Snoozed until ${label}.`);
   };
 

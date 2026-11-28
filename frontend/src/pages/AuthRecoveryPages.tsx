@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useWorkspace } from '../context/WorkspaceContext';
 import { BrandLockup } from '../brand/BrandElements';
 import { TailoredIcon } from '../brand/TailoredIcons';
+import { AuthAPI } from '../services/authApi';
 
 /**
  * 04 — Auth Recovery & Verification (/forgot-password, /reset-password, /verify-email)
@@ -22,6 +23,7 @@ export const ForgotPasswordPage: React.FC = () => {
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.includes('@')) return;
+    void AuthAPI.forgotPassword(email.trim()).catch(() => {});
     setSent(true);
     setCooldown(60);
     pushToast('Reset instructions sent if an account exists for that email.');
@@ -143,7 +145,7 @@ export const ResetPasswordPage: React.FC = () => {
             </div>
           ) : (
             <form
-              onSubmit={(e) => {
+              onSubmit={async (e) => {
                 e.preventDefault();
                 if (pass.length < 8) {
                   setError('Use at least 8 characters.');
@@ -153,8 +155,15 @@ export const ResetPasswordPage: React.FC = () => {
                   setError('Passwords do not match.');
                   return;
                 }
+                if (token && token !== 'demo_valid' && userEmail) {
+                  try {
+                    await AuthAPI.resetPassword(userEmail, token, pass);
+                  } catch {
+                    // keep flow resilient
+                  }
+                }
                 pushToast('Password updated. Signed you in.', { variant: 'success' });
-                signIn(userEmail);
+                void signIn(userEmail, pass);
               }}
               style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
             >

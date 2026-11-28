@@ -1,6 +1,6 @@
-import type { JobItem } from './jobsApi';
+import { apiFetchRaw, getAccessToken } from './apiClient';
+import { extractEmail, normalizeServerJob, resolveServerJobId, type JobItem } from './jobsApi';
 import type { CoverLetterItem } from './coverLetterApi';
-import { extractEmail } from './jobsApi';
 
 export type PipelineStatus = 'saved' | 'in_process' | 'applied' | 'interview' | 'archived';
 
@@ -60,17 +60,13 @@ export interface OutreachPackage {
 
 const STORAGE_KEY = 'tailored_application_pipeline_v1';
 const MIGRATED_FLAG_KEY = 'tailored_pipeline_migrated_to_db_v1';
-const API_BASE = 'http://127.0.0.1:8000/api/v1';
 
-function resolveNumericId(id: string): number | null {
-  if (/^\d+$/.test(id)) {
-    return parseInt(id, 10);
+function resolveServerItemId(id: string): string | null {
+  if (!id || id.startsWith('pipe_') || id.startsWith('local')) {
+    const match = id.match(/^pipe_([0-9a-f-]{8,}|\d+)$/);
+    return match ? match[1] : null;
   }
-  const match = id.match(/pipe_(\d+)/);
-  if (match) {
-    return parseInt(match[1], 10);
-  }
-  return null;
+  return id;
 }
 
 export const PipelineStorage = {
@@ -104,25 +100,35 @@ export const PipelineStorage = {
    */
   async fetchServerItems(profileId?: number): Promise<PipelineItem[]> {
     try {
-      const url = profileId ? `${API_BASE}/pipeline?profile_id=${profileId}` : `${API_BASE}/pipeline`;
-      const res = await fetch(url);
+      if (!getAccessToken()) return this.getItems();
+      const url = profileId ? `/pipeline?profile_id=${profileId}` : '/pipeline';
+      const res = await apiFetchRaw(url);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const serverItems = await res.json();
       const mapped: PipelineItem[] = serverItems.map((s: any) => ({
         id: String(s.id),
-        job: s.job,
+        job: normalizeServerJob(
+          s.job || {
+            id: s.job_id || s.id,
+            title: s.job_title || 'Target Opportunity',
+            company_name: s.company_name || 'Company',
+            url: s.job_url || '',
+            source_type: s.channel === 'direct_email' ? 'recruiter_post' : 'web',
+            recruiter_email: s.recruiter_email,
+          }
+        ),
         status: s.status as PipelineStatus,
-        saved_at: s.saved_at,
+        saved_at: s.saved_at || s.created_at,
         applied_at: s.applied_at,
         recruiter_email: s.recruiter_email,
         tailored_cv_doc_id: s.tailored_cv_doc_id,
         cover_letter: s.cover_letter
           ? {
-            doc_id: s.cover_letter.doc_id,
-            subject_line: s.cover_letter.subject_line,
-            body_markdown: s.cover_letter.body_markdown,
-            created_at: s.cover_letter.created_at,
-          }
+              doc_id: s.cover_letter.doc_id,
+              subject_line: s.cover_letter.subject_line,
+              body_markdown: s.cover_letter.body_markdown,
+              created_at: s.cover_letter.created_at,
+            }
           : null,
         notes: s.notes,
       }));
@@ -141,19 +147,18 @@ export const PipelineStorage = {
    */
   async syncWithServer(profileId?: number): Promise<PipelineItem[]> {
     try {
+      if (!getAccessToken()) return this.getItems();
       const isMigrated = localStorage.getItem(MIGRATED_FLAG_KEY);
       const localItems = this.getItems();
 
       if (!isMigrated && localItems.length > 0) {
-        // Run one-time batch import to persist local items to SQLite/Postgres
         try {
-          await fetch(`${API_BASE}/pipeline/batch-import`, {
+          await apiFetchRaw('/pipeline/batch-import', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
+            body: {
               profile_id: profileId,
               items: localItems.map((it) => ({
-                job_id: it.job.id,
+                job_id: resolveServerJobId(it.job.id, it.job.server_id),
                 job_source_id: it.job.source_id,
                 job_url: it.job.url,
                 status: it.status,
@@ -163,7 +168,7 @@ export const PipelineStorage = {
                 applied_at: it.applied_at,
                 job: it.job,
               })),
-            }),
+            },
           });
           localStorage.setItem(MIGRATED_FLAG_KEY, 'true');
         } catch (importErr) {
@@ -184,7 +189,7 @@ export const PipelineStorage = {
     job: JobItem,
     status: PipelineStatus = 'in_process',
     recruiterEmail?: string | null,
-    profileId?: number,
+    _profileId?: number,
     pkg?: { tailoredCvDocId?: string | null; coverLetter?: CoverLetterItem | null }
   ): PipelineItem | null {
     if (!job) return null;
@@ -235,31 +240,35 @@ export const PipelineStorage = {
     this.saveItems(items);
 
     // Asynchronously synchronize with backend database
-    fetch(`${API_BASE}/pipeline`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        job_id: job.id,
-        profile_id: profileId,
-        status,
-        recruiter_email: email,
-      }),
-    })
-      .then(async (res) => {
-        if (res.ok) {
-          const serverItem = await res.json();
-          // Update local ID to matching server ID
-          const currentItems = this.getItems();
-          const idx = currentItems.findIndex((it) => it.job.id === job.id);
-          if (idx >= 0) {
-            currentItems[idx].id = String(serverItem.id);
-            this.saveItems(currentItems);
-          }
-        }
+    if (getAccessToken()) {
+      apiFetchRaw('/pipeline', {
+        method: 'POST',
+        body: {
+          job_id: resolveServerJobId(job.id, job.server_id),
+          job_title: job.title,
+          company_name: job.company_name,
+          job_url: job.url,
+          status,
+          recruiter_email: email,
+          tailored_cv_doc_id: pkg?.tailoredCvDocId ?? null,
+        },
+        featureKey: 'pipeline.item.create',
       })
-      .catch((err) => {
-        console.warn('Backend /pipeline sync scheduled on next online heartbeat:', err);
-      });
+        .then(async (res) => {
+          if (res.ok) {
+            const serverItem = await res.json();
+            const currentItems = this.getItems();
+            const idx = currentItems.findIndex((it) => it.job.id === job.id);
+            if (idx >= 0) {
+              currentItems[idx].id = String(serverItem.id);
+              this.saveItems(currentItems);
+            }
+          }
+        })
+        .catch((err) => {
+          console.warn('Backend /pipeline sync scheduled on next online heartbeat:', err);
+        });
+    }
 
     return itemToReturn;
   },
@@ -274,13 +283,12 @@ export const PipelineStorage = {
     }
     this.saveItems(items);
 
-    // Asynchronously notify backend
-    const numId = resolveNumericId(id);
-    if (numId) {
-      fetch(`${API_BASE}/pipeline/${numId}`, {
+    const serverId = resolveServerItemId(id);
+    if (serverId && getAccessToken()) {
+      apiFetchRaw(`/pipeline/${serverId}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status, applied_at: item.applied_at }),
+        body: { status, applied_at: item.applied_at },
+        featureKey: 'pipeline.item.update',
       }).catch((err) => console.warn('Backend updateStatus sync deferred:', err));
     }
 
@@ -297,12 +305,11 @@ export const PipelineStorage = {
     }
     this.saveItems(items);
 
-    const numId = resolveNumericId(id);
-    if (numId && coverLetter.doc_id) {
-      fetch(`${API_BASE}/pipeline/${numId}`, {
+    const serverId = resolveServerItemId(id);
+    if (serverId && coverLetter.doc_id && getAccessToken()) {
+      apiFetchRaw(`/pipeline/${serverId}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cover_letter_doc_id: coverLetter.doc_id }),
+        body: { cover_letter_doc_id: coverLetter.doc_id },
       }).catch((err) => console.warn('Backend cover letter link deferred:', err));
     }
 
@@ -319,12 +326,11 @@ export const PipelineStorage = {
     }
     this.saveItems(items);
 
-    const numId = resolveNumericId(id);
-    if (numId) {
-      fetch(`${API_BASE}/pipeline/${numId}`, {
+    const serverId = resolveServerItemId(id);
+    if (serverId && getAccessToken()) {
+      apiFetchRaw(`/pipeline/${serverId}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tailored_cv_doc_id: docId }),
+        body: { tailored_cv_doc_id: docId },
       }).catch((err) => console.warn('Backend tailored CV link deferred:', err));
     }
 
@@ -338,12 +344,11 @@ export const PipelineStorage = {
     item.notes = notes;
     this.saveItems(items);
 
-    const numId = resolveNumericId(id);
-    if (numId) {
-      fetch(`${API_BASE}/pipeline/${numId}`, {
+    const serverId = resolveServerItemId(id);
+    if (serverId && getAccessToken()) {
+      apiFetchRaw(`/pipeline/${serverId}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ notes }),
+        body: { notes },
       }).catch((err) => console.warn('Backend notes update deferred:', err));
     }
 
@@ -354,9 +359,9 @@ export const PipelineStorage = {
     const items = this.getItems().filter((it) => it.id !== id);
     this.saveItems(items);
 
-    const numId = resolveNumericId(id);
-    if (numId) {
-      fetch(`${API_BASE}/pipeline/${numId}`, {
+    const serverId = resolveServerItemId(id);
+    if (serverId && getAccessToken()) {
+      apiFetchRaw(`/pipeline/${serverId}`, {
         method: 'DELETE',
       }).catch((err) => console.warn('Backend removeItem deferred:', err));
     }
@@ -369,12 +374,11 @@ export const PipelineStorage = {
     item.recruiter_email = email;
     this.saveItems(items);
 
-    const numId = resolveNumericId(id);
-    if (numId) {
-      fetch(`${API_BASE}/pipeline/${numId}`, {
+    const serverId = resolveServerItemId(id);
+    if (serverId && getAccessToken()) {
+      apiFetchRaw(`/pipeline/${serverId}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ recruiter_email: email }),
+        body: { recruiter_email: email },
       }).catch((err) => console.warn('Backend recruiter_email update deferred:', err));
     }
     return item;
@@ -384,10 +388,10 @@ export const PipelineStorage = {
    * Fetches structured outreach package (Gmail URL, Mailto URL, candidate contact details) from server.
    */
   async getOutreachPackage(id: string | number): Promise<OutreachPackage | null> {
-    const numId = typeof id === 'number' ? id : resolveNumericId(id);
-    if (!numId) return null;
+    const serverId = resolveServerItemId(String(id));
+    if (!serverId || !getAccessToken()) return null;
     try {
-      const res = await fetch(`${API_BASE}/pipeline/${numId}/outreach`);
+      const res = await apiFetchRaw(`/pipeline/${serverId}/outreach`);
       if (!res.ok) return null;
       return await res.json();
     } catch {

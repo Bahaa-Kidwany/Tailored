@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useWorkspace } from '../context/WorkspaceContext';
 import { SAMPLE_PROFILE } from '../services/profileApi';
+import { AuthAPI } from '../services/authApi';
+import { getAccessToken } from '../services/apiClient';
 
 export const AccountSettingsPage: React.FC = () => {
   const {
@@ -49,7 +51,22 @@ export const AccountSettingsPage: React.FC = () => {
     toggleSso(provider);
   };
 
-  const handleExportJson = () => {
+  const handleExportJson = async () => {
+    if (getAccessToken()) {
+      try {
+        const blob = await AuthAPI.exportArchive();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'tailored_gdpr_export_archive.zip';
+        a.click();
+        URL.revokeObjectURL(url);
+        pushToast('Exported verified GDPR Vault .zip archive.', { variant: 'success' });
+        return;
+      } catch {
+        // fallback to client JSON export below
+      }
+    }
     const payload = JSON.stringify(currentProfile?.profile || SAMPLE_PROFILE, null, 2);
     const blob = new Blob([payload], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -308,7 +325,10 @@ export const AccountSettingsPage: React.FC = () => {
                 type="button"
                 className="t-btn t-btn--alarm t-btn--sm"
                 disabled={deleteConfirm !== 'DELETE'}
-                onClick={() => {
+                onClick={async () => {
+                  if (getAccessToken()) {
+                    await AuthAPI.deleteAccount('DELETE').catch(() => {});
+                  }
                   pushToast('Account erased cleanly. Signing out.');
                   signOut();
                 }}

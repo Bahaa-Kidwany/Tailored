@@ -22,7 +22,9 @@ import {
 import { SAMPLE_PROFILE } from '../services/profileApi';
 import { cleanCompanyName, cleanTargetJobTitle, CvFitAPI } from '../services/cvFitApi';
 import { CoverLetterAPI, type CoverLetterItem } from '../services/coverLetterApi';
-import { extractEmail, type JobItem } from '../services/jobsApi';
+import { extractEmail, resolveServerJobId, type JobItem } from '../services/jobsApi';
+import { AgentAPI } from '../services/agentApi';
+import { getAccessToken } from '../services/apiClient';
 import { evaluateAllPersonas } from '../utils/fitEngine';
 import { buildWorkspaceCoachReply } from '../utils/workspaceCoachEngine';
 import {
@@ -834,9 +836,70 @@ export const CoverLetterStudioPage: React.FC = () => {
     });
   };
 
-  const handleSendCoachMessage = (prompt: string, mode: string) => {
+  const agentThreadRef = useRef<Record<string, string>>({});
+
+  const handleSendCoachMessage = async (prompt: string, mode: string) => {
     setMessages((prev) => [...prev, { id: `clu_${Date.now()}`, role: 'user', text: prompt }]);
     setIsStreaming(true);
+
+    if (getAccessToken()) {
+      const assistantId = `cla_${Date.now()}`;
+      try {
+        const key = String(displayJob.id);
+        let threadId = agentThreadRef.current[key];
+        if (!threadId) {
+          const th = await AgentAPI.createThread({
+            surface: 'cover_letter',
+            job_id: resolveServerJobId(displayJob.id, displayJob.server_id),
+            doc_id: activeLetter?.doc_id,
+            title: `${company} — Cover Letter`,
+          });
+          threadId = th.id;
+          agentThreadRef.current[key] = threadId;
+        }
+        setMessages((prev) => [...prev, { id: assistantId, role: 'assistant', text: '' }]);
+        await AgentAPI.streamMessage(
+          threadId,
+          {
+            prompt,
+            mode,
+            focused_anchor: focusedAnchor,
+            job_id: resolveServerJobId(displayJob.id, displayJob.server_id),
+            doc_id: activeLetter?.doc_id,
+          },
+          {
+            onThinkingStep: (step) =>
+              setMessages((prev) =>
+                prev.map((m) => (m.id === assistantId ? { ...m, thinkingSummary: step } : m))
+              ),
+            onTextDelta: (delta) =>
+              setMessages((prev) =>
+                prev.map((m) => (m.id === assistantId ? { ...m, text: `${m.text}${delta}` } : m))
+              ),
+            onProposalCard: (proposal) =>
+              setMessages((prev) =>
+                prev.map((m) => (m.id === assistantId ? { ...m, proposal } : m))
+              ),
+            onActionCard: (actionCard) =>
+              setMessages((prev) =>
+                prev.map((m) => (m.id === assistantId ? { ...m, actionCard } : m))
+              ),
+            onResourceList: (resources) =>
+              setMessages((prev) =>
+                prev.map((m) => (m.id === assistantId ? { ...m, resources } : m))
+              ),
+            onAuditSummary: (audit) =>
+              setMessages((prev) =>
+                prev.map((m) => (m.id === assistantId ? { ...m, audit } : m))
+              ),
+          }
+        );
+        setIsStreaming(false);
+        return;
+      } catch {
+        setMessages((prev) => prev.filter((m) => m.id !== assistantId));
+      }
+    }
 
     const workspaceReply = buildWorkspaceCoachReply({
       prompt,
@@ -914,6 +977,9 @@ export const CoverLetterStudioPage: React.FC = () => {
     if (pulseTimerRef.current) window.clearTimeout(pulseTimerRef.current);
     appliedTimerRef.current = window.setTimeout(() => setAppliedAnchorId(null), 1100);
     pulseTimerRef.current = window.setTimeout(() => setFitPulse(false), 700);
+    if (getAccessToken()) {
+      void AgentAPI.resolveProposal(propId, 'apply').catch(() => {});
+    }
     pushToast('Applied edit to outreach pitch.', {
       variant: 'success',
       undoLabel: 'Undo',

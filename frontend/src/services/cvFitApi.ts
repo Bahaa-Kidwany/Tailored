@@ -5,6 +5,8 @@
  */
 
 import { SAMPLE_PROFILE, type UserProfilePayload } from './profileApi';
+import { API_BASE, apiFetchRaw, getAccessToken } from './apiClient';
+import { resolveServerJobId } from './jobsApi';
 
 export interface BulletDiff {
   section: string;
@@ -111,7 +113,6 @@ export interface CvFitCreateRequest {
   user_comments?: string;
 }
 
-const API_BASE = 'http://127.0.0.1:8000/api/v1';
 const LOCAL_CV_STORAGE_KEY = 'tailored_cv_fits_fallback_v1';
 
 export function cleanTargetJobTitle(rawTitle?: string, fallbackTitle: string = 'AI & Data Engineer'): string {
@@ -933,17 +934,34 @@ export const CvFitAPI = {
     candidateProfile: UserProfilePayload = SAMPLE_PROFILE
   ): Promise<{ data: CvFitDetail; isOffline: boolean }> {
     try {
-      const res = await fetch(`${API_BASE}/cv-fit`, {
+      const payload = {
+        ...req,
+        job_id: req.job_id !== undefined ? resolveServerJobId(req.job_id) : undefined,
+      };
+      const res = await apiFetchRaw('/cv-fit', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(req),
+        body: payload,
+        featureKey: 'studio.cv.tailor',
       });
 
       if (!res.ok) {
         throw new Error(`HTTP ${res.status}: ${await res.text()}`);
       }
 
-      const data: CvFitDetail = await res.json();
+      let data: CvFitDetail = await res.json();
+      if (data.status === 'compiling' && data.doc_id) {
+        for (let attempt = 0; attempt < 5; attempt += 1) {
+          await new Promise((r) => setTimeout(r, 600));
+          const poll = await apiFetchRaw(`/cv-fit/${data.doc_id}`);
+          if (poll.ok) {
+            const latest = await poll.json();
+            data = latest;
+            if (latest.status === 'completed' || latest.compile_status === 'ok') {
+              break;
+            }
+          }
+        }
+      }
       saveLocalCvFit(data);
       return { data, isOffline: false };
     } catch (err) {
@@ -1058,12 +1076,12 @@ export const CvFitAPI = {
   async listCvFits(profileId?: number): Promise<{ docs: CvFitSummary[]; isOffline: boolean }> {
     try {
       const qs = profileId ? `?profile_id=${profileId}` : '';
-      const res = await fetch(`${API_BASE}/cv-fit${qs}`);
+      const res = await apiFetchRaw(`/cv-fit${qs}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data: CvFitSummary[] = await res.json();
       if (data.length === 0 && profileId) {
         // Also check unfiltered if profile_id had no matches yet
-        const allRes = await fetch(`${API_BASE}/cv-fit`);
+        const allRes = await apiFetchRaw('/cv-fit');
         if (allRes.ok) {
           const allData: CvFitSummary[] = await allRes.json();
           return { docs: mergeLocalCvSummaries(allData), isOffline: false };
@@ -1093,7 +1111,7 @@ export const CvFitAPI = {
       return localHit;
     }
     try {
-      const res = await fetch(`${API_BASE}/cv-fit/${docId}`);
+      const res = await apiFetchRaw(`/cv-fit/${docId}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const detail: CvFitDetail = await res.json();
       saveLocalCvFit(detail);
@@ -1107,7 +1125,9 @@ export const CvFitAPI = {
    * Direct backend download URL for PDF or .tex artifact
    */
   getDownloadUrl(docId: string, kind: 'pdf' | 'tex'): string {
-    return `${API_BASE}/cv-fit/${docId}/download/${kind}`;
+    const token = getAccessToken();
+    const base = `${API_BASE}/cv-fit/${docId}/download/${kind}`;
+    return token ? `${base}?token=${encodeURIComponent(token)}` : base;
   },
 
   /**
@@ -1120,7 +1140,7 @@ export const CvFitAPI = {
 
     if (!doc.doc_id.startsWith('local-') && !doc.doc_id.includes('_fork_')) {
       try {
-        const res = await fetch(this.getDownloadUrl(doc.doc_id, kind));
+        const res = await apiFetchRaw(`/cv-fit/${doc.doc_id}/download/${kind}`);
         if (res.ok) {
           const blob = await res.blob();
           const url = URL.createObjectURL(blob);
