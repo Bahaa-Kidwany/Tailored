@@ -50,6 +50,19 @@ http:
       middlewares: [auth-forward]
       service: profile-svc
 
+    jobs-explore-public:
+      entryPoints: [web]
+      priority: 100
+      rule: "PathPrefix(`/api/v1/explore`)"
+      service: jobs-svc
+
+    jobs-protected:
+      entryPoints: [web]
+      priority: 50
+      rule: "PathPrefix(`/api/v1/jobs`) || PathPrefix(`/api/v1/interest`)"
+      middlewares: [auth-forward]
+      service: jobs-svc
+
     telemetry-public:
       entryPoints: [web]
       priority: 80
@@ -71,6 +84,10 @@ http:
       loadBalancer:
         servers:
           - url: "http://profile-service:8002"
+    jobs-svc:
+      loadBalancer:
+        servers:
+          - url: "http://jobs-service:8003"
     telemetry-audit-svc:
       loadBalancer:
         servers:

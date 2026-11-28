@@ -74,6 +74,47 @@ services:
       timeout: 5s
       retries: 10
 
+  jobs-service:
+    build:
+      context: ../..
+      dockerfile: services/jobs-service/Dockerfile
+    container_name: tailored-jobs
+    restart: unless-stopped
+    profiles: ["core"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redpanda:
+        condition: service_healthy
+      redpanda-init:
+        condition: service_completed_successfully
+      minio:
+        condition: service_healthy
+    environment:
+      SERVICE_NAME: jobs-service
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      DATABASE_URL: postgresql+psycopg://jobs_svc:${JOBS_DB_PASSWORD:-tailored_jobs_pass}@postgres:5432/jobs_db
+      REDPANDA_BROKERS: ${REDPANDA_BROKERS:-redpanda:9092}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT:-http://minio:9000}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-tailored_minio}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-tailored_minio_dev_pass}
+      OTLP_ENDPOINT: ${OTLP_ENDPOINT:-http://otel-collector:4317}
+      OTEL_ENABLED: ${OTEL_ENABLED:-true}
+      INTERNAL_HMAC_SECRET: ${INTERNAL_HMAC_SECRET:-dev_internal_hmac_secret_change_in_prod}
+      AUDIT_ACTOR_SALT: ${AUDIT_ACTOR_SALT:-dev_audit_actor_salt_change_in_prod}
+    ports:
+      - "8003:8003"
+    networks:
+      - internal_mesh
+      - data_net
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8003/health')\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
   telemetry-audit-service:
     build:
       context: ../..

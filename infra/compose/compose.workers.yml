@@ -1,3 +1,27 @@
-# Phase 2 / Phase 3 async worker container definitions will be activated here.
-# Planned workers: scraper-worker, latex-worker (profile: ["workers"], sandbox_net for latex-worker)
-services: {}
+services:
+  scraper-worker:
+    build:
+      context: ../..
+      dockerfile: services/scraper-worker/Dockerfile
+    container_name: tailored-scraper-worker
+    restart: unless-stopped
+    profiles: ["workers"]
+    depends_on:
+      redpanda:
+        condition: service_healthy
+      redpanda-init:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    environment:
+      SERVICE_NAME: scraper-worker
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      REDPANDA_BROKERS: ${REDPANDA_BROKERS:-redpanda:9092}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      OTLP_ENDPOINT: ${OTLP_ENDPOINT:-http://otel-collector:4317}
+      OTEL_ENABLED: ${OTEL_ENABLED:-true}
+      APIFY_MAX_ITEMS_PER_ACTOR: ${APIFY_MAX_ITEMS_PER_ACTOR:-2}
+    networks:
+      - internal_mesh
+      - data_net
