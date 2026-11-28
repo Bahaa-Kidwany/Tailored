@@ -25,3 +25,36 @@ services:
     networks:
       - internal_mesh
       - data_net
+
+  latex-worker:
+    build:
+      context: ../..
+      dockerfile: services/latex-worker/Dockerfile
+    container_name: tailored-latex-worker
+    restart: unless-stopped
+    profiles: ["workers"]
+    user: "10001:10001"
+    read_only: true
+    tmpfs:
+      - /tmp:size=256M
+    depends_on:
+      redpanda:
+        condition: service_healthy
+      redpanda-init:
+        condition: service_completed_successfully
+      minio:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+    environment:
+      SERVICE_NAME: latex-worker
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      REDPANDA_BROKERS: ${REDPANDA_BROKERS:-redpanda:9092}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT:-http://minio:9000}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-tailored_minio}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-tailored_minio_dev_pass}
+      OTEL_ENABLED: "false"
+    networks:
+      - sandbox_net
+      - data_net

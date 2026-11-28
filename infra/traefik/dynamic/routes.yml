@@ -63,6 +63,32 @@ http:
       middlewares: [auth-forward]
       service: jobs-svc
 
+    billing-webhooks-public:
+      entryPoints: [web]
+      priority: 100
+      rule: "PathPrefix(`/api/v1/webhooks`)"
+      service: billing-svc
+
+    billing-packs-public:
+      entryPoints: [web]
+      priority: 100
+      rule: "PathPrefix(`/api/v1/credits/packs`)"
+      service: billing-svc
+
+    billing-protected:
+      entryPoints: [web]
+      priority: 50
+      rule: "PathPrefix(`/api/v1/credits`)"
+      middlewares: [auth-forward]
+      service: billing-svc
+
+    documents-protected:
+      entryPoints: [web]
+      priority: 50
+      rule: "PathPrefix(`/api/v1/cv-fit`) || PathPrefix(`/api/v1/cover-letter`) || PathPrefix(`/api/v1/documents`)"
+      middlewares: [auth-forward]
+      service: documents-svc
+
     telemetry-public:
       entryPoints: [web]
       priority: 80
@@ -88,6 +114,14 @@ http:
       loadBalancer:
         servers:
           - url: "http://jobs-service:8003"
+    documents-svc:
+      loadBalancer:
+        servers:
+          - url: "http://documents-service:8004"
+    billing-svc:
+      loadBalancer:
+        servers:
+          - url: "http://billing-service:8006"
     telemetry-audit-svc:
       loadBalancer:
         servers:
