@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useWorkspace } from '../context/WorkspaceContext';
 import { SAMPLE_PROFILE } from '../services/profileApi';
-import { AuthAPI } from '../services/authApi';
-import { getAccessToken } from '../services/apiClient';
+import { AuthAPI, type PrivacyConsentsPayload } from '../services/authApi';
+import { AgentAPI, type BehavioralMemoryFact, type ProactiveSuggestion } from '../services/agentApi';
+import { ApiError, getAccessToken } from '../services/apiClient';
+import { TelemetrySDK } from '../services/telemetrySdk';
 
 export const AccountSettingsPage: React.FC = () => {
   const {
@@ -30,11 +32,161 @@ export const AccountSettingsPage: React.FC = () => {
     resetAllPaneWidths,
     currentProfile,
     signOut,
+    navigateTo,
     pushToast,
   } = useWorkspace();
 
   const [emailDraft, setEmailDraft] = useState(userEmail);
   const [deleteConfirm, setDeleteConfirm] = useState('');
+
+  // 2FA Modal state
+  const [twoFaModalMode, setTwoFaModalMode] = useState<'enable' | 'disable' | null>(null);
+  const [twoFaSetupData, setTwoFaSetupData] = useState<{
+    secret: string;
+    otpauth_uri: string;
+    recovery_codes: string[];
+  } | null>(null);
+  const [twoFaCodeInput, setTwoFaCodeInput] = useState('');
+  const [twoFaBusy, setTwoFaBusy] = useState(false);
+
+  // Privacy & Telemetry Consents state
+  const [consents, setConsents] = useState<PrivacyConsentsPayload>({
+    analytics_micro_signals: true,
+    ai_passive_learning: true,
+    proactive_nudges: true,
+  });
+
+  // AI Behavioral Memory Inspector state
+  const [memoryFacts, setMemoryFacts] = useState<BehavioralMemoryFact[]>([]);
+  const [proactiveSuggestions, setProactiveSuggestions] = useState<ProactiveSuggestion[]>([]);
+  const [memoryLoading, setMemoryLoading] = useState(false);
+
+  const loadPrivacyAndMemory = async () => {
+    if (!getAccessToken()) return;
+    setMemoryLoading(true);
+    try {
+      const [priv, mem] = await Promise.all([
+        AuthAPI.getPrivacy().catch(() => null),
+        AgentAPI.getMemory().catch(() => null),
+      ]);
+      if (priv) {
+        setConsents(priv);
+        TelemetrySDK.setConsent(priv.analytics_micro_signals);
+      }
+      if (mem) {
+        setMemoryFacts(mem.memory_facts || []);
+        setProactiveSuggestions(mem.proactive_suggestions || []);
+      }
+    } finally {
+      setMemoryLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    void loadPrivacyAndMemory();
+  }, []);
+
+  const handleConsentToggle = async (key: keyof PrivacyConsentsPayload) => {
+    const nextValue = !consents[key];
+    const nextState: PrivacyConsentsPayload = { ...consents, [key]: nextValue };
+    setConsents(nextState);
+    if (key === 'analytics_micro_signals') {
+      TelemetrySDK.setConsent(nextValue);
+    }
+    if (getAccessToken()) {
+      try {
+        const updated = await AuthAPI.updatePrivacy({ [key]: nextValue });
+        setConsents(updated);
+        TelemetrySDK.setConsent(updated.analytics_micro_signals);
+        pushToast('Privacy consent preference saved.', { variant: 'success' });
+      } catch {
+        setConsents(consents);
+        pushToast('Could not persist privacy setting.', { variant: 'error' });
+      }
+    } else {
+      pushToast('Privacy preference updated in session.');
+    }
+  };
+
+  const handleOpen2faModal = async () => {
+    setTwoFaCodeInput('');
+    if (twoFactorEnabled) {
+      setTwoFaSetupData(null);
+      setTwoFaModalMode('disable');
+      return;
+    }
+    if (!getAccessToken()) {
+      toggleTwoFactor(true);
+      return;
+    }
+    setTwoFaBusy(true);
+    try {
+      const setup = await AuthAPI.setup2fa();
+      setTwoFaSetupData(setup);
+      setTwoFaModalMode('enable');
+    } catch (err) {
+      const msg = err instanceof ApiError ? err.message : 'Unable to start 2FA setup.';
+      pushToast(msg, { variant: 'error' });
+    } finally {
+      setTwoFaBusy(false);
+    }
+  };
+
+  const handleConfirm2faModal = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const code = twoFaCodeInput.trim();
+    if (!code) return;
+    if (!getAccessToken()) {
+      toggleTwoFactor(twoFaModalMode === 'enable');
+      setTwoFaModalMode(null);
+      return;
+    }
+    setTwoFaBusy(true);
+    try {
+      if (twoFaModalMode === 'enable') {
+        await AuthAPI.enable2fa(code);
+        toggleTwoFactor(true);
+      } else if (twoFaModalMode === 'disable') {
+        await AuthAPI.disable2fa(code);
+        toggleTwoFactor(false);
+      }
+      setTwoFaModalMode(null);
+      setTwoFaSetupData(null);
+      setTwoFaCodeInput('');
+    } catch (err) {
+      const msg = err instanceof ApiError ? err.message : 'Invalid verification code.';
+      pushToast(msg, { variant: 'error' });
+    } finally {
+      setTwoFaBusy(false);
+    }
+  };
+
+  const handleDeleteFact = async (factId: string) => {
+    setMemoryFacts((prev) => prev.filter((f) => f.id !== factId));
+    if (getAccessToken()) {
+      await AgentAPI.deleteMemoryFact(factId).catch(() => {});
+    }
+    pushToast('Removed behavioral memory fact.');
+  };
+
+  const handleClearMemory = async () => {
+    setMemoryFacts([]);
+    setProactiveSuggestions([]);
+    if (getAccessToken()) {
+      await AgentAPI.clearMemory().catch(() => {});
+    }
+    pushToast('Cleared all ambient behavioral memory.', { variant: 'success' });
+  };
+
+  const handleResolveSuggestion = async (sugg: ProactiveSuggestion, status: 'clicked' | 'dismissed') => {
+    setProactiveSuggestions((prev) => prev.map((s) => (s.id === sugg.id ? { ...s, status } : s)));
+    if (getAccessToken()) {
+      await AgentAPI.resolveSuggestion(sugg.id, status).catch(() => {});
+    }
+    if (status === 'clicked' && sugg.cta_route) {
+      navigateTo(sugg.cta_route);
+    }
+  };
 
   // Sole-Login Protection Guard: count active login channels
   const activeAuthCount =
@@ -110,10 +262,11 @@ export const AccountSettingsPage: React.FC = () => {
             </div>
             <button
               type="button"
+              disabled={twoFaBusy}
               className={`t-btn t-btn--sm ${twoFactorEnabled ? 't-btn--outline' : 't-btn--primary'}`}
-              onClick={() => toggleTwoFactor(!twoFactorEnabled)}
+              onClick={() => void handleOpen2faModal()}
             >
-              {twoFactorEnabled ? 'Disable 2FA' : 'Enable 2FA'}
+              {twoFaBusy ? 'Preparing…' : twoFactorEnabled ? 'Disable 2FA' : 'Enable 2FA'}
             </button>
           </div>
         </section>
@@ -299,7 +452,181 @@ export const AccountSettingsPage: React.FC = () => {
           </div>
         </section>
 
-        {/* 5. Data Ownership & Danger Zone (Full Span) */}
+        {/* 5. Privacy & AI Telemetry Consents */}
+        <section className="t-card" style={{ padding: 24 }}>
+          <span className="t-eyebrow">Privacy & Telemetry Governance</span>
+          <h2 style={{ fontSize: 20, marginTop: 4, marginBottom: 12 }}>AI & Analytics Consents</h2>
+          <p style={{ fontSize: 13, color: 'var(--n500)', marginBottom: 14 }}>
+            Control passive behavioral signal capture, ambient personalization, and gentle proactive prompts.
+          </p>
+
+          {[
+            {
+              key: 'analytics_micro_signals' as const,
+              title: 'Micro-Signal UX Telemetry',
+              desc: 'Anonymous UI engagement metrics (scroll depth, card dwell time; zero PII).',
+            },
+            {
+              key: 'ai_passive_learning' as const,
+              title: 'Ambient AI Passive Learning',
+              desc: 'Allow Studio Coach to distill style & role drift memory facts in pgvector.',
+            },
+            {
+              key: 'proactive_nudges' as const,
+              title: 'Calm Proactive Suggestions',
+              desc: 'Receive rate-limited match alerts and persona drift prompts.',
+            },
+          ].map((item) => {
+            const on = consents[item.key];
+            return (
+              <div
+                key={item.key}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  gap: 12,
+                  padding: '10px 0',
+                  borderTop: '1px solid var(--n300)',
+                }}
+              >
+                <div>
+                  <div style={{ fontWeight: 600, fontSize: 13.5 }}>{item.title}</div>
+                  <div style={{ fontSize: 12, color: 'var(--n500)' }}>{item.desc}</div>
+                </div>
+                <button
+                  type="button"
+                  className={`t-btn t-btn--sm ${on ? 't-btn--ink' : 't-btn--outline'}`}
+                  onClick={() => void handleConsentToggle(item.key)}
+                >
+                  {on ? 'Enabled' : 'Disabled'}
+                </button>
+              </div>
+            );
+          })}
+        </section>
+
+        {/* 6. AI Behavioral Memory Inspector */}
+        <section className="t-card" style={{ padding: 24 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, gap: 10 }}>
+            <div>
+              <span className="t-eyebrow">Ambient Intelligence Inspector</span>
+              <h2 style={{ fontSize: 20, marginTop: 4 }}>Learned AI Memory & Suggestions</h2>
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button
+                type="button"
+                className="t-btn t-btn--outline t-btn--sm"
+                onClick={() => void loadPrivacyAndMemory()}
+                disabled={memoryLoading}
+              >
+                {memoryLoading ? 'Loading…' : 'Refresh'}
+              </button>
+              <button
+                type="button"
+                className="t-btn t-btn--outline t-btn--sm"
+                disabled={memoryFacts.length === 0 && proactiveSuggestions.length === 0}
+                onClick={() => void handleClearMemory()}
+              >
+                Clear All Memory
+              </button>
+            </div>
+          </div>
+
+          <div className="t-label" style={{ marginBottom: 8 }}>
+            Learned Behavioral Facts ({memoryFacts.length})
+          </div>
+          {memoryFacts.length === 0 ? (
+            <div style={{ fontSize: 13, color: 'var(--n500)', padding: '10px 0' }}>
+              No distilled behavioral memory facts stored yet.
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14 }}>
+              {memoryFacts.map((fact) => (
+                <div
+                  key={fact.id}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: 10,
+                    padding: '9px 11px',
+                    border: '1px solid var(--n300)',
+                    background: 'var(--chalk)',
+                  }}
+                >
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
+                      <span className="t-chip">{fact.category}</span>
+                      <span className="t-mono" style={{ fontSize: 11, color: 'var(--n500)' }}>
+                        conf {Math.round(fact.confidence * 100)}%
+                      </span>
+                    </div>
+                    <div style={{ fontSize: 13 }}>{fact.fact_text}</div>
+                  </div>
+                  <button
+                    type="button"
+                    className="t-btn t-btn--outline t-btn--sm"
+                    onClick={() => void handleDeleteFact(fact.id)}
+                  >
+                    Forget
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="t-label" style={{ marginTop: 10, marginBottom: 8 }}>
+            Proactive Suggestions ({proactiveSuggestions.length})
+          </div>
+          {proactiveSuggestions.length === 0 ? (
+            <div style={{ fontSize: 13, color: 'var(--n500)' }}>No proactive suggestions queued.</div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {proactiveSuggestions.map((s) => (
+                <div
+                  key={s.id}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: 10,
+                    padding: '9px 11px',
+                    border: '1px solid var(--n300)',
+                    background: 'var(--chalk)',
+                  }}
+                >
+                  <div>
+                    <div style={{ fontWeight: 600, fontSize: 13.5 }}>{s.title}</div>
+                    <div style={{ fontSize: 12.5, color: 'var(--n500)' }}>{s.body}</div>
+                  </div>
+                  {s.status === 'pending' || !s.status ? (
+                    <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+                      <button
+                        type="button"
+                        className="t-btn t-btn--ink t-btn--sm"
+                        onClick={() => void handleResolveSuggestion(s, 'clicked')}
+                      >
+                        Open
+                      </button>
+                      <button
+                        type="button"
+                        className="t-btn t-btn--outline t-btn--sm"
+                        onClick={() => void handleResolveSuggestion(s, 'dismissed')}
+                      >
+                        Dismiss
+                      </button>
+                    </div>
+                  ) : (
+                    <span className="t-chip">{s.status}</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* 7. Data Ownership & Danger Zone (Full Span) */}
         <section className="t-card" style={{ gridColumn: '1 / -1', padding: 24, borderColor: 'var(--alarm)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
             <div>
@@ -339,6 +666,80 @@ export const AccountSettingsPage: React.FC = () => {
           </div>
         </section>
       </div>
+
+      {twoFaModalMode && (
+        <div className="t-drawer-backdrop" onClick={() => setTwoFaModalMode(null)}>
+          <div
+            className="t-card"
+            style={{
+              width: 'min(480px, 92vw)',
+              margin: 'auto',
+              padding: 26,
+              zIndex: 60,
+              background: 'var(--paper)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <span className="t-eyebrow">Two-Factor Authentication</span>
+            <h3 style={{ fontSize: 22, marginTop: 4, marginBottom: 10 }}>
+              {twoFaModalMode === 'enable' ? 'Configure Authenticator App (TOTP)' : 'Disable Two-Factor Auth'}
+            </h3>
+
+            {twoFaModalMode === 'enable' && twoFaSetupData && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 14 }}>
+                <div style={{ fontSize: 13, color: 'var(--n700)' }}>
+                  Add this setup key or `otpauth://` URI to Google Authenticator / 1Password, save your single-use recovery codes, then verify with a 6-digit code.
+                </div>
+                <div style={{ padding: 10, background: 'var(--chalk)', border: '1px solid var(--n300)' }}>
+                  <div className="t-label">Manual Secret Key</div>
+                  <div className="t-mono" style={{ fontSize: 13, wordBreak: 'break-all', marginTop: 2 }}>
+                    {twoFaSetupData.secret}
+                  </div>
+                </div>
+                <div style={{ padding: 10, background: 'var(--chalk)', border: '1px solid var(--n300)' }}>
+                  <div className="t-label">OTPAuth URI</div>
+                  <div className="t-mono" style={{ fontSize: 11, wordBreak: 'break-all', marginTop: 2 }}>
+                    {twoFaSetupData.otpauth_uri}
+                  </div>
+                </div>
+                {twoFaSetupData.recovery_codes?.length > 0 && (
+                  <div style={{ padding: 10, background: 'var(--chalk)', border: '1px solid var(--n300)' }}>
+                    <div className="t-label">Single-Use Recovery Codes</div>
+                    <div className="t-mono" style={{ fontSize: 11.5, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, marginTop: 4 }}>
+                      {twoFaSetupData.recovery_codes.map((rc) => (
+                        <span key={rc}>{rc}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <form onSubmit={(e) => void handleConfirm2faModal(e)} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div>
+                <label className="t-label" style={{ display: 'block', marginBottom: 5 }}>
+                  {twoFaModalMode === 'enable' ? '6-Digit Verification Code' : 'Current 6-Digit Code (or Recovery Code)'}
+                </label>
+                <input
+                  className="t-input t-mono"
+                  value={twoFaCodeInput}
+                  onChange={(e) => setTwoFaCodeInput(e.target.value)}
+                  placeholder="123456"
+                  autoFocus
+                />
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+                <button type="button" className="t-btn t-btn--outline t-btn--sm" onClick={() => setTwoFaModalMode(null)}>
+                  Cancel
+                </button>
+                <button type="submit" className="t-btn t-btn--primary t-btn--sm" disabled={twoFaBusy || !twoFaCodeInput.trim()}>
+                  {twoFaBusy ? 'Verifying…' : twoFaModalMode === 'enable' ? 'Verify & Activate 2FA' : 'Confirm Disable'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

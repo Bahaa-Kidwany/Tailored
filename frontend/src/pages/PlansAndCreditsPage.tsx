@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { CREDIT_PACKS, useWorkspace, type CreditPackOption } from '../context/WorkspaceContext';
 import { TailoredIcon } from '../brand/TailoredIcons';
+import { BillingAPI } from '../services/billingApi';
 
 export const PlansAndCreditsPage: React.FC = () => {
   const {
@@ -11,15 +12,35 @@ export const PlansAndCreditsPage: React.FC = () => {
     setLowBalanceThreshold,
     creditLedger,
     purchaseCreditPack,
+    pushToast,
   } = useWorkspace();
 
   const [checkoutPack, setCheckoutPack] = useState<CreditPackOption | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'meeza' | 'fawry'>('card');
+  const [downloadingOrderId, setDownloadingOrderId] = useState<string | null>(null);
 
   const completeCheckout = () => {
     if (!checkoutPack) return;
-    purchaseCreditPack(checkoutPack.id, paymentMethod);
+    void purchaseCreditPack(checkoutPack.id, paymentMethod);
     setCheckoutPack(null);
+  };
+
+  const handleDownloadInvoice = async (orderId: string) => {
+    setDownloadingOrderId(orderId);
+    try {
+      const blob = await BillingAPI.downloadInvoicePdf(orderId);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `tailored_invoice_${orderId}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+      pushToast('Downloaded PDF receipt.', { variant: 'success' });
+    } catch {
+      pushToast('Receipt PDF unavailable for this order.', { variant: 'error' });
+    } finally {
+      setDownloadingOrderId(null);
+    }
   };
 
   return (
@@ -192,6 +213,7 @@ export const PlansAndCreditsPage: React.FC = () => {
               <th>Target Role / Pack</th>
               <th>Credits</th>
               <th>Balance After</th>
+              <th>Receipt</th>
             </tr>
           </thead>
           <tbody>
@@ -204,6 +226,20 @@ export const PlansAndCreditsPage: React.FC = () => {
                   {row.delta >= 0 ? `+${row.delta}` : row.delta}
                 </td>
                 <td className="t-mono">{row.balanceAfter}</td>
+                <td>
+                  {row.orderId ? (
+                    <button
+                      type="button"
+                      className="t-btn t-btn--outline t-btn--sm"
+                      disabled={downloadingOrderId === row.orderId}
+                      onClick={() => void handleDownloadInvoice(row.orderId!)}
+                    >
+                      {downloadingOrderId === row.orderId ? 'Downloading…' : 'Receipt PDF'}
+                    </button>
+                  ) : (
+                    <span className="t-mono" style={{ fontSize: 11, color: 'var(--n500)' }}>—</span>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>

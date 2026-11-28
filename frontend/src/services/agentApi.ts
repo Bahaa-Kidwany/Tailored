@@ -19,6 +19,16 @@ export interface BehavioralMemoryFact {
   last_reinforced_at: string;
 }
 
+export interface ProactiveSuggestion {
+  id: string;
+  rule_key: string;
+  title: string;
+  body: string;
+  cta_route: string;
+  status: string;
+  created_at?: string;
+}
+
 export interface StreamTurnHandlers {
   onThinkingStep?: (step: string) => void;
   onTextDelta?: (delta: string) => void;
@@ -122,9 +132,14 @@ export const AgentAPI = {
   async getMemory(): Promise<{
     behavior_profile: Record<string, unknown> | null;
     memory_facts: BehavioralMemoryFact[];
-    proactive_suggestions: Array<Record<string, unknown>>;
+    proactive_suggestions: ProactiveSuggestion[];
   }> {
     return apiFetch('/agent/memory');
+  },
+
+  async getProactiveSuggestions(): Promise<ProactiveSuggestion[]> {
+    const res = await AgentAPI.getMemory();
+    return res.proactive_suggestions || [];
   },
 
   async deleteMemoryFact(factId: string): Promise<void> {
@@ -133,5 +148,16 @@ export const AgentAPI = {
 
   async clearAllMemory(): Promise<void> {
     await apiFetch('/agent/memory', { method: 'DELETE' });
+  },
+
+  async clearMemory(): Promise<void> {
+    await AgentAPI.clearAllMemory();
+  },
+
+  async resolveSuggestion(suggestionId: string, status: 'clicked' | 'dismissed'): Promise<ProactiveSuggestion> {
+    return apiFetch(`/agent/suggestions/${suggestionId}/resolve`, {
+      method: 'POST',
+      body: { status },
+    });
   },
 };

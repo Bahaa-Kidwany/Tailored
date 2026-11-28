@@ -105,6 +105,7 @@ export interface CreditLedgerEntry {
   delta: number;
   balanceAfter: number;
   docId?: string;
+  orderId?: string;
 }
 
 export interface NotificationItem {
@@ -350,6 +351,12 @@ const DEFAULT_NOTIFICATIONS: NotificationItem[] = [
   },
 ];
 
+export interface SignInResult {
+  ok: boolean;
+  requires2fa?: boolean;
+  error?: string;
+}
+
 interface WorkspaceContextValue {
   // Routing
   currentPath: string;
@@ -365,7 +372,7 @@ interface WorkspaceContextValue {
   twoFactorEnabled: boolean;
   connectedSso: { google: boolean; linkedin: boolean };
   sessions: ActiveSessionDevice[];
-  signIn: (email: string, password?: string) => Promise<void> | void;
+  signIn: (email: string, password?: string, totpCode?: string) => Promise<SignInResult>;
   registerAccount: (fullName: string, email: string, password?: string) => Promise<void> | void;
   signOut: () => void;
   verifyOtpCode: (code: string) => boolean;
@@ -404,7 +411,7 @@ interface WorkspaceContextValue {
     jobTarget: string;
     onAuthorized: () => Promise<void> | void;
   }) => Promise<void>;
-  purchaseCreditPack: (packId: string, paymentMethod?: string) => void;
+  purchaseCreditPack: (packId: string, paymentMethod?: string) => Promise<void>;
 
   // Jobs, Radar & Interest
   radarJobs: JobItem[];
@@ -512,9 +519,10 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     try {
       const saved = localStorage.getItem('tailored_auth_v2');
-      return saved ? JSON.parse(saved).isAuthenticated : true;
+      if (saved) return Boolean(JSON.parse(saved).isAuthenticated);
+      return Boolean(getAccessToken());
     } catch {
-      return true;
+      return Boolean(getAccessToken());
     }
   });
   const [userEmail, setUserEmail] = useState<string>('mostafa.eng@tailored.atelier');
@@ -854,6 +862,8 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
               jobTarget: l.job_target,
               delta: l.delta,
               balanceAfter: l.balance_after,
+              docId: l.doc_id ?? undefined,
+              orderId: l.order_id ?? undefined,
             }))
           );
         }
@@ -902,11 +912,11 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   }, [isAuthenticated, pushToast]);
 
   // Auth helpers
-  const signIn = async (email: string, password?: string) => {
+  const signIn = async (email: string, password?: string, totpCode?: string): Promise<SignInResult> => {
     const cleanEmail = email.trim() || 'mostafa.eng@tailored.atelier';
     try {
       if (password) {
-        const res = await AuthAPI.login(cleanEmail, password);
+        const res = await AuthAPI.login(cleanEmail, password, totpCode?.trim() || undefined);
         setUserEmail(res.user.email);
         setEmailVerified(res.user.email_verified);
       } else {
@@ -922,10 +932,18 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       } else {
         navigateTo(defaultHomeRoute);
       }
+      return { ok: true };
     } catch (err) {
       if (err instanceof ApiError && (err.status === 401 || err.status === 403 || err.status === 422)) {
-        pushToast(err.message || 'Invalid credentials.', { variant: 'error' });
-        return;
+        const needs2fa =
+          err.metadata?.requires_2fa === true ||
+          /two-factor/i.test(err.message || '');
+        pushToast(err.message || 'Invalid credentials.', { variant: needs2fa ? 'info' : 'error' });
+        return {
+          ok: false,
+          requires2fa: needs2fa,
+          error: err.message || 'Invalid credentials.',
+        };
       }
       setUserEmail(cleanEmail);
       setIsAuthenticated(true);
@@ -936,6 +954,7 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       } else {
         navigateTo(defaultHomeRoute);
       }
+      return { ok: true };
     }
   };
 
@@ -1003,9 +1022,6 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   const toggleTwoFactor = (enabled: boolean) => {
     setTwoFactorEnabled(enabled);
-    if (enabled && getAccessToken()) {
-      void AuthAPI.setup2fa().catch(() => {});
-    }
     pushToast(enabled ? 'Two-factor authentication enabled.' : 'Two-factor authentication disabled.');
   };
 
@@ -1102,18 +1118,69 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     [creditBalance, unlockedJobKeys]
   );
 
-  const purchaseCreditPack = (packId: string, paymentMethod: string = 'card') => {
+  const purchaseCreditPack = async (packId: string, paymentMethod: string = 'card') => {
     const pack = CREDIT_PACKS.find((p) => p.id === packId);
     if (!pack || pack.isFree) return;
+
     if (getAccessToken()) {
-      void BillingAPI.createCheckout(packId, creditCurrency, paymentMethod)
-        .then((order) => {
-          if (order.fawry_ref_code) {
-            pushToast(`Fawry Reference Created: ${order.fawry_ref_code}`, { variant: 'info' });
+      try {
+        const order = await BillingAPI.createCheckout(packId, creditCurrency, paymentMethod);
+        if (order.fawry_ref_code) {
+          pushToast(
+            `Fawry reference ${order.fawry_ref_code} created for ${pack.name}. Credits activate once payment settles.`,
+            { variant: 'info' }
+          );
+        } else {
+          if (order.checkout_url && /^https?:\/\//i.test(order.checkout_url)) {
+            window.open(order.checkout_url, '_blank', 'noopener,noreferrer');
           }
-        })
-        .catch(() => {});
+          pushToast(
+            `Checkout created via ${order.provider} (Order ${order.provider_order_id}). Polling wallet for settled credits.`,
+            { variant: 'info' }
+          );
+        }
+
+        const refreshWalletAndLedger = async () => {
+          const [w, l] = await Promise.all([
+            BillingAPI.getBalance().catch(() => null),
+            BillingAPI.getLedger().catch(() => null),
+          ]);
+          if (w) {
+            setCreditBalance(w.available_credits);
+            if (outOfCreditsState && w.available_credits >= outOfCreditsState.requiredCredits) {
+              const resumeFn = outOfCreditsState.onResume;
+              setOutOfCreditsState(null);
+              setTimeout(() => resumeFn(), 120);
+            }
+          }
+          if (l && l.length > 0) {
+            setCreditLedger(
+              l.map((row) => ({
+                id: row.id,
+                date: row.date,
+                action: row.action,
+                jobTarget: row.job_target,
+                delta: row.delta,
+                balanceAfter: row.balance_after,
+                docId: row.doc_id ?? undefined,
+                orderId: row.order_id ?? undefined,
+              }))
+            );
+          }
+        };
+
+        await refreshWalletAndLedger();
+        setTimeout(() => void refreshWalletAndLedger(), 3000);
+        setTimeout(() => void refreshWalletAndLedger(), 7000);
+        return;
+      } catch (err) {
+        const msg = err instanceof ApiError ? err.message : 'Unable to initialize payment checkout.';
+        pushToast(msg, { variant: 'error' });
+        return;
+      }
     }
+
+    // Offline / unauthenticated demo fallback
     const nextBal = creditBalance + pack.credits;
     setCreditBalance(nextBal);
     setCreditLedger((prev) => [
@@ -1127,7 +1194,7 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       },
       ...prev,
     ]);
-    pushToast(`Added ${pack.credits} credits to your wallet.`, { variant: 'success' });
+    pushToast(`Added ${pack.credits} demo credits to your wallet.`, { variant: 'success' });
     if (outOfCreditsState && nextBal >= outOfCreditsState.requiredCredits) {
       const resumeFn = outOfCreditsState.onResume;
       setOutOfCreditsState(null);

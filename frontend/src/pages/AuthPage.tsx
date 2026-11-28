@@ -21,6 +21,8 @@ export const AuthPage: React.FC<{ initialMode: 'signin' | 'signup' }> = ({ initi
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [totpCode, setTotpCode] = useState('');
+  const [requires2fa, setRequires2fa] = useState(false);
   const [showPass, setShowPass] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -32,6 +34,8 @@ export const AuthPage: React.FC<{ initialMode: 'signin' | 'signup' }> = ({ initi
 
   const switchMode = (next: 'signin' | 'signup') => {
     setErrorMsg(null);
+    setRequires2fa(false);
+    setTotpCode('');
     navigateTo(next === 'signin' ? '/login' : '/register');
   };
 
@@ -40,8 +44,9 @@ export const AuthPage: React.FC<{ initialMode: 'signin' | 'signup' }> = ({ initi
     (/[0-9]/.test(password) ? 1 : 0) +
     (/[^a-zA-Z0-9]/.test(password) ? 1 : 0);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMsg(null);
     if (!email.trim() || !email.includes('@')) {
       setErrorMsg('Please enter a valid email address.');
       return;
@@ -51,7 +56,19 @@ export const AuthPage: React.FC<{ initialMode: 'signin' | 'signup' }> = ({ initi
       return;
     }
     if (mode === 'signin') {
-      void signIn(email.trim(), password);
+      if (requires2fa && !totpCode.trim()) {
+        setErrorMsg('Please enter your 6-digit authenticator code or recovery code.');
+        return;
+      }
+      const res = await signIn(email.trim(), password, requires2fa ? totpCode.trim() : undefined);
+      if (res && !res.ok) {
+        if (res.requires2fa) {
+          setRequires2fa(true);
+          setErrorMsg('Two-factor authentication required — enter your 6-digit authenticator code.');
+        } else {
+          setErrorMsg(res.error || 'Invalid credentials.');
+        }
+      }
     } else {
       void registerAccount(fullName.trim() || 'Mostafa Ibrahim', email.trim(), password);
     }
@@ -298,6 +315,23 @@ export const AuthPage: React.FC<{ initialMode: 'signin' | 'signup' }> = ({ initi
                   </div>
                 )}
               </div>
+
+              {mode === 'signin' && requires2fa && (
+                <div>
+                  <label htmlFor="auth-totp" className="t-auth-field-label">
+                    Authenticator 6-Digit Code (or Recovery Code)
+                  </label>
+                  <input
+                    id="auth-totp"
+                    className="t-auth-input t-mono"
+                    value={totpCode}
+                    onChange={(e) => setTotpCode(e.target.value)}
+                    placeholder="123456"
+                    autoComplete="one-time-code"
+                    autoFocus
+                  />
+                </div>
+              )}
 
               {errorMsg && (
                 <div
